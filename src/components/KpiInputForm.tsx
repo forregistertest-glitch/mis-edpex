@@ -35,12 +35,15 @@ interface FormField {
   min?: number;
   max?: number;
   unit?: string;
+  target_kpi?: string;
 }
 
 interface FormDef {
   form_id: string;
   name_th: string;
   name_en: string;
+  meaning_th?: string;
+  meaning_en?: string;
   department_id: string;
   frequency: string;
   kpi_ids: string[];
@@ -76,21 +79,44 @@ export default function KpiInputForm({ lang }: { lang: "th" | "en" }) {
   const [showPreview, setShowPreview] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  
+  // Audit Trail State
   const [recentLogs, setRecentLogs] = useState<KpiEntry[]>([]);
   const [kpiMasters, setKpiMasters] = useState<KpiMaster[]>([]);
   const [loadingLogs, setLoadingLogs] = useState(true);
+  const [totalCount, setTotalCount] = useState(0);
+  const [page, setPage] = useState(1);
+  const [tempFilters, setTempFilters] = useState({
+    kpi_id: "",
+    year: 2568,
+    status: "all",
+    period: "all",
+    submitted_by: "all"
+  });
+  const [filters, setFilters] = useState({
+    kpi_id: "",
+    year: 2568,
+    status: "all",
+    period: "all",
+    submitted_by: "all"
+  });
 
   const t = lang === "th";
 
-  // Load recent entries and KPI masters from Firestore
+  // Load data from Firestore
   useEffect(() => {
     const loadData = async () => {
+      setLoadingLogs(true);
       try {
-        const [logs, masters] = await Promise.all([
-          getRecentEntries(15),
+        const [filteredResults, masters] = await Promise.all([
+          import("@/lib/data-service").then(m => m.getRecentEntriesFiltered({
+            ...filters,
+            year: filters.year === 0 ? undefined : filters.year
+          }, page, 20)),
           getAllKpiMaster(),
         ]);
-        setRecentLogs(logs);
+        setRecentLogs(filteredResults.entries);
+        setTotalCount(filteredResults.total);
         setKpiMasters(masters);
       } catch (err) {
         console.error("Error loading data:", err);
@@ -99,7 +125,7 @@ export default function KpiInputForm({ lang }: { lang: "th" | "en" }) {
       }
     };
     loadData();
-  }, [submitted]);
+  }, [submitted, filters, page]);
 
   const resetForm = () => {
     setFormValues({});
@@ -152,7 +178,9 @@ export default function KpiInputForm({ lang }: { lang: "th" | "en" }) {
       // Create one kpi_entry per numeric field
       for (const field of selectedForm.fields) {
         if (field.type === "number" && formValues[field.field_id]) {
-          const kpiId = selectedForm.kpi_ids[0]; // Primary KPI
+          // Use specific KPI ID for this field if provided, else fallback to primary form KPI
+          const kpiId = field.target_kpi || selectedForm.kpi_ids[0];
+          
           await addKpiEntry({
             kpi_id: kpiId,
             fiscal_year: parseInt(formValues["fiscal_year"] || "2568"),
@@ -187,7 +215,7 @@ export default function KpiInputForm({ lang }: { lang: "th" | "en" }) {
     const value = formValues[field.field_id] || "";
 
     const baseInputCls = `w-full rounded-xl border-2 px-4 py-3 text-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500/30 ${
-      hasError ? "border-red-400 bg-red-50/50" : "border-slate-200 bg-white hover:border-blue-300 focus:border-blue-500"
+      hasError ? "border-red-400 bg-red-50/50" : "border-slate-200 bg-white hover:border-blue-300 focus:border-blue-500 text-black font-normal"
     }`;
 
     return (
@@ -203,9 +231,15 @@ export default function KpiInputForm({ lang }: { lang: "th" | "en" }) {
         </label>
 
         {field.type === "select" ? (
-          <select className={baseInputCls} value={value} onChange={(e) => setFormValues({ ...formValues, [field.field_id]: e.target.value })}>
-            <option value="">{t ? "— เลือก —" : "— Select —"}</option>
-            {field.options?.map((opt) => <option key={String(opt)} value={String(opt)}>{String(opt)}</option>)}
+          <select 
+            className={`${baseInputCls} appearance-none bg-[url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20fill%3D%22none%22%20viewBox%3D%220%200%2020%2020%22%3E%3Cpath%20stroke%3D%22%23000000%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%20stroke-width%3D%222%22%20d%3D%22m6%208%204%204%204-4%22%2F%3E%3C%2Fsvg%3E')] bg-[length:1.25em_1.25em] bg-[right_0.5rem_center] bg-no-repeat pr-10`} 
+            value={value} 
+            onChange={(e) => setFormValues({ ...formValues, [field.field_id]: e.target.value })}
+          >
+            <option value="" className="text-slate-400">{t ? "— เลือก —" : "— Select —"}</option>
+            {field.options?.map((opt) => (
+              <option key={String(opt)} value={String(opt)} className="text-black font-normal bg-white">{String(opt)}</option>
+            ))}
           </select>
         ) : field.type === "textarea" ? (
           <textarea className={`${baseInputCls} min-h-[80px] resize-y`} value={value} onChange={(e) => setFormValues({ ...formValues, [field.field_id]: e.target.value })} placeholder={t ? "กรุณากรอกข้อมูล..." : "Enter data..."} />
@@ -281,7 +315,7 @@ export default function KpiInputForm({ lang }: { lang: "th" | "en" }) {
             </button>
             <button onClick={confirmSubmit} disabled={submitting} className="px-6 py-2.5 bg-green-600 text-white rounded-xl text-sm font-bold hover:bg-green-700 transition-all shadow-lg shadow-green-600/20 flex items-center gap-2 disabled:opacity-50">
               {submitting ? <Loader2 size={14} className="animate-spin" /> : <Send size={14} />}
-              {submitting ? (t ? "กำลังบันทึก..." : "Saving...") : (t ? "ยืนยันบันทึกลง Firestore" : "Confirm & Save to Firestore")}
+              {submitting ? (t ? "กำลังบันทึก..." : "Saving...") : (t ? "ยืนยันบันทึก" : "Confirm & Save")}
             </button>
           </div>
         </div>
@@ -319,7 +353,10 @@ export default function KpiInputForm({ lang }: { lang: "th" | "en" }) {
                 <div className={`${meta.bg} ${meta.color} w-12 h-12 rounded-2xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform`}>
                   <IconComp size={22} />
                 </div>
-                <h3 className="font-bold text-slate-800 text-sm mb-1 line-clamp-2">{t ? form.name_th : form.name_en}</h3>
+                <div className="space-y-0.5 mb-2">
+                  <h3 className="font-bold text-slate-800 text-sm leading-snug">{form.name_th.split(" / ")[0]}</h3>
+                  <p className="text-[11px] font-medium text-slate-500 leading-tight italic">{form.name_th.split(" / ")[1] || form.name_en}</p>
+                </div>
                 <p className="text-xs text-slate-400 mb-3">{form.kpi_ids.length} KPIs · {form.fields.length} {t ? "ช่อง" : "fields"}</p>
                 <div className="flex items-center gap-1 text-xs font-semibold text-blue-600 opacity-0 group-hover:opacity-100 transition-opacity">
                   {t ? "เปิดฟอร์ม" : "Open Form"} <ChevronRight size={14} />
@@ -330,55 +367,221 @@ export default function KpiInputForm({ lang }: { lang: "th" | "en" }) {
           })}
         </div>
 
-        {/* Recent Submissions from Firestore */}
-        <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
-          <div className="px-6 py-4 border-b border-slate-200 flex items-center justify-between">
-            <h3 className="font-bold text-slate-800">{t ? "ข้อมูลล่าสุดจาก Firestore" : "Recent Entries from Firestore"}</h3>
-            <span className="text-xs text-slate-400 bg-slate-100 px-2 py-1 rounded-full">
-              {loadingLogs ? "..." : `${recentLogs.length} ${t ? "รายการ" : "entries"}`}
-            </span>
-          </div>
-          {loadingLogs ? (
-            <div className="p-12 text-center text-slate-400"><Loader2 size={24} className="animate-spin mx-auto" /></div>
-          ) : recentLogs.length === 0 ? (
-            <div className="p-12 text-center text-slate-400">{t ? "ยังไม่มีข้อมูล — กรุณารัน Seed ก่อน (/seed)" : "No entries yet — run Seed first (/seed)"}</div>
-          ) : (
-            <div className="overflow-x-auto">
-              <table className="w-full text-sm">
-                <thead>
-                  <tr className="bg-slate-50 text-left">
-                    <th className="px-6 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wider">KPI</th>
-                    <th className="px-6 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wider">{t ? "ชื่อ" : "Name"}</th>
-                    <th className="px-6 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wider">{t ? "ปี" : "Year"}</th>
-                    <th className="px-6 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wider">{t ? "งวด" : "Period"}</th>
-                    <th className="px-6 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wider">{t ? "ค่า" : "Value"}</th>
-                    <th className="px-6 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wider">{t ? "สถานะ" : "Status"}</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-slate-100">
-                  {recentLogs.map((log, i) => {
-                    const badge = statusBadge[log.status] || statusBadge.pending;
-                    const BadgeIcon = badge.icon;
-                    const master = kpiMasters.find((m) => m.kpi_id === log.kpi_id);
-                    return (
-                      <tr key={log.id || i} className="hover:bg-slate-50/50 transition-colors">
-                        <td className="px-6 py-3 font-mono text-xs text-blue-600 font-bold">{log.kpi_id}</td>
-                        <td className="px-6 py-3 text-slate-700 text-xs max-w-[200px] truncate">{master ? (t ? master.name_th : master.name_en) : "—"}</td>
-                        <td className="px-6 py-3 text-slate-600">{log.fiscal_year}</td>
-                        <td className="px-6 py-3"><span className="text-xs bg-blue-50 text-blue-600 px-2 py-0.5 rounded-full font-semibold">{log.period}</span></td>
-                        <td className="px-6 py-3 font-bold text-slate-800">{log.value !== null ? log.value.toLocaleString() : "—"} <span className="text-slate-400 font-normal text-xs">{log.unit}</span></td>
-                        <td className="px-6 py-3">
-                          <span className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold ${badge.cls}`}>
-                            <BadgeIcon size={12} />{t ? badge.label_th : badge.label_en}
-                          </span>
-                        </td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
+        {/* Recent Submissions from Firestore (Audit Trail) */}
+        <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden min-h-[500px] flex flex-col">
+          <div className="px-6 py-4 border-b border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div className="flex items-center gap-3">
+              <h3 className="font-bold text-slate-800">{t ? "ข้อมูลล่าสุดจาก Firestore" : "Recent Entries from Firestore"}</h3>
+              <span className="text-xs text-slate-400 bg-slate-100 px-2 py-1 rounded-full">
+                {loadingLogs ? "..." : `${totalCount} ${t ? "รายการ" : "entries"}`}
+              </span>
             </div>
-          )}
+
+            {/* Top Pagination & Counter */}
+            {!loadingLogs && (
+              <div className="flex items-center gap-4">
+                <div className="hidden lg:block text-[11px] font-medium text-slate-400">
+                  {t ? `แสดง ${recentLogs.length} จาก ${totalCount}` : `Showing ${recentLogs.length} of ${totalCount}`}
+                </div>
+                <div className="flex items-center gap-1 bg-white p-1 rounded-xl border border-slate-100 shadow-sm">
+                  <button 
+                    disabled={page === 1}
+                    onClick={() => setPage(p => Math.max(1, p - 1))}
+                    className="p-1 px-2 hover:bg-slate-100 rounded-lg text-slate-400 hover:text-blue-600 disabled:opacity-30 transition-all flex items-center gap-1"
+                  >
+                    <ArrowLeft size={12} />
+                    <span className="text-[10px] font-bold uppercase hidden sm:inline">{t ? "ก่อนหน้า" : "Prev"}</span>
+                  </button>
+                  
+                  <div className="flex items-center gap-1 mx-1">
+                    {Array.from({ length: Math.min(5, Math.ceil(totalCount / 20)) }, (_, i) => {
+                      const totalPages = Math.ceil(totalCount / 20);
+                      let pageNum = i + 1;
+                      
+                      // Simple logic to show pages around current page
+                      if (totalPages > 5 && page > 3) {
+                        pageNum = page - 3 + i;
+                        if (pageNum + (4-i) > totalPages) pageNum = totalPages - 4 + i;
+                      }
+
+                      if (pageNum > totalPages) return null;
+
+                      return (
+                        <button 
+                          key={pageNum}
+                          onClick={() => setPage(pageNum)}
+                          className={`w-7 h-7 flex items-center justify-center rounded-lg text-[11px] font-black transition-all ${page === pageNum ? 'bg-blue-600 text-white shadow-md' : 'text-slate-400 hover:bg-slate-50 hover:text-slate-600'}`}
+                        >
+                          {pageNum}
+                        </button>
+                      );
+                    })}
+                  </div>
+
+                  <button 
+                    disabled={page >= Math.ceil(totalCount / 20)}
+                    onClick={() => setPage(p => p + 1)}
+                    className="p-1 px-2 hover:bg-slate-100 rounded-lg text-slate-400 hover:text-blue-600 disabled:opacity-30 transition-all flex items-center gap-1"
+                  >
+                    <span className="text-[10px] font-bold uppercase hidden sm:inline">{t ? "ถัดไป" : "Next"}</span>
+                    <ChevronRight size={12} />
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Filter Controls */}
+          <div className="bg-slate-50 border-b border-slate-200 px-6 py-4 flex flex-col lg:flex-row items-end gap-4 overflow-visible">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3 flex-1 w-full">
+              <div className="space-y-1">
+                <label className="text-[10px] font-bold text-slate-400 uppercase">{t ? "หมวดหมู่" : "Category"}</label>
+                <select 
+                  className="w-full bg-white border border-slate-200 rounded-lg px-2 py-1.5 text-xs text-slate-900 font-medium focus:ring-2 focus:ring-blue-500/20"
+                  value={tempFilters.kpi_id}
+                  onChange={(e) => setTempFilters({...tempFilters, kpi_id: e.target.value})}
+                >
+                  <option value="">{t ? "ทั้งหมด" : "All"}</option>
+                  {forms.map(f => (
+                    <option key={f.form_id} value={f.kpi_ids[0]}>{t ? f.name_th : f.name_en}</option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="space-y-1">
+                <label className="text-[10px] font-bold text-slate-400 uppercase">{t ? "ปีงบประมาณ" : "Fiscal Year"}</label>
+                <select 
+                  className="w-full bg-white border border-slate-200 rounded-lg px-2 py-1.5 text-xs text-slate-900 font-medium focus:ring-2 focus:ring-blue-500/20"
+                  value={tempFilters.year}
+                  onChange={(e) => setTempFilters({...tempFilters, year: Number(e.target.value)})}
+                >
+                  <option value={0}>{t ? "ทั้งหมด" : "All Years"}</option>
+                  {[2568, 2567, 2566, 2565, 2564].map(y => (
+                    <option key={y} value={y}>{y}</option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="space-y-1">
+                <label className="text-[10px] font-bold text-slate-400 uppercase">{t ? "งวดข้อมูล" : "Period"}</label>
+                <select 
+                  className="w-full bg-white border border-slate-200 rounded-lg px-2 py-1.5 text-xs text-slate-900 font-medium focus:ring-2 focus:ring-blue-500/20"
+                  value={tempFilters.period}
+                  onChange={(e) => setTempFilters({...tempFilters, period: e.target.value})}
+                >
+                  <option value="all">{t ? "ทั้งหมด" : "All"}</option>
+                  <option value="annual">{t ? "รายปี" : "Annual"}</option>
+                  {Array.from({length: 4}, (_, i) => `Q${i+1}`).map(q => <option key={q} value={q}>{q}</option>)}
+                  {Array.from({length: 12}, (_, i) => `M${String(i+1).padStart(2, '0')}`).map(m => <option key={m} value={m}>{m}</option>)}
+                </select>
+              </div>
+
+              <div className="space-y-1">
+                <label className="text-[10px] font-bold text-slate-400 uppercase">{t ? "ผู้กรอก" : "User"}</label>
+                <select 
+                  className="w-full bg-white border border-slate-200 rounded-lg px-2 py-1.5 text-xs text-slate-900 font-medium focus:ring-2 focus:ring-blue-500/20"
+                  value={tempFilters.submitted_by}
+                  onChange={(e) => setTempFilters({...tempFilters, submitted_by: e.target.value})}
+                >
+                  <option value="all">{t ? "ทั้งหมด" : "All"}</option>
+                  <option value="user">User</option>
+                  <option value="system_seed">System Seed</option>
+                </select>
+              </div>
+
+              <div className="space-y-1">
+                <label className="text-[10px] font-bold text-slate-400 uppercase">{t ? "สถานะ" : "Status"}</label>
+                <select 
+                  className="w-full bg-white border border-slate-200 rounded-lg px-2 py-1.5 text-xs text-slate-900 font-medium focus:ring-2 focus:ring-blue-500/20"
+                  value={tempFilters.status}
+                  onChange={(e) => setTempFilters({...tempFilters, status: e.target.value})}
+                >
+                  <option value="all">{t ? "ทั้งหมด" : "All"}</option>
+                  {Object.entries(statusBadge).map(([key, data]) => (
+                    <option key={key} value={key}>{t ? data.label_th : data.label_en}</option>
+                  ))}
+                </select>
+              </div>
+            </div>
+
+            {/* Filter Actions */}
+            <div className="flex items-center gap-2 w-full lg:w-auto mt-2 lg:mt-0">
+              <button 
+                onClick={() => {
+                  const reset = { kpi_id: "", year: 2568, status: "all", period: "all", submitted_by: "all" };
+                  setTempFilters(reset);
+                  setFilters(reset);
+                  setPage(1);
+                }}
+                className="flex-1 lg:flex-none px-4 py-1.5 bg-slate-200 text-slate-700 rounded-lg text-xs font-bold hover:bg-slate-300 transition-colors"
+              >
+                {t ? "ล้าง" : "Clear"}
+              </button>
+              <button 
+                onClick={() => { setFilters(tempFilters); setPage(1); }}
+                className="flex-1 lg:flex-none px-5 py-1.5 bg-blue-600 text-white rounded-lg text-xs font-bold hover:bg-blue-700 transition-all shadow-md shadow-blue-500/20 flex items-center justify-center gap-1.5"
+                disabled={loadingLogs}
+              >
+                {loadingLogs ? <Loader2 size={12} className="animate-spin" /> : null}
+                {t ? "ค้นหา" : "Refresh"}
+              </button>
+            </div>
+          </div>
+
+          {/* Audit Table Area (Stable) */}
+          <div className="relative flex-1">
+            {loadingLogs && (
+              <div className="absolute inset-0 bg-white/60 backdrop-blur-[1px] z-10 flex items-center justify-center transition-all">
+                <div className="bg-white px-6 py-4 rounded-2xl shadow-xl border border-slate-100 flex flex-col items-center gap-3">
+                  <Loader2 size={24} className="animate-spin text-blue-600" />
+                  <p className="text-xs font-bold text-slate-500">{t ? "กำลังดึงข้อมูล..." : "Refreshing Table..."}</p>
+                </div>
+              </div>
+            )}
+            
+            {!loadingLogs && recentLogs.length === 0 ? (
+              <div className="p-20 text-center text-slate-400">
+                <AlertCircle size={32} className="mx-auto mb-3 opacity-20" />
+                <p className="text-sm font-medium">{t ? "ไม่พบข้อมูลตามเงื่อนไข" : "No results found for these filters"}</p>
+              </div>
+            ) : (
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm">
+                  <thead>
+                    <tr className="bg-slate-50 text-left border-b border-slate-100">
+                      <th className="px-6 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wider">KPI</th>
+                      <th className="px-6 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wider">{t ? "ชื่อตัวชี้วัด" : "Indicator Name"}</th>
+                      <th className="px-6 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wider">{t ? "ปี" : "Year"}</th>
+                      <th className="px-6 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wider">{t ? "งวด" : "Period"}</th>
+                      <th className="px-6 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wider">{t ? "ค่า" : "Value"}</th>
+                      <th className="px-6 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wider">{t ? "สถานะ" : "Status"}</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-100">
+                    {recentLogs.map((log, i) => {
+                      const badge = statusBadge[log.status] || statusBadge.pending;
+                      const BadgeIcon = badge.icon;
+                      const master = kpiMasters.find((m) => m.kpi_id === log.kpi_id);
+                      return (
+                        <tr key={log.id || i} className="hover:bg-slate-50/50 transition-colors">
+                          <td className="px-6 py-4 font-mono text-xs text-blue-600 font-bold">{log.kpi_id}</td>
+                          <td className="px-6 py-4 text-slate-700 text-xs max-w-[200px] truncate" title={master ? (t ? master.name_th : master.name_en) : ""}>{master ? (t ? master.name_th : master.name_en) : "—"}</td>
+                          <td className="px-6 py-4 text-slate-600 text-xs">{log.fiscal_year}</td>
+                          <td className="px-6 py-4"><span className="text-[10px] bg-blue-50 text-blue-600 px-2 py-0.5 rounded-full font-bold uppercase">{log.period}</span></td>
+                          <td className="px-6 py-4 font-bold text-slate-800 text-xs">{log.value !== null ? log.value.toLocaleString() : "—"} <span className="text-slate-400 font-normal text-[10px]">{log.unit}</span></td>
+                          <td className="px-6 py-4">
+                            <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold ${badge.cls}`}>
+                              <BadgeIcon size={10} />{t ? badge.label_th : badge.label_en}
+                            </span>
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </div>
         </div>
       </div>
     );
@@ -398,8 +601,19 @@ export default function KpiInputForm({ lang }: { lang: "th" | "en" }) {
         <div className="flex items-center gap-4">
           <div className="bg-white/20 p-3 rounded-2xl backdrop-blur-sm"><IconComp size={28} /></div>
           <div>
-            <h2 className="text-xl font-bold">{t ? selectedForm.name_th : selectedForm.name_en}</h2>
-            <p className="text-white/60 text-sm mt-0.5">{selectedForm.kpi_ids.join(", ")}</p>
+            <h2 className="text-xl font-bold flex flex-wrap items-center gap-x-2">
+              <span>{selectedForm.name_th}</span>
+              <span className="text-white/60 font-medium">/ {selectedForm.name_en}</span>
+            </h2>
+            <div className="flex flex-wrap items-center gap-x-4 gap-y-1 mt-1">
+              <p className="text-white/60 text-xs font-mono bg-white/10 px-2 py-0.5 rounded">KPIs: {selectedForm.kpi_ids.join(", ")}</p>
+              {selectedForm.meaning_th && (
+                <p className="text-white/80 text-xs italic opacity-90">
+                  <span className="font-bold underline mr-1">{t ? "ความหมาย:" : "Meaning:"}</span>
+                  {t ? selectedForm.meaning_th : selectedForm.meaning_en}
+                </p>
+              )}
+            </div>
           </div>
         </div>
       </div>

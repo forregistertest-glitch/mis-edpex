@@ -6,14 +6,14 @@ import type { KpiMaster } from "@/lib/data-service";
 import kpiMasterRaw from "../../../db_design/kpi_master.json";
 
 // ─── Aggregation map by data_pattern ───────────────────────────
-function getAggregation(pattern: string): string {
+function getAggregation(pattern: string): "sum" | "avg" | "latest" | "count" | "append" {
   switch (pattern) {
-    case "year_series": return "average";
+    case "year_series": return "avg";
     case "matrix": return "sum";
     case "survey": return "latest";
     case "narrative": return "append";
     case "milestone": return "latest";
-    default: return "average";
+    default: return "avg";
   }
 }
 
@@ -29,7 +29,6 @@ function generateSampleEntries() {
     "7.1.2":  [70.0, 72.5, 75.0, 77.3, 79.8],
     "7.1.3":  [150, 165, 180, 192, 210],
     "7.1.7":  [800, 850, 920, 980, 1050],
-    "7.1.11": [3, 2, 1, 1, 0],
     "7.1.13": [85, 90, 95, 98, 105],
     "7.1.14": [92.5, 93.0, 93.8, 94.2, 95.1],
     "7.1.16": [15, 17, 19, 21, 23],
@@ -40,7 +39,10 @@ function generateSampleEntries() {
     "7.2.6":  [3.8, 3.9, 4.0, 4.1, 4.2],
     "7.2.7":  [12000, 13500, 14200, 15000, 15800],
     "7.2.8":  [1200000, 1500000, 1800000, 2100000, 2400000],
+    "7.2.9":  [4.2, 4.3, 4.4, 4.5, 4.6],
     "7.2.10": [3.9, 4.0, 4.1, 4.1, 4.2],
+    "7.2.11": [450, 480, 520, 550, 600],
+    "7.2.14": [120, 145, 160, 180, 210],
     "7.2.12": [200, 220, 250, 280, 310],
     "7.3.3":  [320, 325, 330, 335, 340],
     "7.3.4":  [5.2, 4.8, 4.5, 4.2, 3.9],

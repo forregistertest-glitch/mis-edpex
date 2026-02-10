@@ -110,22 +110,17 @@ export default function Dashboard() {
     }
   }, [activeTab]);
 
-  const handleViewDetails = async (context: string, title: string) => {
+  // Handle View Details button click from dashboard
+  const handleViewDetails = async (categoryId: string, title: string) => {
     setExplorerLoading(true);
+    setExplorerTitle(title);
     try {
-      let data: any[] = [];
-      if (context.startsWith('7.')) {
-        // Category-based: get entries for the category
-        data = await getEntriesByCategory(context);
-      } else {
-        // Fallback: get all entries
-        data = await getKpiEntries();
-      }
+      // Filter by the dashboard's current year (2568) for context-aware exploration
+      const data = await getEntriesByCategory(categoryId, 2568);
       setExplorerData(data);
-      setExplorerTitle(title);
       setShowExplorer(true);
     } catch (error) {
-      console.error("Error fetching explorer data:", error);
+      console.error("Fetch detail error:", error);
     } finally {
       setExplorerLoading(false);
     }
@@ -213,21 +208,29 @@ export default function Dashboard() {
     }
   };
 
-  // Format display values
-  const fmtVal = (v: number | null, unit?: string) => {
+  // Format display values with professional decimal handling
+  const fmtVal = (v: number | null, unit?: string, agg?: string) => {
     if (v === null) return "—";
+    
+    // Percentages: 1 decimal
     if (unit === "ร้อยละ" || unit === "%") return `${v.toFixed(1)}%`;
-    if (unit === "คะแนน") return `${v.toFixed(1)}/5`;
-    if (v >= 1000000) return `${(v / 1000000).toFixed(1)}M`;
-    if (v >= 1000) return v.toLocaleString();
-    return v.toString();
+    
+    // Scores/Ratings: 2 decimals
+    if (unit === "คะแนน") return `${v.toFixed(2)}/5`;
+    
+    // Currency/Large Numbers
+    if (v >= 1000000) return `${(v / 1000000).toFixed(2)}M`;
+    if (v >= 1000) return v.toLocaleString(undefined, { minimumFractionDigits: agg === "avg" ? 2 : 0, maximumFractionDigits: 2 });
+    
+    // Default: 0 for counts/sums, 2 for averages
+    return agg === "avg" ? v.toFixed(2) : v.toString();
   };
 
   // Build KPI cards from real data
   const kpis = [
     { 
       title: t('academicPassRate'), 
-      value: fmtVal(dashboardData?.academicPassRate ?? null, "%"), 
+      value: fmtVal(dashboardData?.academicPassRate ?? null, "%", "avg"), 
       trend: dashboardData?.academicPassRate && dashboardData.academicPassRate > 80 ? "✓ On Target" : "→ Tracking",
       icon: GraduationCap, 
       color: "text-blue-600", 
@@ -235,7 +238,7 @@ export default function Dashboard() {
     },
     { 
       title: t('customerSatisfaction'), 
-      value: fmtVal(dashboardData?.customerSatisfaction ?? null, "คะแนน"),
+      value: fmtVal(dashboardData?.customerSatisfaction ?? null, "คะแนน", "avg"),
       trend: dashboardData?.customerSatisfaction && dashboardData.customerSatisfaction >= 4.0 ? "✓ ≥ 4.0" : "→ Tracking",
       icon: Users, 
       color: "text-green-600", 
@@ -243,7 +246,7 @@ export default function Dashboard() {
     },
     { 
       title: t('successRateStrategic'),
-      value: fmtVal(dashboardData?.strategicSuccess ?? null),
+      value: fmtVal(dashboardData?.strategicSuccess ?? null, "%", "avg"),
       trend: `${dashboardData?.kpisWithData || 0}/${dashboardData?.totalKpis || 0} KPIs`,
       icon: LineChart, 
       color: "text-purple-600", 
@@ -327,11 +330,20 @@ export default function Dashboard() {
                 {categoryData.map((kpi: any) => {
                   const hasTarget = kpi.target_value !== null && kpi.target_value !== undefined;
                   const met = hasTarget && kpi.latestValue !== null && kpi.latestValue >= kpi.target_value;
+                  const formulaHint = kpi.aggregation === 'sum' 
+                    ? (lang === 'th' ? 'ผลรวมของรายการทั้งหมด' : 'Sum of all entries')
+                    : (lang === 'th' ? 'ค่าเฉลี่ยของรายการทั้งหมด' : 'Average of all entries');
+
                   return (
-                    <tr key={kpi.kpi_id} className="hover:bg-slate-50/50 transition-colors">
+                    <tr key={kpi.kpi_id} className="hover:bg-slate-50/50 transition-colors group">
                       <td className="px-6 py-4 font-mono text-xs text-blue-600 font-bold whitespace-nowrap">{kpi.kpi_id}</td>
                       <td className="px-6 py-4 text-slate-700 text-sm max-w-[300px]">{lang === 'th' ? kpi.name_th : kpi.name_en}</td>
-                      <td className="px-6 py-4 text-right font-bold text-slate-800">{kpi.latestValue !== null ? fmtVal(kpi.latestValue, kpi.unit) : <span className="text-slate-300">—</span>}</td>
+                      <td 
+                        className="px-6 py-4 text-right font-bold text-slate-800 cursor-help"
+                        title={`${lang === 'th' ? 'สูตรคำนวณ' : 'Formula'}: ${formulaHint}`}
+                      >
+                        {kpi.latestValue !== null ? fmtVal(kpi.latestValue, kpi.unit, kpi.aggregation) : <span className="text-slate-300">—</span>}
+                      </td>
                       <td className="px-6 py-4 text-right text-slate-500">{hasTarget ? fmtVal(kpi.target_value, kpi.unit) : "—"}</td>
                       <td className="px-6 py-4">
                         {kpi.latestValue === null ? (
@@ -399,18 +411,8 @@ export default function Dashboard() {
             </button>
           ))}
         </nav>
-        <div className="p-4 border-t border-slate-200 space-y-2">
-          <button 
-            onClick={() => setLang(lang === 'th' ? 'en' : 'th')}
-            className="flex items-center gap-3 px-4 py-2 text-sm text-blue-600 bg-blue-50 w-full hover:bg-blue-100 rounded-lg transition-colors font-semibold"
-          >
-            <Languages size={18} />
-            {lang === 'th' ? 'English Content' : 'เนื้อหาภาษาไทย'}
-          </button>
-          <button className="flex items-center gap-3 px-4 py-2 text-sm text-slate-500 w-full hover:bg-slate-100 rounded-lg transition-colors">
-            <Settings size={18} />
-            {t('settings')}
-          </button>
+        <div className="p-4 border-t border-slate-200">
+          <p className="text-[10px] text-slate-400 font-medium text-center uppercase tracking-widest">{t('academicYear')} 2568</p>
         </div>
       </aside>
 
@@ -420,12 +422,40 @@ export default function Dashboard() {
           <h2 className="text-lg font-semibold text-slate-800">
             {activeTab === 'Dashboard' ? t('executiveOverview') : activeTab}
           </h2>
-          <div className="flex items-center gap-4">
-            <div className="flex items-center gap-2 text-sm font-medium text-slate-500 bg-slate-100 px-3 py-1 rounded-full">
-              <Database size={14} />
-              <span>{dashboardData?.totalEntries || 0} entries</span>
+          <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2 text-[11px] font-bold text-slate-500 bg-slate-100 px-3 py-1.5 rounded-xl border border-slate-200">
+              <Database size={13} className="text-blue-500" />
+              <span>{dashboardData?.totalEntries || 0} Entries</span>
             </div>
-            <span className="text-sm font-medium text-slate-500 bg-slate-100 px-3 py-1 rounded-full">{t('academicYear')} 2568</span>
+            
+            <div className="h-6 w-[1px] bg-slate-200 mx-1 hidden sm:block" />
+
+            {/* Language Toggle */}
+            <button 
+              onClick={() => setLang(lang === 'th' ? 'en' : 'th')}
+              className="p-2 text-slate-500 hover:text-blue-600 hover:bg-blue-50 rounded-xl transition-all relative group"
+              title={lang === 'th' ? 'Switch to English' : 'เปลี่ยนเป็นภาษาไทย'}
+            >
+              <Languages size={20} />
+              <span className="absolute -bottom-8 left-1/2 -translate-x-1/2 bg-slate-800 text-white text-[10px] px-2 py-1 rounded opacity-0 group-hover:opacity-100 pointer-events-none whitespace-nowrap transition-opacity">
+                {lang === 'th' ? 'EN' : 'TH'}
+              </span>
+            </button>
+
+            {/* Settings */}
+            <button 
+              className="p-2 text-slate-500 hover:text-slate-800 hover:bg-slate-100 rounded-xl transition-all"
+              title={t('settings')}
+            >
+              <Settings size={20} />
+            </button>
+
+            <div className="h-6 w-[1px] bg-slate-200 mx-1 hidden sm:block" />
+
+            <div className="flex items-center gap-2 text-sm font-medium text-slate-500 bg-slate-100 px-3 py-1 rounded-full">
+              {t('academicYear')} 2568
+            </div>
+
             <div className="w-9 h-9 rounded-full bg-blue-600 border-2 border-white shadow-sm flex items-center justify-center text-white text-xs font-bold">
               ADM
             </div>
@@ -613,7 +643,7 @@ export default function Dashboard() {
 
       {/* Documentation Viewer Overlay */}
       {showDocs && (
-        <DocViewer lang={lang} onClose={() => setShowDocs(false)} />
+        <DocViewer t={lang === 'th'} onClose={() => setShowDocs(false)} />
       )}
 
       {/* Global Fetching Loader */}

@@ -19,16 +19,35 @@ export async function GET(request: Request) {
       return NextResponse.json({ name: file, content });
     }
 
-    // List all docs
+    const titleMap: Record<string, { th: string; en: string }> = {
+      "app_architecture": { th: "โครงสร้างทางสถาปัตยกรรม", en: "System Architecture" },
+      "database_design": { th: "การออกแบบฐานข้อมูล", en: "Database Schema" },
+      "data_dictionary": { th: "พจนานุกรมข้อมูล", en: "Data Dictionary" },
+      "features_list": { th: "รายการฟีเจอร์ปัจจุบัน", en: "System Features" },
+      "input_manual": { th: "คู่มือการใช้ฟอร์มกรอกข้อมูล", en: "Data Input Manual" },
+      "firebase_capacity": { th: "Firebase Capacity", en: "Pilot Test Quotas" },
+      "qa": { th: "QA: ความถูกต้องของข้อมูล", en: "Data Authenticity QA" },
+      "kpi_master_data": { th: "KPI Master Data", en: "61 KPIs Definition" },
+      "performance_seed_data": { th: "ข้อมูลจำลองผลการดำเนินงาน", en: "Performance Seed Data" },
+    };
+
     const files = fs.readdirSync(DOC_DIR).filter((f) => f.endsWith(".md"));
     const docs = files.map((f) => {
+      const baseName = f.replace(".md", "");
       const stat = fs.statSync(path.join(DOC_DIR, f));
+      const titles = titleMap[baseName] || { th: baseName.replace(/_/g, " "), en: "" };
       return {
         name: f,
-        title: f.replace(/_/g, " ").replace(".md", ""),
+        title: titles.th,
+        subtitle: titles.en,
         size: stat.size,
         modified: stat.mtime.toISOString(),
+        isManual: baseName === "input_manual"
       };
+    }).sort((a, b) => {
+      if (a.isManual) return -1;
+      if (b.isManual) return 1;
+      return a.title.localeCompare(b.title);
     });
     return NextResponse.json({ docs });
   } catch (error: any) {

@@ -1,5 +1,4 @@
 # KUVMIS Data Dictionary & Schema Mapping
-# Version 1.1 — อัปเดต: 10 ก.พ. 2569
 
 ## 1. Firestore Collections (Production)
 

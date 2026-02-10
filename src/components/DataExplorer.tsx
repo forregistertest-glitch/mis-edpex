@@ -153,23 +153,26 @@ export default function DataExplorer({ data, title, onClose, lang }: DataExplore
             <table className="w-full text-left border-collapse">
               <thead className="sticky top-0 bg-slate-50 z-10 shadow-sm">
                 <tr>
-                  {Object.keys(paginatedData[0]).map(key => (
-                    <th key={key} className="px-6 py-4 text-[11px] font-bold text-slate-400 uppercase tracking-widest border-b border-slate-100">
+                  {Object.keys(data[0] || {}).map(key => (
+                    <th key={key} className="px-6 py-4 text-[11px] font-bold text-slate-400 uppercase tracking-widest border-b border-slate-100 whitespace-nowrap">
                       {key}
                     </th>
                   ))}
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100">
-                {paginatedData.map((row, i) => (
-                  <tr key={i} className="hover:bg-blue-50/30 transition-colors">
-                    {Object.values(row).map((val: any, j) => (
-                      <td key={j} className="px-6 py-4 text-sm text-slate-600">
-                        {typeof val === 'object' ? JSON.stringify(val) : String(val)}
-                      </td>
-                    ))}
-                  </tr>
-                ))}
+                {paginatedData.map((row, idx) => {
+                  const columns = Object.keys(data[0] || {});
+                  return (
+                    <tr key={idx} className="hover:bg-blue-50/30 transition-colors">
+                      {columns.map((col, cIdx) => (
+                        <td key={cIdx} className="px-6 py-4 text-xs text-slate-600">
+                          {row[col] === null ? "—" : String(row[col])}
+                        </td>
+                      ))}
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           ) : (

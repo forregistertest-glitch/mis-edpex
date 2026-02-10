@@ -20,11 +20,11 @@ export interface KpiMaster {
   name_th: string;
   name_en: string;
   unit: string;
-  data_pattern: string;
   target_value: number | null;
-  aggregation: string;
+  aggregation: "sum" | "avg" | "latest" | "count" | "append";
   frequency: string;
   department_id: string;
+  data_pattern?: string;
 }
 
 export interface KpiEntry {
@@ -76,10 +76,10 @@ export async function getKpiEntries(
   });
 }
 
-export async function getEntriesByCategory(categoryId: string): Promise<KpiEntry[]> {
+export async function getEntriesByCategory(categoryId: string, year?: number): Promise<KpiEntry[]> {
   const masters = await getKpiMasterByCategory(categoryId);
   const kpiIds = masters.map((m) => m.kpi_id);
-  const allEntries = await getKpiEntries();
+  const allEntries = await getKpiEntries(undefined, year);
   return allEntries.filter((e) => kpiIds.includes(e.kpi_id));
 }
 
@@ -87,7 +87,7 @@ export async function getEntriesByCategory(categoryId: string): Promise<KpiEntry
 export async function getAggregatedValue(
   kpiId: string,
   year: number,
-  aggregation: string = "average"
+  aggregation: "sum" | "avg" | "latest" | "count" | "append" = "avg"
 ): Promise<{ value: number | null; count: number; entries: KpiEntry[] }> {
   const entries = await getKpiEntries(kpiId, year);
   const numericEntries = entries.filter((e) => e.value !== null);
@@ -107,7 +107,7 @@ export async function getAggregatedValue(
     case "count":
       value = values.length;
       break;
-    case "average":
+    case "avg":
     default:
       value = values.reduce((a, b) => a + b, 0) / values.length;
       break;
@@ -141,12 +141,51 @@ export async function addKpiEntry(data: Omit<KpiEntry, "id">): Promise<string> {
   return docRef.id;
 }
 
-// ─── Recent Entries ────────────────────────────────────────────
+// ─── Recent Entries & Filtering ───────────────────────────────
 export async function getRecentEntries(count: number = 20): Promise<KpiEntry[]> {
   const allEntries = await getKpiEntries();
   return allEntries
     .sort((a, b) => (b.submitted_at || "").localeCompare(a.submitted_at || ""))
     .slice(0, count);
+}
+
+export interface EntryFilters {
+  kpi_id?: string;
+  year?: number;
+  period?: string;
+  status?: string;
+  submitted_by?: string;
+}
+
+export async function getRecentEntriesFiltered(
+  filters: EntryFilters,
+  page: number = 1,
+  pageSize: number = 20
+): Promise<{ entries: KpiEntry[]; total: number }> {
+  let allEntries = await getKpiEntries();
+
+  // Sort by submitted_at DESC
+  allEntries.sort((a, b) => (b.submitted_at || "").localeCompare(a.submitted_at || ""));
+
+  // Apply filters
+  let filtered = allEntries;
+  if (filters.kpi_id) filtered = filtered.filter(e => e.kpi_id === filters.kpi_id);
+  if (filters.year) filtered = filtered.filter(e => e.fiscal_year === filters.year);
+  if (filters.period && filters.period !== "all") filtered = filtered.filter(e => e.period === filters.period);
+  if (filters.status && filters.status !== "all") filtered = filtered.filter(e => e.status === filters.status);
+  if (filters.submitted_by && filters.submitted_by !== "all") 
+    filtered = filtered.filter(e => e.submitted_by === filters.submitted_by);
+
+  const total = filtered.length;
+  const start = (page - 1) * pageSize;
+  const entries = filtered.slice(start, start + pageSize);
+
+  return { entries, total };
+}
+
+export async function updateKpiEntryStatus(id: string, status: "approved" | "rejected" | "pending"): Promise<void> {
+  const docRef = doc(db, "kpi_entries", id);
+  await setDoc(docRef, { status }, { merge: true });
 }
 
 // ─── Dashboard Summary ────────────────────────────────────────
@@ -166,11 +205,16 @@ export async function getDashboardSummary(year: number) {
     ? customer.reduce((s, e) => s + (e.value || 0), 0) / customer.length
     : null;
 
-  // Strategic Success (average across 7.4.x year_series KPIs)
+  // Strategic Success (average % of target achievement across 7.4.x KPIs)
   const strategicKpis = allEntries.filter((e) => e.kpi_id.startsWith("7.4"));
   const strategicVal = strategicKpis.length > 0
-    ? strategicKpis.reduce((s, e) => s + (e.value || 0), 0) / strategicKpis.length
-    : null;
+    ? (strategicKpis.reduce((total, e) => {
+        const master = allMasters.find(m => m.kpi_id === e.kpi_id);
+        const target = master?.target_value || 100;
+        const pct = (e.value || 0) / target * 100;
+        return total + Math.min(pct, 100); // Cap achievement at 100% for the summary
+      }, 0) / strategicKpis.length)
+    : 0;
 
   // Safety Incidents (7.1.11)
   const safety = allEntries.filter((e) => e.kpi_id === "7.1.11");

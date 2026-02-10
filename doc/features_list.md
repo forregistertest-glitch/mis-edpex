@@ -1,8 +1,6 @@
 # KUVMIS Feature List
 # คณะสัตวแพทยศาสตร์ มหาวิทยาลัยเกษตรศาสตร์
 
-> Version 1.1.0 — อัปเดต: 10 ก.พ. 2569
-
 ## 1. Executive Dashboard
 - **Glassmorphic UI**: ดีไซน์พรีเมียมด้วย Tailwind CSS + gradient backgrounds
 - **KPI Pulse Cards**: 4 cards (Academic, Customer, Strategic, Safety) แสดงค่าปัจจุบัน

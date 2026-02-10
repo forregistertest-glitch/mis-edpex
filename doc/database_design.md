@@ -1,8 +1,6 @@
 # โครงสร้างฐานข้อมูล KUVMIS — Database Design Document
 # Faculty of Veterinary Medicine, Kasetsart University
 
-> อัปเดตล่าสุด: 10 กุมภาพันธ์ 2569
-
 ---
 
 ## 1. ภาพรวมระบบฐานข้อมูล

@@ -1,8 +1,6 @@
 # KUVMIS Application Architecture
 # คณะสัตวแพทยศาสตร์ มหาวิทยาลัยเกษตรศาสตร์
 
-> อัปเดตล่าสุด: 10 กุมภาพันธ์ 2569 | Version: 1.1.0
-
 ---
 
 ## 1. ภาพรวมระบบ (System Overview)
