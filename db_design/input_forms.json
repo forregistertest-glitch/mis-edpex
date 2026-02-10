@@ -1,0 +1,123 @@
+[
+  {
+    "form_id": "form_academic_yearly",
+    "name_th": "ฟอร์มกรอกข้อมูล KPI การเรียนรู้ (รายปี)",
+    "name_en": "Academic KPI Yearly Input Form",
+    "department_id": "dept_academic",
+    "frequency": "yearly",
+    "kpi_ids": ["7.1.1", "7.1.2", "7.1.3", "7.1.7", "7.1.13", "7.1.14"],
+    "fields": [
+      { "field_id": "fiscal_year", "label_th": "ปีการศึกษา", "label_en": "Fiscal Year", "type": "select", "required": true, "options": [2564, 2565, 2566, 2567, 2568] },
+      { "field_id": "kpi_711_pct", "label_th": "ร้อยละสอบผ่านวิชาชีพ (7.1.1)", "label_en": "Professional Exam Pass %", "type": "number", "required": true, "min": 0, "max": 100, "unit": "%" },
+      { "field_id": "kpi_712_first", "label_th": "ร้อยละ OSCE ผ่านครั้งแรก (7.1.2a)", "label_en": "OSCE First-Time Pass %", "type": "number", "required": true, "min": 0, "max": 100, "unit": "%" },
+      { "field_id": "kpi_712_total", "label_th": "ร้อยละ OSCE ผ่านก่อนจบ (7.1.2b)", "label_en": "OSCE Final Pass %", "type": "number", "required": true, "min": 0, "max": 100, "unit": "%" },
+      { "field_id": "kpi_713_hours", "label_th": "ชั่วโมงฝึกปฏิบัติ (7.1.3)", "label_en": "Practical Hours", "type": "number", "required": true, "min": 0, "unit": "ชั่วโมง" },
+      { "field_id": "kpi_717_participants", "label_th": "ผู้เข้าร่วม CE/Training (7.1.7)", "label_en": "CE/Training Participants", "type": "number", "required": true, "min": 0, "unit": "คน" },
+      { "field_id": "kpi_7113_schools", "label_th": "โรงเรียนเครือข่าย (7.1.13)", "label_en": "Network Schools", "type": "number", "required": true, "min": 0, "unit": "โรงเรียน" },
+      { "field_id": "kpi_7114_enrolled", "label_th": "จำนวนนิสิตรับเข้า (7.1.14)", "label_en": "Students Enrolled", "type": "number", "required": true, "min": 0, "unit": "คน" },
+      { "field_id": "kpi_7114_retained", "label_th": "จำนวนนิสิตคงอยู่ (7.1.14)", "label_en": "Students Retained", "type": "number", "required": true, "min": 0, "unit": "คน" },
+      { "field_id": "notes", "label_th": "หมายเหตุ", "label_en": "Notes", "type": "textarea", "required": false }
+    ]
+  },
+  {
+    "form_id": "form_grad_matrix",
+    "name_th": "ฟอร์มกรอกข้อมูล บัณฑิตศึกษาแยกสาขา (รายปี)",
+    "name_en": "Postgraduate Graduates by Field Form",
+    "department_id": "dept_academic",
+    "frequency": "yearly",
+    "kpi_ids": ["7.1.5", "7.1.6"],
+    "fields": [
+      { "field_id": "fiscal_year", "label_th": "ปีการศึกษา", "label_en": "Fiscal Year", "type": "select", "required": true, "options": [2564, 2565, 2566, 2567, 2568] },
+      { "field_id": "degree_level", "label_th": "ระดับปริญญา", "label_en": "Degree Level", "type": "select", "required": true, "options": ["ปริญญาโท", "ปริญญาเอก", "ประจำบ้าน"] },
+      { "field_id": "field_name", "label_th": "สาขา/เชี่ยวชาญ", "label_en": "Field/Specialty", "type": "select", "required": true, "options": ["วิทยาศาสตร์สุขภาพสัตว์", "คลินิกศึกษา", "เภสัชวิทยา", "ระบาดวิทยา", "จุลชีววิทยา", "เวชศาสตร์ระบบสืบพันธุ์", "อายุรศาสตร์", "ศัลยศาสตร์", "พยาธิวิทยา"] },
+      { "field_id": "graduate_count", "label_th": "จำนวนผู้จบ", "label_en": "Graduates", "type": "number", "required": true, "min": 0, "unit": "คน" },
+      { "field_id": "notes", "label_th": "หมายเหตุ", "label_en": "Notes", "type": "textarea", "required": false }
+    ]
+  },
+  {
+    "form_id": "form_research_funding",
+    "name_th": "ฟอร์มกรอกข้อมูล ทุนวิจัย (รายปี)",
+    "name_en": "Research Funding Input Form",
+    "department_id": "dept_research",
+    "frequency": "yearly",
+    "kpi_ids": ["7.1.16", "7.1.17", "7.1.18", "7.1.19"],
+    "fields": [
+      { "field_id": "fiscal_year", "label_th": "ปีงบประมาณ", "label_en": "Fiscal Year", "type": "select", "required": true, "options": [2564, 2565, 2566, 2567, 2568] },
+      { "field_id": "internal_grants", "label_th": "จำนวนทุนภายใน (7.1.16)", "label_en": "Internal Grants Count", "type": "number", "required": true, "min": 0, "unit": "ทุน" },
+      { "field_id": "internal_amount", "label_th": "เงินทุนภายใน (7.1.17)", "label_en": "Internal Funding Amount", "type": "number", "required": true, "min": 0, "unit": "บาท" },
+      { "field_id": "external_grants", "label_th": "จำนวนทุนภายนอก (7.1.18)", "label_en": "External Grants Count", "type": "number", "required": true, "min": 0, "unit": "ทุน" },
+      { "field_id": "external_amount", "label_th": "เงินทุนภายนอก (7.1.19)", "label_en": "External Funding Amount", "type": "number", "required": true, "min": 0, "unit": "บาท" },
+      { "field_id": "funding_source", "label_th": "รายชื่อแหล่งทุนหลัก", "label_en": "Key Funding Sources", "type": "textarea", "required": false },
+      { "field_id": "notes", "label_th": "หมายเหตุ", "label_en": "Notes", "type": "textarea", "required": false }
+    ]
+  },
+  {
+    "form_id": "form_hospital_stats",
+    "name_th": "ฟอร์มกรอกข้อมูล สถิติ รพ.สัตว์ (รายปี)",
+    "name_en": "Veterinary Hospital Statistics Form",
+    "department_id": "dept_hospital",
+    "frequency": "yearly",
+    "kpi_ids": ["7.1.20", "7.2.7", "7.2.8"],
+    "fields": [
+      { "field_id": "fiscal_year", "label_th": "ปีงบประมาณ", "label_en": "Fiscal Year", "type": "select", "required": true, "options": [2564, 2565, 2566, 2567, 2568] },
+      { "field_id": "hospital_branch", "label_th": "สาขา รพ.สัตว์", "label_en": "Hospital Branch", "type": "select", "required": true, "options": ["รพส.มก.บางเขน", "รพส.มก.กำแพงแสน", "รพส.มก.หนองโว", "รพส.มก.หัวหิน"] },
+      { "field_id": "patient_referrals", "label_th": "สัตว์ป่วยส่งต่อ (7.1.20)", "label_en": "Patient Referrals", "type": "number", "required": true, "min": 0, "unit": "ตัว" },
+      { "field_id": "pet_owner_visits", "label_th": "เจ้าของสัตว์มารับบริการ (7.2.7)", "label_en": "Pet Owner Visits", "type": "number", "required": true, "min": 0, "unit": "ราย" },
+      { "field_id": "donations", "label_th": "เงินบริจาค (7.2.8)", "label_en": "Donations", "type": "number", "required": false, "min": 0, "unit": "บาท" },
+      { "field_id": "notes", "label_th": "หมายเหตุ", "label_en": "Notes", "type": "textarea", "required": false }
+    ]
+  },
+  {
+    "form_id": "form_hr_workforce",
+    "name_th": "ฟอร์มกรอกข้อมูล HR บุคลากร (รายปี)",
+    "name_en": "HR Workforce Data Form",
+    "department_id": "dept_hr",
+    "frequency": "yearly",
+    "kpi_ids": ["7.3.3", "7.3.5", "7.3.11"],
+    "fields": [
+      { "field_id": "fiscal_year", "label_th": "ปีงบประมาณ", "label_en": "Fiscal Year", "type": "select", "required": true, "options": [2564, 2565, 2566, 2567, 2568] },
+      { "field_id": "total_staff", "label_th": "จำนวนบุคลากรรวม (7.3.3)", "label_en": "Total Staff", "type": "number", "required": true, "min": 0, "unit": "คน" },
+      { "field_id": "staff_position", "label_th": "ประเภทตำแหน่ง", "label_en": "Position Type", "type": "select", "required": true, "options": ["ข้าราชการ", "พนักงาน มก.", "พนักงานเงินรายได้", "ลูกจ้างประจำ", "ลูกจ้างชั่วคราว", "อาจารย์", "สัตวแพทย์ รพ.", "สัตวแพทย์ วินิจฉัย"] },
+      { "field_id": "accidents_count", "label_th": "อุบัติเหตุจากงาน (7.3.5)", "label_en": "Workplace Accidents", "type": "number", "required": true, "min": 0, "unit": "ครั้ง" },
+      { "field_id": "resignations_0_3", "label_th": "ลาออก 0-3 ปี (7.3.11)", "label_en": "Resignations 0-3yr", "type": "number", "required": true, "min": 0, "unit": "คน" },
+      { "field_id": "resignations_3_7", "label_th": "ลาออก 3-7 ปี", "label_en": "Resignations 3-7yr", "type": "number", "required": true, "min": 0, "unit": "คน" },
+      { "field_id": "resignations_7plus", "label_th": "ลาออก 7 ปีขึ้นไป", "label_en": "Resignations 7yr+", "type": "number", "required": true, "min": 0, "unit": "คน" },
+      { "field_id": "notes", "label_th": "หมายเหตุ", "label_en": "Notes", "type": "textarea", "required": false }
+    ]
+  },
+  {
+    "form_id": "form_strategic_governance",
+    "name_th": "ฟอร์มกรอกข้อมูล ยุทธศาสตร์/ธรรมาภิบาล (รายปี)",
+    "name_en": "Strategic/Governance Data Form",
+    "department_id": "dept_strategy",
+    "frequency": "yearly",
+    "kpi_ids": ["7.4.5", "7.4.6", "7.4.7"],
+    "fields": [
+      { "field_id": "fiscal_year", "label_th": "ปีงบประมาณ", "label_en": "Fiscal Year", "type": "select", "required": true, "options": [2564, 2565, 2566, 2567, 2568] },
+      { "field_id": "iso_nc_count", "label_th": "จำนวน NC ที่พบ ISO (7.4.5)", "label_en": "ISO NC Count", "type": "number", "required": true, "min": 0, "unit": "รายการ" },
+      { "field_id": "fraud_complaints", "label_th": "ข้อร้องเรียนทุจริต (7.4.6)", "label_en": "Fraud Complaints", "type": "number", "required": true, "min": 0, "unit": "เรื่อง" },
+      { "field_id": "revenue_ce", "label_th": "รายได้ CE (7.4.7)", "label_en": "CE Revenue", "type": "number", "required": false, "min": 0, "unit": "บาท" },
+      { "field_id": "revenue_conference", "label_th": "รายได้ศูนย์ประชุม", "label_en": "Conference Revenue", "type": "number", "required": false, "min": 0, "unit": "บาท" },
+      { "field_id": "revenue_vaccine", "label_th": "รายได้วัคซีน", "label_en": "Vaccine Revenue", "type": "number", "required": false, "min": 0, "unit": "บาท" },
+      { "field_id": "notes", "label_th": "หมายเหตุ", "label_en": "Notes", "type": "textarea", "required": false }
+    ]
+  },
+  {
+    "form_id": "form_narrative_entry",
+    "name_th": "ฟอร์มกรอก ผลงานเชิงบรรยาย/Milestone",
+    "name_en": "Narrative/Milestone Entry Form",
+    "department_id": "dept_strategy",
+    "frequency": "event",
+    "kpi_ids": ["7.1.4", "7.3.8", "7.4.1", "7.4.2", "7.4.8", "7.4.9", "7.4.13"],
+    "fields": [
+      { "field_id": "kpi_id", "label_th": "KPI ที่เกี่ยวข้อง", "label_en": "Related KPI", "type": "select", "required": true, "options": ["7.1.4", "7.3.8", "7.4.1", "7.4.2", "7.4.8", "7.4.9", "7.4.13"] },
+      { "field_id": "fiscal_year", "label_th": "ปีที่เกิดเหตุการณ์", "label_en": "Event Year", "type": "select", "required": true, "options": [2564, 2565, 2566, 2567, 2568] },
+      { "field_id": "title", "label_th": "ชื่อเรื่อง/ผลงาน", "label_en": "Title", "type": "text", "required": true },
+      { "field_id": "description", "label_th": "รายละเอียด", "label_en": "Description", "type": "textarea", "required": true },
+      { "field_id": "old_value", "label_th": "ค่าเดิม (ถ้ามี)", "label_en": "Previous Value", "type": "textarea", "required": false },
+      { "field_id": "new_value", "label_th": "ค่าใหม่ (ถ้ามี)", "label_en": "New Value", "type": "textarea", "required": false },
+      { "field_id": "status", "label_th": "สถานะ", "label_en": "Status", "type": "select", "required": true, "options": ["สำเร็จ", "อยู่ระหว่างดำเนินการ", "รอผลอนุมัติ", "ยกเลิก"] },
+      { "field_id": "attachments", "label_th": "เอกสารแนบ", "label_en": "Attachments", "type": "file", "required": false }
+    ]
+  }
+]

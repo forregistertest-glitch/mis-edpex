@@ -1,0 +1,124 @@
+[
+  {
+    "log_id": "log_001",
+    "kpi_id": "7.1.1",
+    "fiscal_year": 2567,
+    "form_id": "form_academic_yearly",
+    "action": "create",
+    "submitted_by": "staff_002",
+    "submitted_at": "2026-01-20T10:30:00Z",
+    "approved_by": "staff_001",
+    "approved_at": "2026-01-21T14:00:00Z",
+    "status": "approved",
+    "data_snapshot": {
+      "kpi_711_pct": 81.70,
+      "fiscal_year": 2567,
+      "notes": "ข้อมูลจากสำนักทะเบียน มก."
+    }
+  },
+  {
+    "log_id": "log_002",
+    "kpi_id": "7.1.17",
+    "fiscal_year": 2568,
+    "form_id": "form_research_funding",
+    "action": "create",
+    "submitted_by": "staff_003",
+    "submitted_at": "2026-02-01T09:15:00Z",
+    "approved_by": null,
+    "approved_at": null,
+    "status": "pending_review",
+    "data_snapshot": {
+      "fiscal_year": 2568,
+      "internal_grants": 26,
+      "internal_amount": 5040775,
+      "external_grants": 7,
+      "external_amount": 8907300,
+      "funding_source": "สกว., วช., สกอ., ทุนคณะ",
+      "notes": "ข้อมูล ณ สิ้นเดือน ม.ค. 2569"
+    }
+  },
+  {
+    "log_id": "log_003",
+    "kpi_id": "7.1.20",
+    "fiscal_year": 2568,
+    "form_id": "form_hospital_stats",
+    "action": "create",
+    "submitted_by": "staff_004",
+    "submitted_at": "2026-02-05T08:00:00Z",
+    "approved_by": "staff_001",
+    "approved_at": "2026-02-06T10:30:00Z",
+    "status": "approved",
+    "data_snapshot": {
+      "fiscal_year": 2568,
+      "hospital_branch": "รพส.มก.บางเขน",
+      "patient_referrals": 828,
+      "pet_owner_visits": 15420,
+      "donations": 3200000,
+      "notes": "ยอดรวมทั้งปี 2568"
+    }
+  },
+  {
+    "log_id": "log_004",
+    "kpi_id": "7.3.11",
+    "fiscal_year": 2568,
+    "form_id": "form_hr_workforce",
+    "action": "create",
+    "submitted_by": "staff_005",
+    "submitted_at": "2026-02-08T11:00:00Z",
+    "approved_by": "staff_001",
+    "approved_at": "2026-02-08T16:00:00Z",
+    "status": "approved",
+    "data_snapshot": {
+      "fiscal_year": 2568,
+      "total_staff": 926,
+      "staff_position": "รวมทุกตำแหน่ง",
+      "accidents_count": 0,
+      "resignations_0_3": 4,
+      "resignations_3_7": 4,
+      "resignations_7plus": 4,
+      "notes": "ข้อมูลจากฝ่ายบุคคล สิ้นปี 2568"
+    }
+  },
+  {
+    "log_id": "log_005",
+    "kpi_id": "7.4.7",
+    "fiscal_year": 2568,
+    "form_id": "form_strategic_governance",
+    "action": "update",
+    "submitted_by": "staff_001",
+    "submitted_at": "2026-02-10T09:00:00Z",
+    "approved_by": null,
+    "approved_at": null,
+    "status": "pending_review",
+    "data_snapshot": {
+      "fiscal_year": 2568,
+      "iso_nc_count": 0,
+      "fraud_complaints": 0,
+      "revenue_ce": 17993156,
+      "revenue_conference": 30027891,
+      "revenue_vaccine": 21410740,
+      "notes": "ข้อมูลรายได้จากแหล่งใหม่ 3 ประเภท ปี 2568"
+    }
+  },
+  {
+    "log_id": "log_006",
+    "kpi_id": "7.4.1",
+    "fiscal_year": 2568,
+    "form_id": "form_narrative_entry",
+    "action": "create",
+    "submitted_by": "staff_001",
+    "submitted_at": "2026-02-10T10:00:00Z",
+    "approved_by": "staff_006",
+    "approved_at": "2026-02-10T11:30:00Z",
+    "status": "approved",
+    "data_snapshot": {
+      "kpi_id": "7.4.1",
+      "fiscal_year": 2568,
+      "title": "มาตรฐาน ISO 9001:2015",
+      "description": "6 หน่วยงาน",
+      "old_value": "1 หน่วยงาน (2564)",
+      "new_value": "6 หน่วยงาน (2568)",
+      "status": "สำเร็จ"
+    }
+  }
+]

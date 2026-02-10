@@ -1,0 +1,185 @@
+[
+  {
+    "kpi_id": "7.1.1", "category_id": "7.1", "name_th": "ร้อยละ 100 นิสิตสอบผ่านความรู้วิชาชีพ", "name_en": "100% students pass professional knowledge exam", "unit": "ร้อยละ", "data_pattern": "year_series", "target_value": 100, "target_description": "ร้อยละ 100", "frequency": "yearly", "department_id": "dept_academic"
+  },
+  {
+    "kpi_id": "7.1.2", "category_id": "7.1", "name_th": "ร้อยละ 100 นิสิตผ่าน Day-One Skills (OSCE)", "name_en": "100% students pass OSCE Day-One Skills", "unit": "ร้อยละ", "data_pattern": "year_series", "target_value": 100, "target_description": "ร้อยละ 100", "frequency": "yearly", "department_id": "dept_academic"
+  },
+  {
+    "kpi_id": "7.1.3", "category_id": "7.1", "name_th": "จำนวนชั่วโมงฝึกปฏิบัติเพิ่มขึ้น", "name_en": "Increased practical training hours", "unit": "ชั่วโมง", "data_pattern": "year_series", "target_value": 200, "target_description": "≥ 200 ชม.", "frequency": "yearly", "department_id": "dept_academic"
+  },
+  {
+    "kpi_id": "7.1.4", "category_id": "7.1", "name_th": "เปรียบเทียบหลักสูตร 2562 vs 2568", "name_en": "Curriculum comparison 2562 vs 2568", "unit": "รายการ", "data_pattern": "narrative", "target_value": null, "target_description": "เปรียบเทียบเชิงคุณภาพ", "frequency": "once", "department_id": "dept_academic"
+  },
+  {
+    "kpi_id": "7.1.5", "category_id": "7.1", "name_th": "จำนวนบัณฑิต ป.โท/เอก แยกสาขา", "name_en": "Master/Doctoral graduates by field", "unit": "คน", "data_pattern": "matrix", "target_value": 30, "target_description": "≥ 30 คน/ปี", "frequency": "yearly", "department_id": "dept_academic"
+  },
+  {
+    "kpi_id": "7.1.6", "category_id": "7.1", "name_th": "สัตวแพทย์ประจำบ้าน (Resident Vet) สำเร็จ", "name_en": "Resident Vet graduates by specialty", "unit": "คน", "data_pattern": "matrix", "target_value": 2, "target_description": "≥ 2 คน/ปี", "frequency": "yearly", "department_id": "dept_academic"
+  },
+  {
+    "kpi_id": "7.1.7", "category_id": "7.1", "name_th": "โครงการ CE/Training สัตวแพทย์", "name_en": "CE/Training programs for veterinarians", "unit": "คน", "data_pattern": "year_series", "target_value": 1000, "target_description": "≥ 1,000 คน/ปี", "frequency": "yearly", "department_id": "dept_academic"
+  },
+  {
+    "kpi_id": "7.1.8", "category_id": "7.1", "name_th": "ความก้าวหน้าพัฒนาหลักสูตรใหม่", "name_en": "New curriculum development progress", "unit": "หลักสูตร", "data_pattern": "matrix", "target_value": 1, "target_description": "≥ 1 หลักสูตร/ปี", "frequency": "yearly", "department_id": "dept_academic"
+  },
+  {
+    "kpi_id": "7.1.9", "category_id": "7.1", "name_th": "สัตวแพทย์/บุคลากรจาก รพ.สัตว์ ร่วมสอน", "name_en": "Hospital staff contributing to teaching", "unit": "คน", "data_pattern": "year_series", "target_value": 30, "target_description": "≥ 30 คน", "frequency": "yearly", "department_id": "dept_academic"
+  },
+  {
+    "kpi_id": "7.1.10", "category_id": "7.1", "name_th": "นิสิตไม่สามารถเรียนต่อ (กาย/จิต)", "name_en": "Students unable to continue (physical/mental)", "unit": "คน", "data_pattern": "matrix", "target_value": 0, "target_description": "= 0 คน", "frequency": "yearly", "department_id": "dept_academic"
+  },
+  {
+    "kpi_id": "7.1.11", "category_id": "7.1", "name_th": "อุบัติเหตุด้านความปลอดภัย", "name_en": "Safety incidents count", "unit": "ครั้ง", "data_pattern": "year_series", "target_value": 0, "target_description": "= 0 ครั้ง", "frequency": "yearly", "department_id": "dept_academic"
+  },
+  {
+    "kpi_id": "7.1.12", "category_id": "7.1", "name_th": "ฝึกซ้อมอัคคีภัย/ปฐมพยาบาล", "name_en": "Fire drill & first aid training", "unit": "สถานะ", "data_pattern": "matrix", "target_value": null, "target_description": "ทุกไตรมาส", "frequency": "quarterly", "department_id": "dept_academic"
+  },
+  {
+    "kpi_id": "7.1.13", "category_id": "7.1", "name_th": "เครือข่ายโรงเรียนมัธยมเครือข่าย", "name_en": "Network high schools & enrollment", "unit": "โรงเรียน", "data_pattern": "year_series", "target_value": 100, "target_description": "≥ 100 โรงเรียน", "frequency": "yearly", "department_id": "dept_academic"
+  },
+  {
+    "kpi_id": "7.1.14", "category_id": "7.1", "name_th": "อัตราคงอยู่ (นิสิตปี 2 ขึ้นไป)", "name_en": "Retention rate (Year 2+)", "unit": "ร้อยละ", "data_pattern": "year_series", "target_value": 95, "target_description": "≥ 95%", "frequency": "yearly", "department_id": "dept_academic"
+  },
+  {
+    "kpi_id": "7.1.15", "category_id": "7.1", "name_th": "สวบ. สัตวแพทย์ประจำบ้าน สำเร็จ by สถาบัน", "name_en": "Resident Vet graduates by institution", "unit": "คน", "data_pattern": "matrix", "target_value": null, "target_description": "เพิ่มขึ้นต่อเนื่อง", "frequency": "yearly", "department_id": "dept_academic"
+  },
+  {
+    "kpi_id": "7.1.16", "category_id": "7.1", "name_th": "จำนวนทุนวิจัยภายใน", "name_en": "Internal research grants count", "unit": "ทุน", "data_pattern": "year_series", "target_value": 20, "target_description": "≥ 20 ทุน/ปี", "frequency": "yearly", "department_id": "dept_research"
+  },
+  {
+    "kpi_id": "7.1.17", "category_id": "7.1", "name_th": "เงินทุนวิจัยภายใน (บาท)", "name_en": "Internal research funding (THB)", "unit": "บาท", "data_pattern": "year_series", "target_value": 5000000, "target_description": "≥ 5,000,000 บาท", "frequency": "yearly", "department_id": "dept_research"
+  },
+  {
+    "kpi_id": "7.1.18", "category_id": "7.1", "name_th": "จำนวนทุนวิจัยภายนอก", "name_en": "External research grants count", "unit": "ทุน", "data_pattern": "year_series", "target_value": 10, "target_description": "≥ 10 ทุน/ปี", "frequency": "yearly", "department_id": "dept_research"
+  },
+  {
+    "kpi_id": "7.1.19", "category_id": "7.1", "name_th": "เงินทุนวิจัยภายนอก (บาท)", "name_en": "External research funding (THB)", "unit": "บาท", "data_pattern": "year_series", "target_value": 10000000, "target_description": "≥ 10,000,000 บาท", "frequency": "yearly", "department_id": "dept_research"
+  },
+  {
+    "kpi_id": "7.1.20", "category_id": "7.1", "name_th": "จำนวน รพ.สัตว์/คลินิก และสัตว์ป่วยส่งต่อ", "name_en": "Vet hospitals/clinics & patient referrals", "unit": "ตัว", "data_pattern": "matrix", "target_value": null, "target_description": "เพิ่มขึ้นต่อเนื่อง", "frequency": "yearly", "department_id": "dept_hospital"
+  },
+  {
+    "kpi_id": "7.2.1", "category_id": "7.2", "name_th": "โครงการสำคัญ (จำนวน + งบ)", "name_en": "Key projects count & budget", "unit": "โครงการ", "data_pattern": "year_series", "target_value": null, "target_description": "เพิ่มขึ้นต่อเนื่อง", "frequency": "yearly", "department_id": "dept_student_affairs"
+  },
+  {
+    "kpi_id": "7.2.2", "category_id": "7.2", "name_th": "ทุนอุดหนุนโครงการสำคัญระดับประเทศ", "name_en": "National-level project grants", "unit": "ทุน", "data_pattern": "year_series", "target_value": null, "target_description": "เพิ่มขึ้นต่อเนื่อง", "frequency": "yearly", "department_id": "dept_student_affairs"
+  },
+  {
+    "kpi_id": "7.2.3", "category_id": "7.2", "name_th": "ร้อยละตอบกลับข้อเสนอแนะนิสิต", "name_en": "Student feedback response rate", "unit": "ร้อยละ", "data_pattern": "year_series", "target_value": 100, "target_description": "100%", "frequency": "yearly", "department_id": "dept_student_affairs"
+  },
+  {
+    "kpi_id": "7.2.4", "category_id": "7.2", "name_th": "จำนวนนิสิตบัณฑิต/หลังปริญญา สำเร็จ", "name_en": "Graduate/postgraduate completion count", "unit": "คน", "data_pattern": "matrix", "target_value": null, "target_description": "ตามแผน", "frequency": "yearly", "department_id": "dept_student_affairs"
+  },
+  {
+    "kpi_id": "7.2.5", "category_id": "7.2", "name_th": "จำนวนผู้สมัครเรียนหลักสูตรต่างๆ", "name_en": "Applicants per program", "unit": "คน", "data_pattern": "matrix", "target_value": null, "target_description": "เพิ่มขึ้นต่อเนื่อง", "frequency": "yearly", "department_id": "dept_student_affairs"
+  },
+  {
+    "kpi_id": "7.2.6", "category_id": "7.2", "name_th": "ความพึงพอใจผู้เรียนหลักสูตรบัณฑิต", "name_en": "Graduate student satisfaction", "unit": "คะแนน", "data_pattern": "survey", "target_value": 4.0, "target_description": "≥ 4.0 / 5.0", "frequency": "yearly", "department_id": "dept_student_affairs"
+  },
+  {
+    "kpi_id": "7.2.7", "category_id": "7.2", "name_th": "จำนวนเจ้าของสัตว์มารับบริการ", "name_en": "Pet owner service visits", "unit": "ราย", "data_pattern": "matrix", "target_value": null, "target_description": "เพิ่มขึ้นต่อเนื่อง", "frequency": "yearly", "department_id": "dept_hospital"
+  },
+  {
+    "kpi_id": "7.2.8", "category_id": "7.2", "name_th": "เงินบริจาคช่วยเหลือสัตว์ป่วยอนาถา", "name_en": "Donations for animal welfare", "unit": "บาท", "data_pattern": "year_series", "target_value": null, "target_description": "เพิ่มขึ้นต่อเนื่อง", "frequency": "yearly", "department_id": "dept_hospital"
+  },
+  {
+    "kpi_id": "7.2.9", "category_id": "7.2", "name_th": "ความพึงพอใจสัมมนาวิชาการ", "name_en": "Academic seminar satisfaction", "unit": "คะแนน", "data_pattern": "survey", "target_value": 4.0, "target_description": "≥ 4.0 / 5.0", "frequency": "yearly", "department_id": "dept_hospital"
+  },
+  {
+    "kpi_id": "7.2.10", "category_id": "7.2", "name_th": "ผลสำรวจความพึงพอใจบริการ > 4.0 (80%)", "name_en": "Service satisfaction score > 4.0", "unit": "คะแนน", "data_pattern": "survey", "target_value": 4.0, "target_description": "≥ 4.0 (80%)", "frequency": "yearly", "department_id": "dept_hospital"
+  },
+  {
+    "kpi_id": "7.2.11", "category_id": "7.2", "name_th": "จำนวนตัวอย่างมารับบริการแยกประเภท", "name_en": "Service samples by category", "unit": "ตัวอย่าง", "data_pattern": "matrix", "target_value": null, "target_description": "เพิ่มขึ้นต่อเนื่อง", "frequency": "yearly", "department_id": "dept_hospital"
+  },
+  {
+    "kpi_id": "7.2.12", "category_id": "7.2", "name_th": "นิสิตร่วมกิจกรรมอาสา/ฉีดวัคซีน", "name_en": "Student volunteer/vaccination activities", "unit": "คน", "data_pattern": "year_series", "target_value": null, "target_description": "เพิ่มขึ้นต่อเนื่อง", "frequency": "yearly", "department_id": "dept_hospital"
+  },
+  {
+    "kpi_id": "7.2.13", "category_id": "7.2", "name_th": "นิสิตหลังปริญญาร่วมกิจกรรมคณะ", "name_en": "Postgrad participation in faculty activities", "unit": "คน", "data_pattern": "year_series", "target_value": null, "target_description": "เพิ่มขึ้นต่อเนื่อง", "frequency": "yearly", "department_id": "dept_student_affairs"
+  },
+  {
+    "kpi_id": "7.2.14", "category_id": "7.2", "name_th": "วันมิตร (คลินิก/รพส.) ผู้ใช้บริการ", "name_en": "Pet Day clinic service users", "unit": "ราย", "data_pattern": "matrix", "target_value": null, "target_description": "เพิ่มขึ้นต่อเนื่อง", "frequency": "yearly", "department_id": "dept_hospital"
+  },
+  {
+    "kpi_id": "7.3.1", "category_id": "7.3", "name_th": "ก้าวหน้าระบบบริหาร HR (Maturity)", "name_en": "HR system maturity progress", "unit": "ร้อยละ", "data_pattern": "survey", "target_value": 1.0, "target_description": "100%", "frequency": "yearly", "department_id": "dept_hr"
+  },
+  {
+    "kpi_id": "7.3.2", "category_id": "7.3", "name_th": "บุคลากรกลุ่มหลักมีสมรรถนะสำคัญ", "name_en": "Key staff with core competencies", "unit": "คน", "data_pattern": "matrix", "target_value": null, "target_description": "ตามเป้าหมาย", "frequency": "yearly", "department_id": "dept_hr"
+  },
+  {
+    "kpi_id": "7.3.3", "category_id": "7.3", "name_th": "กำลังคนรวม (ตำแหน่ง×8)", "name_en": "Total workforce by position type", "unit": "คน", "data_pattern": "matrix", "target_value": null, "target_description": "ตามแผนอัตรากำลัง", "frequency": "yearly", "department_id": "dept_hr"
+  },
+  {
+    "kpi_id": "7.3.4", "category_id": "7.3", "name_th": "จำนวนวันลาป่วยเฉลี่ยต่อคน", "name_en": "Average sick leave days per person", "unit": "วัน", "data_pattern": "year_series", "target_value": null, "target_description": "ลดลงต่อเนื่อง", "frequency": "monthly", "department_id": "dept_hr"
+  },
+  {
+    "kpi_id": "7.3.5", "category_id": "7.3", "name_th": "อุบัติเหตุจากการทำงาน", "name_en": "Workplace accidents", "unit": "ครั้ง", "data_pattern": "year_series", "target_value": 0, "target_description": "= 0 ครั้ง", "frequency": "yearly", "department_id": "dept_hr"
+  },
+  {
+    "kpi_id": "7.3.6", "category_id": "7.3", "name_th": "ค่าตอบแทนเพิ่มขึ้นตามภาระงาน", "name_en": "Increased compensation by workload", "unit": "บาท", "data_pattern": "matrix", "target_value": null, "target_description": "เพิ่มขึ้น", "frequency": "yearly", "department_id": "dept_hr"
+  },
+  {
+    "kpi_id": "7.3.7", "category_id": "7.3", "name_th": "สิทธิประโยชน์เพิ่มจากค่าตอบแทนพื้นฐาน", "name_en": "Additional benefits beyond base pay", "unit": "รายการ", "data_pattern": "year_series", "target_value": null, "target_description": "เพิ่มขึ้น", "frequency": "yearly", "department_id": "dept_hr"
+  },
+  {
+    "kpi_id": "7.3.8", "category_id": "7.3", "name_th": "ความสำเร็จงานสำคัญ ISO/AVBC/EdPEx", "name_en": "Key achievements ISO/AVBC/EdPEx", "unit": "รายการ", "data_pattern": "narrative", "target_value": null, "target_description": "สำเร็จตามแผน", "frequency": "event", "department_id": "dept_hr"
+  },
+  {
+    "kpi_id": "7.3.9", "category_id": "7.3", "name_th": "ร้อยละบุคลากรมาทำงานสม่ำเสมอ", "name_en": "Staff regular attendance rate", "unit": "ร้อยละ", "data_pattern": "year_series", "target_value": null, "target_description": "ลดลดต่อเนื่อง", "frequency": "monthly", "department_id": "dept_hr"
+  },
+  {
+    "kpi_id": "7.3.10", "category_id": "7.3", "name_th": "ผลสำรวจความผูกพัน (Engagement)", "name_en": "Employee engagement score", "unit": "คะแนน", "data_pattern": "survey", "target_value": 4.0, "target_description": "≥ 4.0 / 5.0", "frequency": "yearly", "department_id": "dept_hr"
+  },
+  {
+    "kpi_id": "7.3.11", "category_id": "7.3", "name_th": "จำนวนอาจารย์/สัตวแพทย์ลาออก", "name_en": "Faculty/vet resignations", "unit": "คน", "data_pattern": "matrix", "target_value": null, "target_description": "ลดลงต่อเนื่อง", "frequency": "yearly", "department_id": "dept_hr"
+  },
+  {
+    "kpi_id": "7.3.12", "category_id": "7.3", "name_th": "บุคลากร Talent Successor เพิ่มขึ้น", "name_en": "Talent successor count increase", "unit": "คน", "data_pattern": "matrix", "target_value": null, "target_description": "เพิ่มขึ้นทุกปี", "frequency": "yearly", "department_id": "dept_hr"
+  },
+  {
+    "kpi_id": "7.4.1", "category_id": "7.4", "name_th": "ผลงานใหม่ยกระดับเป็นสากล", "name_en": "New work raised to international level", "unit": "ผลงาน", "data_pattern": "narrative", "target_value": null, "target_description": "มีผลงานทุกปี", "frequency": "yearly", "department_id": "dept_strategy"
+  },
+  {
+    "kpi_id": "7.4.2", "category_id": "7.4", "name_th": "ผลงานริเริ่มใหม่ชี้นำ/เป็นต้นแบบ", "name_en": "New initiatives & leading practices", "unit": "ผลงาน", "data_pattern": "narrative", "target_value": null, "target_description": "มีผลงานทุกปี", "frequency": "yearly", "department_id": "dept_strategy"
+  },
+  {
+    "kpi_id": "7.4.3", "category_id": "7.4", "name_th": "ความสำเร็จบูรณาการวันฑกิจ 3 ด้าน", "name_en": "Tri-mission integration success", "unit": "ผลงาน", "data_pattern": "narrative", "target_value": null, "target_description": "สำเร็จครบ 3 ด้าน", "frequency": "yearly", "department_id": "dept_strategy"
+  },
+  {
+    "kpi_id": "7.4.4", "category_id": "7.4", "name_th": "ก้าวหน้าดำเนินงานตามแผนยุทธศาสตร์", "name_en": "Strategic plan execution progress", "unit": "ร้อยละ", "data_pattern": "survey", "target_value": 1.0, "target_description": "100%", "frequency": "yearly", "department_id": "dept_strategy"
+  },
+  {
+    "kpi_id": "7.4.5", "category_id": "7.4", "name_th": "หน่วยงาน ISO ไม่มี NC", "name_en": "ISO units with zero NC", "unit": "หน่วยงาน", "data_pattern": "year_series", "target_value": 0, "target_description": "NC = 0", "frequency": "yearly", "department_id": "dept_strategy"
+  },
+  {
+    "kpi_id": "7.4.6", "category_id": "7.4", "name_th": "ข้อสังเกต/ข้อร้องเรียนทุจริต", "name_en": "Fraud/misconduct complaints", "unit": "เรื่อง", "data_pattern": "year_series", "target_value": 0, "target_description": "= 0 เรื่อง", "frequency": "yearly", "department_id": "dept_strategy"
+  },
+  {
+    "kpi_id": "7.4.7", "category_id": "7.4", "name_th": "แหล่งรายได้ใหม่ (CE + ศูนย์ประชุม + วัคซีน)", "name_en": "New revenue sources", "unit": "บาท", "data_pattern": "matrix", "target_value": null, "target_description": "เพิ่มขึ้นต่อเนื่อง", "frequency": "yearly", "department_id": "dept_strategy"
+  },
+  {
+    "kpi_id": "7.4.8", "category_id": "7.4", "name_th": "ก้าวหน้ารับรอง AVBC, AUNQA", "name_en": "AVBC/AUNQA accreditation progress", "unit": "ผลงาน", "data_pattern": "narrative", "target_value": null, "target_description": "ได้รับรองต่อเนื่อง", "frequency": "yearly", "department_id": "dept_strategy"
+  },
+  {
+    "kpi_id": "7.4.9", "category_id": "7.4", "name_th": "ได้รับมาตรฐาน ISO17025 / ESPReL", "name_en": "ISO17025/ESPReL certification", "unit": "ผลงาน", "data_pattern": "narrative", "target_value": null, "target_description": "ได้รับรองต่อเนื่อง", "frequency": "yearly", "department_id": "dept_strategy"
+  },
+  {
+    "kpi_id": "7.4.10", "category_id": "7.4", "name_th": "บริการหน่วยงานรัฐ (ส่งตรวจตัวอย่าง)", "name_en": "Government agency testing services", "unit": "ตัวอย่าง", "data_pattern": "matrix", "target_value": null, "target_description": "เพิ่มขึ้นต่อเนื่อง", "frequency": "yearly", "department_id": "dept_strategy"
+  },
+  {
+    "kpi_id": "7.4.11", "category_id": "7.4", "name_th": "จริยธรรม ธรรมาภิบาล (ตอบสนอง/โปร่งใส)", "name_en": "Ethics & governance scores", "unit": "คะแนน", "data_pattern": "survey", "target_value": 5.0, "target_description": "≥ 4.0 / 5.0", "frequency": "yearly", "department_id": "dept_strategy"
+  },
+  {
+    "kpi_id": "7.4.12", "category_id": "7.4", "name_th": "สถานที่ได้รับรองมาตรฐานสัตว์ทดลอง", "name_en": "Lab animal standard certified sites", "unit": "แห่ง", "data_pattern": "year_series", "target_value": null, "target_description": "เพิ่มขึ้น", "frequency": "yearly", "department_id": "dept_strategy"
+  },
+  {
+    "kpi_id": "7.4.13", "category_id": "7.4", "name_th": "ก้าวหน้าโครงการวัคซีนสำหรับสัตว์เศรษฐกิจ", "name_en": "Livestock vaccine project milestones", "unit": "milestone", "data_pattern": "milestone", "target_value": null, "target_description": "ครบทุก Phase", "frequency": "yearly", "department_id": "dept_strategy"
+  },
+  {
+    "kpi_id": "7.4.14", "category_id": "7.4", "name_th": "จำนวนครั้งโครงการสัตว์ปลอดโรค", "name_en": "Disease-free animal project frequency", "unit": "ครั้ง", "data_pattern": "year_series", "target_value": null, "target_description": "ดำเนินการต่อเนื่อง", "frequency": "yearly", "department_id": "dept_strategy"
+  },
+  {
+    "kpi_id": "7.4.15", "category_id": "7.4", "name_th": "จำนวนสัตว์ทำหมัน/ฉีดวัคซีน", "name_en": "Animal sterilization & vaccination count", "unit": "ตัว", "data_pattern": "year_series", "target_value": null, "target_description": "ดำเนินการต่อเนื่อง", "frequency": "yearly", "department_id": "dept_strategy"
+  }
+]

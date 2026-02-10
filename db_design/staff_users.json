@@ -1,0 +1,50 @@
+[
+  {
+    "id": "staff_001",
+    "name": "ผศ.ดร.สมศักดิ์ ประกันคุณภาพ",
+    "email": "somsak.qa@vet.ku.ac.th",
+    "department_id": "dept_strategy",
+    "role": "admin",
+    "created_at": "2025-01-15T08:00:00Z"
+  },
+  {
+    "id": "staff_002",
+    "name": "นางนุชนาฎ จัดการศึกษา",
+    "email": "nook.academic@vet.ku.ac.th",
+    "department_id": "dept_academic",
+    "role": "editor",
+    "created_at": "2025-01-15T08:00:00Z"
+  },
+  {
+    "id": "staff_003",
+    "name": "นายวิจัย สุดยอด",
+    "email": "vijai.research@vet.ku.ac.th",
+    "department_id": "dept_research",
+    "role": "editor",
+    "created_at": "2025-02-01T08:00:00Z"
+  },
+  {
+    "id": "staff_004",
+    "name": "สพ.ญ.น้อง รักสัตว์",
+    "email": "nong.hospital@vet.ku.ac.th",
+    "department_id": "dept_hospital",
+    "role": "editor",
+    "created_at": "2025-02-01T08:00:00Z"
+  },
+  {
+    "id": "staff_005",
+    "name": "นางสาว HR ดูแลคน",
+    "email": "hr.staff@vet.ku.ac.th",
+    "department_id": "dept_hr",
+    "role": "editor",
+    "created_at": "2025-02-01T08:00:00Z"
+  },
+  {
+    "id": "staff_006",
+    "name": "รศ.ดร.คณบดี ผู้บริหาร",
+    "email": "dean@vet.ku.ac.th",
+    "department_id": "dept_strategy",
+    "role": "viewer",
+    "created_at": "2025-01-10T08:00:00Z"
+  }
+]

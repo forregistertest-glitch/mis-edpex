@@ -1,0 +1,38 @@
+[
+  {
+    "category_id": "7.1",
+    "name_th": "ผลลัพธ์ด้านการเรียนรู้ของผู้เรียน",
+    "name_en": "Academic & Learning Results",
+    "icon": "📘",
+    "kpi_count": 20,
+    "description_th": "ผลลัพธ์ด้านการเรียนรู้ กระบวนการศึกษา หลักสูตร และงานวิจัย",
+    "description_en": "Student learning, curriculum development, and research outcomes"
+  },
+  {
+    "category_id": "7.2",
+    "name_th": "ผลลัพธ์ด้านลูกค้า/ผู้รับบริการ",
+    "name_en": "Customer & Stakeholder Results",
+    "icon": "📗",
+    "kpi_count": 14,
+    "description_th": "ความพึงพอใจผู้เรียน ผู้ใช้บริการ รพ.สัตว์ และลูกค้าภายนอก",
+    "description_en": "Satisfaction from students, pet owners, hospital clients, and external stakeholders"
+  },
+  {
+    "category_id": "7.3",
+    "name_th": "ผลลัพธ์ด้านบุคลากร",
+    "name_en": "Workforce / Staff Results",
+    "icon": "📙",
+    "kpi_count": 12,
+    "description_th": "การพัฒนาบุคลากร ความผูกพัน สวัสดิการ และการรักษาบุคลากร",
+    "description_en": "Staff development, engagement, benefits, and workforce retention"
+  },
+  {
+    "category_id": "7.4",
+    "name_th": "ผลลัพธ์ด้านการนำองค์กรและการกำกับดูแล",
+    "name_en": "Leadership & Governance Results",
+    "icon": "📕",
+    "kpi_count": 15,
+    "description_th": "ธรรมาภิบาล มาตรฐาน ISO/AVBC ยุทธศาสตร์ และรายได้ใหม่",
+    "description_en": "Governance, ISO/AVBC standards, strategic progress, and new revenue"
+  }
+]
