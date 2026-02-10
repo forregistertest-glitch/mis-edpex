@@ -16,10 +16,20 @@ export async function GET(request: Request) {
         return NextResponse.json({ error: "File not found" }, { status: 404 });
       }
       const content = fs.readFileSync(filePath, "utf-8");
+
+      // Validating extension for security
+      if (file.endsWith(".html")) {
+        return new NextResponse(content, {
+          headers: { "Content-Type": "text/html; charset=utf-8" },
+        });
+      }
+
       return NextResponse.json({ name: file, content });
     }
 
     const titleMap: Record<string, { th: string; en: string }> = {
+      "user_guide": { th: "📖 คู่มือการใช้งาน KUVMIS", en: "KUVMIS User Guide" },
+      "auth_and_workflow": { th: "🔐 ระบบยืนยันตัวตนและ Workflow", en: "Auth & Approval Workflow" },
       "app_architecture": { th: "โครงสร้างทางสถาปัตยกรรม", en: "System Architecture" },
       "database_design": { th: "การออกแบบฐานข้อมูล", en: "Database Schema" },
       "data_dictionary": { th: "พจนานุกรมข้อมูล", en: "Data Dictionary" },
@@ -42,9 +52,12 @@ export async function GET(request: Request) {
         subtitle: titles.en,
         size: stat.size,
         modified: stat.mtime.toISOString(),
+        isGuide: baseName === "user_guide",
         isManual: baseName === "input_manual"
       };
     }).sort((a, b) => {
+      if (a.isGuide) return -1;
+      if (b.isGuide) return 1;
       if (a.isManual) return -1;
       if (b.isManual) return 1;
       return a.title.localeCompare(b.title);

@@ -2,15 +2,19 @@
 
 import { useState, useEffect, useCallback } from "react";
 import DataExplorer from "@/components/DataExplorer";
-import AcademicTrendChart from "@/components/AcademicTrendChart";
 import KpiInputForm from "@/components/KpiInputForm";
 import DocViewer from "@/components/DocViewer";
 import LoginPage from "@/components/LoginPage";
 import Sidebar from "@/components/dashboard/Sidebar";
 import Header from "@/components/dashboard/Header";
 import HeroBanner from "@/components/dashboard/HeroBanner";
-import CategorySection from "@/components/dashboard/CategorySection";
 import ReportsSection from "@/components/dashboard/ReportsSection";
+import ReviewerDashboard from "@/components/dashboard/ReviewerDashboard";
+import AdminPanel from "@/components/dashboard/AdminPanel";
+import AcademicDashboard from "@/components/dashboard/AcademicDashboard";
+import StaffDashboard from "@/components/dashboard/StaffDashboard";
+import HospitalDashboard from "@/components/dashboard/HospitalDashboard";
+import StrategicDashboard from "@/components/dashboard/StrategicDashboard";
 import { useAuth } from "@/contexts/AuthContext";
 import { translations, Language, TranslationKey } from "@/lib/translations";
 import {
@@ -51,6 +55,8 @@ export default function Dashboard() {
     customerSatisfaction: number | null;
     strategicSuccess: number | null;
     safetyIncidents: number | null;
+    researchFunding: number | null;
+    workforceEngagement: number | null;
     totalEntries: number;
     totalKpis: number;
     kpisWithData: number;
@@ -204,10 +210,22 @@ export default function Dashboard() {
       icon: Users, color: "text-green-600", bg: "bg-green-100",
     },
     {
+      title: lang === 'th' ? 'ทุนวิจัยรวม' : 'Research Funding',
+      value: fmtVal(dashboardData?.researchFunding ?? null, "บาท", "sum"),
+      trend: dashboardData?.researchFunding ? '✓ Active' : '→ Tracking',
+      icon: LineChart, color: "text-teal-600", bg: "bg-teal-100",
+    },
+    {
+      title: lang === 'th' ? 'ความผูกพันบุคลากร' : 'Staff Engagement',
+      value: fmtVal(dashboardData?.workforceEngagement ?? null, "คะแนน", "avg"),
+      trend: dashboardData?.workforceEngagement && dashboardData.workforceEngagement >= 4.0 ? '✓ ≥ 4.0' : '→ Tracking',
+      icon: Users, color: "text-amber-600", bg: "bg-amber-100",
+    },
+    {
       title: t('successRateStrategic'),
       value: fmtVal(dashboardData?.strategicSuccess ?? null, "%", "avg"),
       trend: `${dashboardData?.kpisWithData || 0}/${dashboardData?.totalKpis || 0} KPIs`,
-      icon: LineChart, color: "text-purple-600", bg: "bg-purple-100",
+      icon: TrendingUp, color: "text-purple-600", bg: "bg-purple-100",
     },
     {
       title: t('safetyIncidents'),
@@ -247,19 +265,19 @@ export default function Dashboard() {
   return (
     <div className="min-h-screen bg-slate-50 flex">
       {/* Sidebar */}
-      <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} setShowDocs={setShowDocs} t={t} lang={lang} onSignOut={signOut} />
+      <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} setShowDocs={setShowDocs} t={t} lang={lang} onSignOut={signOut} userRole={userRole} userName={user?.displayName || user?.email || null} />
 
       {/* Main Content */}
       <main className="flex-1 overflow-auto">
-        <Header activeTab={activeTab} lang={lang} setLang={setLang} dashboardData={dashboardData} t={t} user={user} onSignOut={signOut} />
+        <Header activeTab={activeTab} lang={lang} setLang={setLang} dashboardData={dashboardData} t={t} user={user} onSignOut={signOut} userRole={userRole} setActiveTab={setActiveTab} />
 
         <div className="p-8 max-w-7xl mx-auto space-y-8">
           {activeTab === 'Dashboard' ? (
             <>
               <HeroBanner dashboardData={dashboardData} fetchDashboard={fetchDashboard} t={t} lang={lang} />
 
-              {/* KPI Cards Grid */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+              {/* KPI Cards Grid — 6 cards */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                 {kpis.map((kpi) => (
                   <div key={kpi.title} className="bg-white p-6 rounded-2xl border border-slate-200/60 shadow-sm hover:shadow-lg transition-all transform hover:-translate-y-1 group">
                     <div className="flex items-center justify-between mb-4">
@@ -278,54 +296,43 @@ export default function Dashboard() {
                 ))}
               </div>
 
-              {/* Charts Row */}
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                <div className="bg-white p-7 rounded-2xl border border-slate-200/60 shadow-sm flex flex-col min-h-[420px]">
-                  <div className="flex justify-between items-center mb-6">
-                    <h3 className="text-slate-800 font-bold text-lg">{t('academicExcellenceTrends')}</h3>
-                    <button onClick={() => handleViewDetails('7.1', t('academic'))} className="text-blue-600 text-sm font-semibold hover:underline">{t('viewDetails')}</button>
-                  </div>
-                  <div className="flex-1 min-h-[300px]"><AcademicTrendChart /></div>
-                </div>
-
-                <div className="bg-white p-7 rounded-2xl border border-slate-200/60 shadow-sm flex flex-col min-h-[420px]">
-                  <div className="flex justify-between items-center mb-6">
-                    <h3 className="text-slate-800 font-bold text-lg">{t('strategicObjectivesProgress')}</h3>
-                    <button onClick={() => handleViewDetails('7.4', t('strategic'))} className="text-blue-600 text-sm font-semibold hover:underline">{t('viewDetails')}</button>
-                  </div>
-                  <div className="flex-1 space-y-6 pt-2">
-                    {[
-                      { label: "SO2: International Standards (AVBC/ISO)", pct: 73, color: "from-purple-500 to-purple-600", shadow: "shadow-purple-200" },
-                      { label: "SO1: Revenue Growth & Structure", pct: 87, color: "from-blue-500 to-blue-600", shadow: "shadow-blue-200" },
-                      { label: "SO3: Workforce Capability", pct: 70, color: "from-green-500 to-green-600", shadow: "shadow-green-200" },
-                      { label: "SO4: Digital MIS Central Database", pct: 50, color: "from-orange-500 to-orange-600", shadow: "shadow-orange-200" },
-                      { label: "SO5: Partnership & Reputation", pct: 90, color: "from-teal-500 to-teal-600", shadow: "shadow-teal-200" },
-                    ].map(so => (
-                      <div key={so.label} className="space-y-2">
-                        <div className="flex justify-between items-center">
-                          <span className="text-sm font-semibold text-slate-700">{so.label}</span>
-                          <span className="text-sm font-bold text-slate-900">{so.pct}%</span>
-                        </div>
-                        <div className="h-2.5 w-full bg-slate-100 rounded-full overflow-hidden shadow-inner">
-                          <div className={`h-full bg-gradient-to-r ${so.color} rounded-full transition-all duration-1000 ${so.shadow} shadow-lg`} style={{ width: `${so.pct}%` }}></div>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
+              {/* Quick-View Category Cards */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                {[
+                  { tab: 'Academic', label: lang === 'th' ? '🎓 วิชาการ' : '🎓 Academic', sub: lang === 'th' ? 'สอบใบประกอบ, OSCE, ทุนวิจัย' : 'Licensure, OSCE, Research', color: 'from-blue-500 to-blue-600' },
+                  { tab: 'Hospital', label: lang === 'th' ? '🏥 โรงพยาบาล' : '🏥 Hospital', sub: lang === 'th' ? 'ความพึงพอใจ, บริจาค, ผู้สมัคร' : 'Satisfaction, Donations, Applicants', color: 'from-emerald-500 to-emerald-600' },
+                  { tab: 'Staff/HR', label: lang === 'th' ? '👥 บุคลากร' : '👥 Staff/HR', sub: lang === 'th' ? 'ความผูกพัน, ลาป่วย, Talent' : 'Engagement, Leave, Talent', color: 'from-amber-500 to-amber-600' },
+                  { tab: 'Strategic', label: lang === 'th' ? '📈 ยุทธศาสตร์' : '📈 Strategic', sub: lang === 'th' ? 'SO Progress, รายได้, ธรรมาภิบาล' : 'SO Progress, Revenue, Governance', color: 'from-purple-500 to-purple-600' },
+                ].map(c => (
+                  <button key={c.tab} onClick={() => setActiveTab(c.tab)}
+                    className="bg-white p-6 rounded-2xl border border-slate-200/60 shadow-sm hover:shadow-lg transition-all text-left group hover:-translate-y-1 transform"
+                  >
+                    <div className={`text-lg font-bold text-transparent bg-clip-text bg-gradient-to-r ${c.color} mb-1`}>{c.label}</div>
+                    <p className="text-xs text-slate-400 mb-3">{c.sub}</p>
+                    <span className="text-xs font-semibold text-blue-600 group-hover:underline">{lang === 'th' ? 'ดู Dashboard →' : 'View Dashboard →'}</span>
+                  </button>
+                ))}
               </div>
             </>
           ) : activeTab === 'Academic' ? (
-            <CategorySection categoryId="7.1" title={t('academic')} icon={GraduationCap} color="text-blue-600" categoryData={categoryData} dataLoading={dataLoading} lang={lang} activeTab={activeTab} fmtVal={fmtVal} handleViewDetails={handleViewDetails} fetchDashboard={fetchDashboard} t={t} />
+            <AcademicDashboard lang={lang} />
           ) : activeTab === 'Staff/HR' ? (
-            <CategorySection categoryId="7.3" title={t('staff')} icon={Users} color="text-amber-600" categoryData={categoryData} dataLoading={dataLoading} lang={lang} activeTab={activeTab} fmtVal={fmtVal} handleViewDetails={handleViewDetails} fetchDashboard={fetchDashboard} t={t} />
+            <StaffDashboard lang={lang} />
           ) : activeTab === 'Hospital' ? (
-            <CategorySection categoryId="7.2" title={t('hospital')} icon={Stethoscope} color="text-emerald-600" categoryData={categoryData} dataLoading={dataLoading} lang={lang} activeTab={activeTab} fmtVal={fmtVal} handleViewDetails={handleViewDetails} fetchDashboard={fetchDashboard} t={t} />
+            <HospitalDashboard lang={lang} />
           ) : activeTab === 'Strategic' ? (
-            <CategorySection categoryId="7.4" title={t('strategic')} icon={TrendingUp} color="text-purple-600" categoryData={categoryData} dataLoading={dataLoading} lang={lang} activeTab={activeTab} fmtVal={fmtVal} handleViewDetails={handleViewDetails} fetchDashboard={fetchDashboard} t={t} />
+            <StrategicDashboard lang={lang} />
           ) : activeTab === 'Input' ? (
             <div className="animate-in fade-in duration-500">
               <KpiInputForm lang={lang} />
+            </div>
+          ) : activeTab === 'Review' ? (
+            <div className="animate-in fade-in duration-500">
+              <ReviewerDashboard lang={lang} />
+            </div>
+          ) : activeTab === 'Admin' ? (
+            <div className="animate-in fade-in duration-500">
+              <AdminPanel lang={lang} />
             </div>
           ) : activeTab === 'Reports' ? (
             <ReportsSection dashboardData={dashboardData} handleGlobalExport={handleGlobalExport} handleJsonExport={handleJsonExport} lang={lang} />

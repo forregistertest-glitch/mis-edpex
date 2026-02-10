@@ -15,6 +15,7 @@ import {
 import formsData from "../../db_design/input_forms.json";
 import { addKpiEntry, getAllKpiMaster } from "@/lib/data-service";
 import type { KpiEntry, KpiMaster } from "@/lib/data-service";
+import { useAuth } from "@/contexts/AuthContext";
 
 import SuccessScreen from "@/components/kpi-input/SuccessScreen";
 import PreviewModal from "@/components/kpi-input/PreviewModal";
@@ -60,6 +61,7 @@ const formMeta: Record<string, { icon: typeof GraduationCap; color: string; bg: 
 
 // ─── Main Component ────────────────────────────────────────────
 export default function KpiInputForm({ lang }: { lang: "th" | "en" }) {
+  const { user } = useAuth();
   const forms = formsData as FormDef[];
 
   const [selectedForm, setSelectedForm] = useState<FormDef | null>(null);
@@ -169,7 +171,7 @@ export default function KpiInputForm({ lang }: { lang: "th" | "en" }) {
             dimension_value: null,
             unit: field.unit || "",
             notes: formValues["notes"] || "",
-            submitted_by: "user",
+            submitted_by: user?.email || "unknown",
             submitted_at: new Date().toISOString(),
             status: "pending",
           });

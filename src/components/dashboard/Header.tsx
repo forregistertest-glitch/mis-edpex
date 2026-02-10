@@ -1,10 +1,13 @@
 "use client";
 
+import { useState, useRef, useEffect } from "react";
 import {
     Languages,
     Settings,
     Database,
     LogOut,
+    Shield,
+    FileText,
 } from "lucide-react";
 import type { Language, TranslationKey } from "@/lib/translations";
 import type { User } from "firebase/auth";
@@ -17,9 +20,26 @@ interface HeaderProps {
     t: (key: TranslationKey) => string;
     user?: User | null;
     onSignOut?: () => void;
+    userRole?: string | null;
+    setActiveTab?: (tab: string) => void;
 }
 
-export default function Header({ activeTab, lang, setLang, dashboardData, t, user, onSignOut }: HeaderProps) {
+export default function Header({ activeTab, lang, setLang, dashboardData, t, user, onSignOut, userRole, setActiveTab }: HeaderProps) {
+    const [settingsOpen, setSettingsOpen] = useState(false);
+    const dropdownRef = useRef<HTMLDivElement>(null);
+    const isAdmin = userRole === "admin";
+
+    // Close dropdown on outside click
+    useEffect(() => {
+        function handleClick(e: MouseEvent) {
+            if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
+                setSettingsOpen(false);
+            }
+        }
+        if (settingsOpen) document.addEventListener("mousedown", handleClick);
+        return () => document.removeEventListener("mousedown", handleClick);
+    }, [settingsOpen]);
+
     return (
         <header className="h-16 bg-white/80 backdrop-blur-md border-b border-slate-200 flex items-center justify-between px-8 sticky top-0 z-10">
             <h2 className="text-lg font-semibold text-slate-800">
@@ -45,13 +65,47 @@ export default function Header({ activeTab, lang, setLang, dashboardData, t, use
                     </span>
                 </button>
 
-                {/* Settings */}
-                <button
-                    className="p-2 text-slate-500 hover:text-slate-800 hover:bg-slate-100 rounded-xl transition-all"
-                    title={t('settings')}
-                >
-                    <Settings size={20} />
-                </button>
+                {/* Settings Dropdown */}
+                <div className="relative" ref={dropdownRef}>
+                    <button
+                        onClick={() => setSettingsOpen(!settingsOpen)}
+                        className={`p-2 rounded-xl transition-all ${settingsOpen ? 'text-blue-600 bg-blue-50' : 'text-slate-500 hover:text-slate-800 hover:bg-slate-100'}`}
+                        title={lang === 'th' ? 'ตั้งค่า' : 'Settings'}
+                    >
+                        <Settings size={20} />
+                    </button>
+
+                    {settingsOpen && (
+                        <div className="absolute right-0 top-12 w-52 bg-white border border-slate-200 rounded-xl shadow-xl py-1.5 z-50 animate-in fade-in slide-in-from-top-2">
+                            {isAdmin && setActiveTab && (
+                                <>
+                                    <button
+                                        onClick={() => { setActiveTab('Admin'); setSettingsOpen(false); }}
+                                        className={`flex items-center gap-3 w-full px-4 py-2.5 text-sm font-medium transition-all ${activeTab === 'Admin' ? 'text-blue-600 bg-blue-50' : 'text-slate-600 hover:bg-slate-50'}`}
+                                    >
+                                        <Shield size={16} />
+                                        {lang === 'th' ? 'จัดการผู้ใช้' : 'Manage Users'}
+                                    </button>
+                                    <a
+                                        href="/api/docs?file=project_analysis.html"
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        onClick={() => setSettingsOpen(false)}
+                                        className="flex items-center gap-3 w-full px-4 py-2.5 text-sm font-medium text-slate-600 hover:bg-slate-50 transition-all"
+                                    >
+                                        <FileText size={16} />
+                                        Project Analysis
+                                    </a>
+                                </>
+                            )}
+                            {!isAdmin && (
+                                <div className="px-4 py-3 text-sm text-slate-400">
+                                    {lang === 'th' ? 'ไม่มีการตั้งค่าเพิ่มเติม' : 'No settings available'}
+                                </div>
+                            )}
+                        </div>
+                    )}
+                </div>
 
                 <div className="h-6 w-[1px] bg-slate-200 mx-1 hidden sm:block" />
 

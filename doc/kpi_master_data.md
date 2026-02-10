@@ -1,5 +1,13 @@
 # รายงานข้อมูลหลักตัวชี้วัด (KPI Master Data)
 
+| Field | Value |
+|:------|:------|
+| **Doc ID** | KUVMIS-DOC-009 |
+| **Version** | 1.3.0 |
+| **Last Updated** | 2026-02-11T01:34:00+07:00 |
+| **Author** | KUVMIS Development Team |
+| **Status** | Released |
+
 เอกสารฉบับนี้รวบรวมรายละเอียดของตัวชี้วัด (KPIs) ทั้งหมด 61 รายการที่ใช้ในระบบ KUVMIS โดยจัดเรียงตามรหัสตัวชี้วัด (KPI ID)
 
 ---

@@ -1,5 +1,13 @@
 # Firebase Capacity — การใช้งานจริงกับ Spark Plan (ฟรี)
 
+| Field | Value |
+|:------|:------|
+| **Doc ID** | KUVMIS-DOC-011 |
+| **Version** | 1.3.0 |
+| **Last Updated** | 2026-02-11T01:34:00+07:00 |
+| **Author** | KUVMIS Development Team |
+| **Status** | Released |
+
 ## สรุป
 
 ระบบ KUVMIS สามารถใช้ทดสอบจริงกับเจ้าหน้าที่ 5-10 คน เป็นเวลา 1-2 เดือน

@@ -1,6 +1,14 @@
 # โครงสร้างฐานข้อมูล KUVMIS — Database Design Document
 # Faculty of Veterinary Medicine, Kasetsart University
 
+| Field | Value |
+|:------|:------|
+| **Doc ID** | KUVMIS-DOC-005 |
+| **Version** | 1.3.0 |
+| **Last Updated** | 2026-02-11T01:34:00+07:00 |
+| **Author** | KUVMIS Development Team |
+| **Status** | Released |
+
 ---
 
 ## 1. ภาพรวมระบบฐานข้อมูล
@@ -26,24 +34,45 @@ Region: Default
 
 ### 2.1 Collection Map
 
-| Collection | EdPEx Category | คำอธิบาย |
-|-----------|----------------|----------|
-| `academic_results` | 7.1 ผลลัพธ์ด้านการเรียนรู้ | ผลสอบ, OSCE, ทุนวิจัย, ชั่วโมงฝึก |
-| `customer_feedback` | 7.2 ผลลัพธ์ด้านลูกค้า | ความพอใจ, บริการ รพ.สัตว์ |
-| `workforce_stats` | 7.3 ผลลัพธ์ด้านบุคลากร | อัตรากำลัง, งบสวัสดิการ, ลาออก |
-| `strategic_kpis` | 7.4 ยุทธศาสตร์/ธรรมาภิบาล | ISO, AVBC, รายได้ใหม่ |
+| Collection | คำอธิบาย | สถานะ |
+|-----------|----------|:---:|
+| `kpi_master` | รายการ KPI หลัก 61 รายการ (ชื่อ, หน่วย, เป้าหมาย, aggregation) | ✅ |
+| `kpi_entries` | ค่า KPI ที่กรอก (ผูกกับ kpi_id, ปี, งวด + review & soft delete fields) | ✅ |
+| `authorized_users` | รายชื่อ email ที่มีสิทธิ์เข้าระบบ + role (user/reviewer/admin) | ✅ |
 
-### 2.2 Document Schema
+### 2.2 Document Schema — kpi_entries
 
 ```json
-// ตัวอย่าง document ใน academic_results
+// ตัวอย่าง document ใน kpi_entries
 {
   "id": "auto_generated",
   "kpi_id": "7.1.1",
-  "year": 2568,
-  "source_sheet": "Sheet1",
-  "raw_data": { ... },
-  "ingested_at": "2026-01-27T10:00:00Z"
+  "fiscal_year": 2568,
+  "period": "Q1",
+  "value": 81.70,
+  "target": 100,
+  "unit": "ร้อยละ",
+  "submitted_by": "staff@ku.th",
+  "submitted_at": "2026-02-10T10:00:00Z",
+  "status": "pending",
+  "reviewed_by": "reviewer@ku.th",
+  "reviewed_at": "2026-02-10T12:00:00Z",
+  "rejection_reason": null,
+  "deleted_by": null,
+  "deleted_at": null,
+  "previous_status": null
+}
+```
+
+### 2.3 Document Schema — authorized_users
+
+```json
+// Document ID = email
+{
+  "email": "nipon.w@ku.th",
+  "role": "admin",
+  "name": "นิพนธ์",
+  "added_at": "2026-02-10T10:00:00Z"
 }
 ```
 
@@ -138,8 +167,12 @@ input_forms (7 ฟอร์ม)
 
 | ลำดับ | งาน | สถานะ |
 |:---:|------|:---:|
-| 1 | Migrate `kpi_master.json` → Firestore `kpi_master` collection | ⬜ |
-| 2 | Migrate `kpi_data_*.json` → Firestore `kpi_data` collection | ⬜ |
-| 3 | เชื่อมต่อ Input Forms → Firestore write operations | ⬜ |
-| 4 | เพิ่ม Authentication (Firebase Auth → `staff_users`) | ⬜ |
+| 1 | Migrate `kpi_master.json` → Firestore `kpi_master` collection | ✅ |
+| 2 | Migrate `kpi_data_*.json` → Firestore `kpi_entries` collection | ✅ |
+| 3 | เชื่อมต่อ Input Forms → Firestore write operations | ✅ |
+| 4 | เพิ่ม Authentication → Firestore `authorized_users` | ✅ |
 | 5 | สร้าง `kpi_data_customer.json` (7.2.x) | ⬜ |
+| 6 | Real-time data sync | ⬜ |
+
+---
+*เอกสารนี้ปรับปรุงล่าสุดเมื่อ 11 ก.พ. 2569 — KUVMIS v1.2*

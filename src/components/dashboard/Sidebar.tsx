@@ -10,6 +10,9 @@ import {
     ClipboardEdit,
     BookOpen,
     LogOut,
+    Shield,
+    UserCheck,
+    User,
 } from "lucide-react";
 import type { Language, TranslationKey } from "@/lib/translations";
 
@@ -20,19 +23,33 @@ interface SidebarProps {
     t: (key: TranslationKey) => string;
     lang: Language;
     onSignOut?: () => void;
+    userRole?: string | null;
+    userName?: string | null;
 }
 
-export default function Sidebar({ activeTab, setActiveTab, setShowDocs, t, lang, onSignOut }: SidebarProps) {
+const roleBadge: Record<string, { label: string; color: string; bg: string; icon: typeof Shield }> = {
+    admin: { label: "Admin", color: "text-red-600", bg: "bg-red-50 border-red-200", icon: Shield },
+    reviewer: { label: "Reviewer", color: "text-amber-600", bg: "bg-amber-50 border-amber-200", icon: UserCheck },
+    user: { label: "User", color: "text-blue-600", bg: "bg-blue-50 border-blue-200", icon: User },
+};
+
+export default function Sidebar({ activeTab, setActiveTab, setShowDocs, t, lang, onSignOut, userRole, userName }: SidebarProps) {
+    const isReviewer = userRole === "reviewer" || userRole === "admin";
+
     const navItems = [
-        { id: 'Dashboard', name: t('dashboard'), icon: LayoutDashboard },
-        { id: 'Academic', name: t('academic'), icon: GraduationCap },
-        { id: 'Staff/HR', name: t('staff'), icon: Users },
-        { id: 'Hospital', name: t('hospital'), icon: Stethoscope },
-        { id: 'Strategic', name: t('strategic'), icon: TrendingUp },
-        { id: 'Input', name: t('inputData'), icon: ClipboardEdit },
-        { id: 'Reports', name: t('reports'), icon: FileText },
-        { id: 'Docs', name: t('documentation'), icon: BookOpen },
-    ];
+        { id: 'Dashboard', name: t('dashboard'), icon: LayoutDashboard, show: true },
+        { id: 'Academic', name: t('academic'), icon: GraduationCap, show: true },
+        { id: 'Staff/HR', name: t('staff'), icon: Users, show: true },
+        { id: 'Hospital', name: t('hospital'), icon: Stethoscope, show: true },
+        { id: 'Strategic', name: t('strategic'), icon: TrendingUp, show: true },
+        { id: 'Input', name: t('inputData'), icon: ClipboardEdit, show: true },
+        { id: 'Review', name: lang === 'th' ? 'ตรวจสอบข้อมูล' : 'Review', icon: UserCheck, show: isReviewer },
+        { id: 'Reports', name: t('reports'), icon: FileText, show: true },
+        { id: 'Docs', name: t('documentation'), icon: BookOpen, show: true },
+    ].filter(item => item.show);
+
+    const badge = roleBadge[userRole || "user"] || roleBadge.user;
+    const BadgeIcon = badge.icon;
 
     return (
         <aside className="w-64 bg-white border-r border-slate-200 hidden lg:flex flex-col">
@@ -45,7 +62,19 @@ export default function Sidebar({ activeTab, setActiveTab, setShowDocs, t, lang,
                 </div>
                 <p className="text-[10px] text-slate-400 font-medium uppercase tracking-widest">{t('heroSub')}</p>
             </div>
-            <nav className="mt-4 flex-1 px-4 space-y-1">
+
+            {/* Role Badge */}
+            <div className="px-4 mb-3">
+                <div className={`flex items-center gap-2 px-3 py-2 rounded-xl border ${badge.bg} transition-all`}>
+                    <BadgeIcon size={14} className={badge.color} />
+                    <div className="flex-1 min-w-0">
+                        <p className="text-xs font-bold text-slate-700 truncate">{userName || "User"}</p>
+                        <p className={`text-[10px] font-semibold ${badge.color}`}>{badge.label}</p>
+                    </div>
+                </div>
+            </div>
+
+            <nav className="flex-1 px-4 space-y-1">
                 {navItems.map((item) => (
                     <button
                         key={item.id}

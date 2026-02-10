@@ -1,6 +1,14 @@
 # KUVMIS Application Architecture
 # คณะสัตวแพทยศาสตร์ มหาวิทยาลัยเกษตรศาสตร์
 
+| Field | Value |
+|:------|:------|
+| **Doc ID** | KUVMIS-DOC-001 |
+| **Version** | 1.3.0 |
+| **Last Updated** | 2026-02-11T01:34:00+07:00 |
+| **Author** | KUVMIS Development Team |
+| **Status** | Released |
+
 ---
 
 ## 1. ภาพรวมระบบ (System Overview)
@@ -20,7 +28,7 @@
 | **Icons** | Lucide React | 0.563.0 | semantic icons |
 | **Charts** | Chart.js + react-chartjs-2 | 4.5.1 / 5.3.1 | data visualization |
 | **Database** | Firebase Firestore | 12.9.0 | NoSQL cloud DB |
-| **Auth** | Firebase Auth | (planned) | user authentication |
+| **Auth** | Firebase Auth | 12.9.0 | ✅ Google Sign-In + Email Whitelist |
 | **Storage** | Firebase Storage | (planned) | file uploads |
 | **Export** | SheetJS (xlsx) | 0.18.5 | Excel/CSV export |
 | **Date** | Luxon | 3.7.2 | date formatting |
@@ -33,22 +41,46 @@
 mis-edpex/
 ├── src/
 │   ├── app/
-│   │   ├── layout.tsx          ← Root layout (fonts, metadata)
-│   │   ├── page.tsx            ← Main dashboard (401 lines)
-│   │   ├── globals.css         ← Tailwind base styles
-│   │   └── favicon.ico
+│   │   ├── layout.tsx           ← Root Layout + AuthProvider wrapper
+│   │   ├── page.tsx             ← Main Dashboard (370+ lines)
+│   │   ├── error.tsx            ← Route-level Error Boundary
+│   │   ├── global-error.tsx     ← Root-level Error Boundary
+│   │   ├── globals.css          ← Tailwind base styles
+│   │   ├── favicon.ico
+│   │   ├── api/docs/route.ts    ← API Route สำหรับเอกสาร
+│   │   └── seed/page.tsx        ← Seed Tool (Admin Only Guard)
+│   ├── contexts/
+│   │   └── AuthContext.tsx      ← Firebase Auth + Role Management
 │   ├── components/
-│   │   ├── AcademicTrendChart.tsx  ← Chart.js line chart
-│   │   ├── DataExplorer.tsx       ← Data table overlay (209 lines)
-│   │   └── KpiInputForm.tsx       ← Dynamic input forms (310 lines)
+│   │   ├── LoginPage.tsx        ← Google Sign-In + KU Branding
+│   │   ├── KpiInputForm.tsx     ← ฟอร์มกรอกข้อมูล (ใช้ email จริง)
+│   │   ├── DocViewer.tsx        ← ดูเอกสาร Markdown
+│   │   ├── DataExplorer.tsx     ← ตารางข้อมูล + Export
+│   │   ├── AcademicTrendChart.tsx ← กราฟแนวโน้ม
+│   │   ├── dashboard/
+│   │   │   ├── Header.tsx       ← User info + Sign-out
+│   │   │   ├── Sidebar.tsx      ← Role badge + เมนูตาม Role
+│   │   │   ├── HeroBanner.tsx   ← Gradient summary banner
+│   │   │   ├── CategorySection.tsx ← KPI category display
+│   │   │   ├── ReportsSection.tsx  ← Export tools
+│   │   │   ├── ReviewerDashboard.tsx ← Approve/Reject (Reviewer+Admin)
+│   │   │   └── AdminPanel.tsx   ← จัดการผู้ใช้ (Admin only)
+│   │   └── kpi-input/           ← Sub-components ของ KpiInputForm
+│   │       ├── FormSelector.tsx
+│   │       ├── FormEntry.tsx
+│   │       ├── PreviewModal.tsx
+│   │       └── SuccessScreen.tsx
 │   └── lib/
-│       ├── firebase.ts         ← Firebase SDK config
-│       ├── data-service.ts     ← Firestore query helpers
-│       └── translations.ts    ← Bilingual TH/EN strings
-├── db_design/                  ← JSON database blueprint (11 files)
-├── doc/                        ← Project documentation
-├── source/                     ← Source Excel/Word files
-├── public/                     ← Static assets
+│       ├── firebase.ts          ← Firebase config (env vars)
+│       ├── data-service.ts      ← CRUD + Review + SoftDelete + Admin
+│       ├── translations.ts     ← ภาษา TH/EN
+│       └── ingestion/
+│           ├── ingest_data.js   ← Script นำเข้าข้อมูลจาก JSON
+│           └── inspect_v4.js    ← Script ตรวจสอบข้อมูล
+├── db_design/                   ← ข้อมูล Seed (JSON) 11 ไฟล์
+├── doc/                         ← เอกสารประกอบ (MD + HTML) 12 ไฟล์
+├── source/                      ← ไฟล์ต้นฉบับอ้างอิง (Excel/Word)
+├── public/                      ← Static assets (SVG icons)
 ├── package.json
 ├── tsconfig.json
 └── next.config.ts
@@ -58,53 +90,68 @@ mis-edpex/
 
 ## 4. Core Components
 
-### 4.1 Dashboard (`page.tsx`)
+### 4.1 Authentication Layer (`AuthContext.tsx`) ✅
+
+| Feature | รายละเอียด |
+|---------|-----------|
+| **Google Sign-In** | Firebase Auth + GoogleAuthProvider |
+| **Email Whitelist** | ตรวจสอบ email กับ Firestore `authorized_users` |
+| **Role Management** | 3 roles: user, reviewer, admin |
+| **2FA** | ได้ฟรีจาก Google Account (ถ้าผู้ใช้เปิดไว้) |
+| **Login Gate** | ทุกหน้าต้อง login ก่อนเข้าถึง |
+
+### 4.2 Dashboard (`page.tsx`)
 
 Main single-page application ประกอบด้วย:
 
 | Section | คำอธิบาย |
 |---------|----------|
-| **Sidebar** | 7 tabs: Dashboard, Academic, Staff/HR, Hospital, Strategic, Input, Reports |
-| **Header** | ปีการศึกษา + user badge |
+| **Sidebar** | 10+ tabs (ตาม Role): Dashboard, Academic, Staff/HR, Hospital, Strategic, Input, Review, Admin, Reports, Docs |
+| **Header** | User avatar + email + Role badge + Sign-out |
 | **Hero Banner** | Gradient banner + system description |
 | **KPI Cards** | 4 cards: Academic Pass Rate, Customer Satisfaction, Strategic Success, Safety |
 | **Charts** | Academic trend line chart (64-68) |
-| **Action Cards** | KPI 7.1.13 Supply Chain + Research Grants |
-| **Data Explorer** | Overlay table with search/export |
+| **Review Tab** | Approve/Reject data entries (Reviewer/Admin) |
+| **Admin Tab** | Manage authorized users (Admin only) |
 
-**State Management:**
-- `activeTab` — tab ปัจจุบัน
-- `lang` — ภาษา (th/en)
-- `showExplorer` / `explorerData` — Data Explorer overlay
-- `explorerLoading` — loading spinner
+### 4.3 Approval Workflow (`ReviewerDashboard.tsx`) ✅
 
-### 4.2 KpiInputForm (`KpiInputForm.tsx`)
+| Feature | รายละเอียด |
+|---------|-----------|
+| **Status Filter** | pending / approved / rejected / revision_requested / all |
+| **Approve** | กด ✅ → status = approved + reviewed_by + reviewed_at |
+| **Reject** | กด ❌ → ใส่เหตุผล → status = rejected |
+| **Revision** | กด ✏️ → status = revision_requested |
+| **Soft Delete** | กด 🗑️ → status = deleted + audit fields |
+
+### 4.4 Admin Panel (`AdminPanel.tsx`) ✅
+
+| Feature | รายละเอียด |
+|---------|-----------|
+| **View Users** | ตารางแสดงผู้ใช้ทั้งหมด |
+| **Add User** | ฟอร์มเพิ่ม email, ชื่อ, Role |
+| **Change Role** | Dropdown เปลี่ยน Role ทันที |
+| **Remove User** | ลบผู้ใช้ (ป้องกันลบตัวเอง) |
+
+### 4.5 KpiInputForm (`KpiInputForm.tsx`)
 
 Dynamic form component ที่อ่าน spec จาก `input_forms.json`:
 
 | Feature | รายละเอียด |
-|---------|-----------|
+|---------|-----------  |
 | **Form Selector** | 7 cards grid, แต่ละ card มี icon+สี+คำอธิบาย |
 | **Dynamic Rendering** | render fields จาก JSON: select, number, text, textarea, file |
 | **Validation** | required check, min/max range, red error |
-| **Preview** | Summary modal ก่อน submit |
-| **Success** | Animated checkmark + message |
+| **submitted_by** | ✅ ใช้ email จริงจาก Auth (ไม่ hardcode แล้ว) |
 | **Audit Trail** | Table แสดง logs ล่าสุด + status badge |
 
-### 4.3 DataExplorer (`DataExplorer.tsx`)
+### 4.6 DataExplorer, DocViewer, AcademicTrendChart
 
-Full-screen overlay สำหรับดู raw data:
-
-| Feature | รายละเอียด |
-|---------|-----------|
-| **Search** | Real-time filter across all columns |
-| **Pagination** | 50/100/500 rows per page |
-| **Export** | Excel (.xlsx), JSON, CSV |
-| **Auto Headers** | อ่าน column headers จาก data keys |
-
-### 4.4 AcademicTrendChart (`AcademicTrendChart.tsx`)
-
-Chart.js line chart แสดง trend KPI วิชาการ (ปี 64-68)
+| Component | คำอธิบาย |
+|-----------|----------|
+| **DataExplorer** | Full-screen overlay + search + pagination + export (Excel/JSON/CSV) |
+| **DocViewer** | Markdown viewer สำหรับเอกสารในโฟลเดอร์ `/doc` |
+| **AcademicTrendChart** | Chart.js line chart แสดง trend KPI วิชาการ 5 ปี |
 
 ---
 
@@ -116,23 +163,28 @@ Chart.js line chart แสดง trend KPI วิชาการ (ปี 64-68)
 │ (SAR 64-68) │     │  (Node.js)   │     │ Collections  │
 └─────────────┘     └──────────────┘     └──────┬──────┘
                                                  │
+                                          ┌──────┴──────┐
+                                          │  AuthContext │
+                                          │  (Login Gate)│
+                                          └──────┬──────┘
+                                                 │
                     ┌──────────────┐              │
                     │  Dashboard   │ ←────────────┘
                     │  (page.tsx)  │    getDocs()
                     └──────┬──────┘
                            │
-              ┌────────────┼────────────┐
-              ↓            ↓            ↓
-        KPI Cards    AcademicChart  DataExplorer
-                                       │
-                              ┌────────┴────────┐
-                              ↓        ↓        ↓
-                            .xlsx    .json    .csv
+          ┌────────────────┼────────────────┐
+          │                │                │
+    ┌─────┴─────┐   ┌─────┴─────┐   ┌─────┴─────┐
+    │ KPI Cards │   │  Charts   │   │DataExplorer│
+    │+ Review   │   │           │   │           │
+    │+ Admin    │   │           │   │ Export    │
+    └───────────┘   └───────────┘   └───────────┘
 ```
 
 ---
 
-## 6. Features ปัจจุบัน (v1.1)
+## 6. Features ปัจจุบัน (v1.2)
 
 | # | Feature | Component | สถานะ |
 |:-:|---------|-----------|:---:|
@@ -140,16 +192,20 @@ Chart.js line chart แสดง trend KPI วิชาการ (ปี 64-68)
 | 2 | KPI Cards (4 pillars) | `page.tsx` | ✅ |
 | 3 | Academic Trend Chart | `AcademicTrendChart.tsx` | ✅ |
 | 4 | Strategic Objectives (SO1-SO6) | `page.tsx` | ✅ |
-| 5 | Supply Chain View (7.1.13) | `page.tsx` | ✅ |
-| 6 | Research Grants View (7.1.16-19) | `page.tsx` | ✅ |
-| 7 | Bilingual UI (TH/EN) | `translations.ts` | ✅ |
-| 8 | Data Explorer + Search | `DataExplorer.tsx` | ✅ |
-| 9 | Excel/JSON/CSV Export | `DataExplorer.tsx` | ✅ |
-| 10 | Global Full Export | `page.tsx` | ✅ |
-| 11 | **KPI Input Forms (7 types)** | `KpiInputForm.tsx` | ✅ |
-| 12 | **Dynamic Field Rendering** | `KpiInputForm.tsx` | ✅ |
-| 13 | **Form Validation** | `KpiInputForm.tsx` | ✅ |
-| 14 | **Audit Trail Table** | `KpiInputForm.tsx` | ✅ |
+| 5 | Bilingual UI (TH/EN) | `translations.ts` | ✅ |
+| 6 | Data Explorer + Search | `DataExplorer.tsx` | ✅ |
+| 7 | Excel/JSON/CSV Export | `DataExplorer.tsx` | ✅ |
+| 8 | KPI Input Forms (7 types) | `KpiInputForm.tsx` | ✅ |
+| 9 | Dynamic Field Rendering | `KpiInputForm.tsx` | ✅ |
+| 10 | Form Validation | `KpiInputForm.tsx` | ✅ |
+| 11 | **Firebase Auth + Google Sign-In** | `AuthContext.tsx` | ✅ |
+| 12 | **Email Whitelist + Role** | `AuthContext.tsx` | ✅ |
+| 13 | **Role Badge + Conditional Menu** | `Sidebar.tsx` | ✅ |
+| 14 | **Seed Page Guard (Admin Only)** | `seed/page.tsx` | ✅ |
+| 15 | **Error Boundary (Route+Global)** | `error.tsx` / `global-error.tsx` | ✅ |
+| 16 | **Approval Workflow** | `ReviewerDashboard.tsx` | ✅ |
+| 17 | **Soft Delete** | `data-service.ts` | ✅ |
+| 18 | **Admin Panel (User CRUD)** | `AdminPanel.tsx` | ✅ |
 
 ---
 
@@ -181,10 +237,9 @@ Config File:       src/lib/firebase.ts
 ```
 
 **Collections ที่ใช้งาน:**
-- `academic_results` — KPI 7.1.x
-- `customer_feedback` — KPI 7.2.x
-- `workforce_stats` — KPI 7.3.x
-- `strategic_kpis` — KPI 7.4.x
+- `kpi_master` — รายการ KPI หลัก (61 KPIs)
+- `kpi_entries` — ข้อมูล KPI ที่กรอก (พร้อม review + soft delete fields)
+- `authorized_users` — รายชื่อ email ที่มีสิทธิ์ + role
 
 ---
 
@@ -195,7 +250,12 @@ Config File:       src/lib/firebase.ts
 | Phase 1 | Dashboard + Data Ingestion | ✅ |
 | Phase 2 | Bilingual UI + Export | ✅ |
 | Phase 3 | Input Forms + DB Blueprint | ✅ |
-| Phase 4 | Firebase Auth + Access Control | ⬜ |
-| Phase 5 | Firestore Migration (61 KPI) | ⬜ |
-| Phase 6 | Real-time Data Sync | ⬜ |
-| Phase 7 | Automated SAR Report Generation | ⬜ |
+| Phase 4 | Firebase Auth + Access Control | ✅ |
+| Phase 5 | Approval Workflow + Soft Delete | ✅ |
+| Phase 6 | Admin Panel (User Management) | ✅ |
+| Phase 7 | Real-time Data Sync | ⬜ |
+| Phase 8 | Automated SAR Report Generation | ⬜ |
+
+---
+
+*เอกสารนี้ปรับปรุงล่าสุดเมื่อ 11 ก.พ. 2569 — KUVMIS v1.2*

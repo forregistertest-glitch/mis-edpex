@@ -41,6 +41,14 @@ export interface KpiEntry {
   submitted_by: string;
   submitted_at: string;
   status: string;
+  // Review fields
+  reviewed_by?: string;
+  reviewed_at?: string;
+  rejection_reason?: string;
+  // Soft delete fields
+  deleted_by?: string;
+  deleted_at?: string;
+  previous_status?: string;
 }
 
 // ─── KPI Master ────────────────────────────────────────────────
@@ -173,7 +181,7 @@ export async function getRecentEntriesFiltered(
   if (filters.year) filtered = filtered.filter(e => e.fiscal_year === filters.year);
   if (filters.period && filters.period !== "all") filtered = filtered.filter(e => e.period === filters.period);
   if (filters.status && filters.status !== "all") filtered = filtered.filter(e => e.status === filters.status);
-  if (filters.submitted_by && filters.submitted_by !== "all") 
+  if (filters.submitted_by && filters.submitted_by !== "all")
     filtered = filtered.filter(e => e.submitted_by === filters.submitted_by);
 
   const total = filtered.length;
@@ -183,9 +191,76 @@ export async function getRecentEntriesFiltered(
   return { entries, total };
 }
 
-export async function updateKpiEntryStatus(id: string, status: "approved" | "rejected" | "pending"): Promise<void> {
+export async function updateKpiEntryStatus(
+  id: string,
+  status: "approved" | "rejected" | "pending" | "revision_requested" | "deleted",
+  reviewerEmail?: string,
+  reason?: string
+): Promise<void> {
   const docRef = doc(db, "kpi_entries", id);
-  await setDoc(docRef, { status }, { merge: true });
+  const updateData: Record<string, any> = { status };
+  if (reviewerEmail) {
+    updateData.reviewed_by = reviewerEmail;
+    updateData.reviewed_at = new Date().toISOString();
+  }
+  if (reason) updateData.rejection_reason = reason;
+  await setDoc(docRef, updateData, { merge: true });
+}
+
+// ─── Review Functions ──────────────────────────────────────────
+export async function getPendingEntries(): Promise<KpiEntry[]> {
+  const allEntries = await getKpiEntries();
+  return allEntries
+    .filter((e) => e.status === "pending")
+    .sort((a, b) => (b.submitted_at || "").localeCompare(a.submitted_at || ""));
+}
+
+export async function getEntriesBySubmitter(email: string): Promise<KpiEntry[]> {
+  const allEntries = await getKpiEntries();
+  return allEntries
+    .filter((e) => e.submitted_by === email && e.status !== "deleted")
+    .sort((a, b) => (b.submitted_at || "").localeCompare(a.submitted_at || ""));
+}
+
+// ─── Soft Delete ───────────────────────────────────────────────
+export async function softDeleteEntry(id: string, deletedBy: string, currentStatus: string): Promise<void> {
+  const docRef = doc(db, "kpi_entries", id);
+  await setDoc(docRef, {
+    status: "deleted",
+    deleted_by: deletedBy,
+    deleted_at: new Date().toISOString(),
+    previous_status: currentStatus,
+  }, { merge: true });
+}
+
+// ─── Authorized Users (Admin) ──────────────────────────────────
+export interface AuthorizedUser {
+  email: string;
+  role: string;
+  name: string;
+  added_at: string;
+}
+
+export async function getAuthorizedUsers(): Promise<AuthorizedUser[]> {
+  const snap = await getDocs(collection(db, "authorized_users"));
+  return snap.docs.map((d) => ({ email: d.id, ...d.data() } as AuthorizedUser));
+}
+
+export async function addAuthorizedUser(email: string, role: string, name: string): Promise<void> {
+  await setDoc(doc(db, "authorized_users", email), {
+    email,
+    role,
+    name,
+    added_at: new Date().toISOString(),
+  });
+}
+
+export async function removeAuthorizedUser(email: string): Promise<void> {
+  await deleteDoc(doc(db, "authorized_users", email));
+}
+
+export async function updateUserRole(email: string, newRole: string): Promise<void> {
+  await setDoc(doc(db, "authorized_users", email), { role: newRole }, { merge: true });
 }
 
 // ─── Dashboard Summary ────────────────────────────────────────
@@ -209,17 +284,29 @@ export async function getDashboardSummary(year: number) {
   const strategicKpis = allEntries.filter((e) => e.kpi_id.startsWith("7.4"));
   const strategicVal = strategicKpis.length > 0
     ? (strategicKpis.reduce((total, e) => {
-        const master = allMasters.find(m => m.kpi_id === e.kpi_id);
-        const target = master?.target_value || 100;
-        const pct = (e.value || 0) / target * 100;
-        return total + Math.min(pct, 100); // Cap achievement at 100% for the summary
-      }, 0) / strategicKpis.length)
+      const master = allMasters.find(m => m.kpi_id === e.kpi_id);
+      const target = master?.target_value || 100;
+      const pct = (e.value || 0) / target * 100;
+      return total + Math.min(pct, 100); // Cap achievement at 100% for the summary
+    }, 0) / strategicKpis.length)
     : 0;
 
   // Safety Incidents (7.1.11)
   const safety = allEntries.filter((e) => e.kpi_id === "7.1.11");
   const safetyVal = safety.length > 0
     ? safety.reduce((s, e) => s + (e.value || 0), 0)
+    : null;
+
+  // Research Funding (7.1.17 + 7.1.19)
+  const researchInternal = allEntries.filter((e) => e.kpi_id === "7.1.17");
+  const researchExternal = allEntries.filter((e) => e.kpi_id === "7.1.19");
+  const researchVal = [...researchInternal, ...researchExternal]
+    .reduce((s, e) => s + (e.value || 0), 0) || null;
+
+  // Workforce Engagement (7.3.10)
+  const engagement = allEntries.filter((e) => e.kpi_id === "7.3.10");
+  const engagementVal = engagement.length > 0
+    ? engagement.reduce((s, e) => s + (e.value || 0), 0) / engagement.length
     : null;
 
   // Total entries count
@@ -232,10 +319,130 @@ export async function getDashboardSummary(year: number) {
     customerSatisfaction: customerVal,
     strategicSuccess: strategicVal,
     safetyIncidents: safetyVal,
+    researchFunding: researchVal,
+    workforceEngagement: engagementVal,
     totalEntries,
     totalKpis,
     kpisWithData,
   };
+}
+
+// ─── Chart Data Functions ──────────────────────────────────────
+export interface ChartFilters {
+  years?: number[];
+  period?: string;
+  dimension?: string;
+}
+
+export interface TrendPoint {
+  year: number;
+  value: number | null;
+  target: number | null;
+}
+
+export async function getKpiTrendData(
+  kpiId: string | string[],
+  filters?: ChartFilters
+): Promise<Record<string, TrendPoint[]>> {
+  const kpiIds = Array.isArray(kpiId) ? kpiId : [kpiId];
+  const allEntries = await getKpiEntries();
+  const masters = await getAllKpiMaster();
+  const result: Record<string, TrendPoint[]> = {};
+
+  for (const kid of kpiIds) {
+    let entries = allEntries.filter((e) => e.kpi_id === kid && e.status !== "deleted");
+    if (filters?.period && filters.period !== "all") {
+      entries = entries.filter((e) => e.period === filters.period);
+    }
+    if (filters?.dimension) {
+      entries = entries.filter((e) => e.dimension === filters.dimension || !e.dimension);
+    }
+
+    // Group by year
+    const byYear = new Map<number, number[]>();
+    for (const e of entries) {
+      if (e.value === null) continue;
+      const arr = byYear.get(e.fiscal_year) || [];
+      arr.push(e.value);
+      byYear.set(e.fiscal_year, arr);
+    }
+
+    const master = masters.find((m) => m.kpi_id === kid);
+    const targetVal = master?.target_value ?? null;
+    const agg = master?.aggregation || "avg";
+
+    const years = filters?.years
+      ? filters.years
+      : [...byYear.keys()].sort();
+
+    result[kid] = years.map((yr) => {
+      const vals = byYear.get(yr) || [];
+      let value: number | null = null;
+      if (vals.length > 0) {
+        value = agg === "sum"
+          ? vals.reduce((a, b) => a + b, 0)
+          : agg === "count"
+            ? vals.length
+            : vals.reduce((a, b) => a + b, 0) / vals.length;
+        value = Math.round(value * 100) / 100;
+      }
+      return { year: yr, value, target: targetVal };
+    });
+  }
+
+  return result;
+}
+
+export interface MatrixPoint {
+  dimension_value: string;
+  value: number;
+  extra?: Record<string, any>;
+}
+
+export async function getKpiMatrixData(
+  kpiId: string,
+  year?: number,
+  dimensionFilter?: string
+): Promise<MatrixPoint[]> {
+  let entries = (await getKpiEntries(kpiId)).filter((e) => e.status !== "deleted");
+  if (year) entries = entries.filter((e) => e.fiscal_year === year);
+  if (dimensionFilter) entries = entries.filter((e) => e.dimension === dimensionFilter);
+
+  // Group by dimension_value
+  const grouped = new Map<string, number[]>();
+  for (const e of entries) {
+    if (e.value === null || !e.dimension_value) continue;
+    const key = e.dimension_value;
+    const arr = grouped.get(key) || [];
+    arr.push(e.value);
+    grouped.set(key, arr);
+  }
+
+  return [...grouped.entries()].map(([dv, vals]) => ({
+    dimension_value: dv,
+    value: Math.round((vals.reduce((a, b) => a + b, 0) / vals.length) * 100) / 100,
+  }));
+}
+
+export interface AvailableFilters {
+  years: number[];
+  periods: string[];
+  dimensions: string[];
+}
+
+export async function getAvailableFilters(categoryId?: string): Promise<AvailableFilters> {
+  let entries = await getKpiEntries();
+  if (categoryId) {
+    const masters = await getKpiMasterByCategory(categoryId);
+    const kpiIds = new Set(masters.map((m) => m.kpi_id));
+    entries = entries.filter((e) => kpiIds.has(e.kpi_id));
+  }
+
+  const years = [...new Set(entries.map((e) => e.fiscal_year).filter(Boolean))].sort() as number[];
+  const periods = [...new Set(entries.map((e) => e.period).filter(Boolean))].sort() as string[];
+  const dimensions = [...new Set(entries.map((e) => e.dimension).filter((d): d is string => d !== null && d !== undefined))].sort();
+
+  return { years, periods, dimensions };
 }
 
 // ─── Export Helpers ─────────────────────────────────────────────

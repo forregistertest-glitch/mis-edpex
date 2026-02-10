@@ -1,6 +1,14 @@
 # คู่มือระบบกรอกข้อมูล KPI — Input Manual
 # KUVMIS Data Entry System
 
+| Field | Value |
+|:------|:------|
+| **Doc ID** | KUVMIS-DOC-006 |
+| **Version** | 1.3.0 |
+| **Last Updated** | 2026-02-11T01:34:00+07:00 |
+| **Author** | KUVMIS Development Team |
+| **Status** | Released |
+
 ---
 
 ## 1. ภาพรวม

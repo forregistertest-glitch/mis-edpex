@@ -1,9 +1,10 @@
 <!DOCTYPE html>
 <html lang="th">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>KUVMIS — Project Analysis</title>
+  <title>KUVMIS — Project Analysis v1.2</title>
   <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
   <style>
     :root {
@@ -21,7 +22,11 @@
       --pink: #f472b6;
     }
 
-    * { margin: 0; padding: 0; box-sizing: border-box; }
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
 
     body {
       font-family: 'Segoe UI', 'Noto Sans Thai', Tahoma, sans-serif;
@@ -63,7 +68,9 @@
       gap: 0.5rem;
     }
 
-    h2 .emoji { font-size: 1.3rem; }
+    h2 .emoji {
+      font-size: 1.3rem;
+    }
 
     h3 {
       font-size: 1.1rem;
@@ -71,9 +78,20 @@
       margin: 1.5rem 0 0.5rem;
     }
 
-    p, li { color: var(--text); font-size: 0.95rem; }
-    ul { padding-left: 1.5rem; margin-bottom: 1rem; }
-    li { margin-bottom: 0.3rem; }
+    p,
+    li {
+      color: var(--text);
+      font-size: 0.95rem;
+    }
+
+    ul {
+      padding-left: 1.5rem;
+      margin-bottom: 1rem;
+    }
+
+    li {
+      margin-bottom: 0.3rem;
+    }
 
     /* Cards */
     .card {
@@ -107,7 +125,9 @@
       color: var(--text);
     }
 
-    tbody tr:hover { background: rgba(56, 189, 248, 0.05); }
+    tbody tr:hover {
+      background: rgba(56, 189, 248, 0.05);
+    }
 
     code {
       background: var(--surface2);
@@ -131,10 +151,28 @@
       color: var(--text-dim);
     }
 
-    .file-tree .dir { color: var(--accent); font-weight: 600; }
-    .file-tree .file { color: var(--text); }
-    .file-tree .comment { color: var(--text-dim); font-style: italic; }
-    .file-tree .highlight { color: var(--green); }
+    .file-tree .dir {
+      color: var(--accent);
+      font-weight: 600;
+    }
+
+    .file-tree .file {
+      color: var(--text);
+    }
+
+    .file-tree .comment {
+      color: var(--text-dim);
+      font-style: italic;
+    }
+
+    .file-tree .highlight {
+      color: var(--green);
+    }
+
+    .file-tree .new {
+      color: var(--orange);
+      font-weight: 600;
+    }
 
     /* Mermaid */
     .mermaid-container {
@@ -155,9 +193,26 @@
       font-size: 0.75rem;
       font-weight: 600;
     }
-    .badge-easy { background: rgba(52, 211, 153, 0.2); color: var(--green); }
-    .badge-medium { background: rgba(251, 146, 60, 0.2); color: var(--orange); }
-    .badge-important { background: rgba(248, 113, 113, 0.2); color: var(--red); }
+
+    .badge-done {
+      background: rgba(52, 211, 153, 0.2);
+      color: var(--green);
+    }
+
+    .badge-easy {
+      background: rgba(52, 211, 153, 0.2);
+      color: var(--green);
+    }
+
+    .badge-medium {
+      background: rgba(251, 146, 60, 0.2);
+      color: var(--orange);
+    }
+
+    .badge-important {
+      background: rgba(248, 113, 113, 0.2);
+      color: var(--red);
+    }
 
     /* Feature grid */
     .feature-grid {
@@ -175,7 +230,9 @@
       transition: border-color 0.2s;
     }
 
-    .feature-card:hover { border-color: var(--accent); }
+    .feature-card:hover {
+      border-color: var(--accent);
+    }
 
     .feature-card h4 {
       color: var(--accent);
@@ -196,6 +253,17 @@
       border-radius: 999px;
       font-size: 0.75rem;
       margin-top: 0.5rem;
+    }
+
+    .feature-card .new-badge {
+      display: inline-block;
+      background: rgba(251, 146, 60, 0.2);
+      color: var(--orange);
+      padding: 0.1rem 0.5rem;
+      border-radius: 999px;
+      font-size: 0.7rem;
+      font-weight: 600;
+      margin-left: 0.5rem;
     }
 
     /* Info box */
@@ -220,25 +288,43 @@
     }
 
     @media print {
-      body { background: #fff; color: #111; }
-      .card, .file-tree, .mermaid-container, .feature-card {
+      body {
+        background: #fff;
+        color: #111;
+      }
+
+      .card,
+      .file-tree,
+      .mermaid-container,
+      .feature-card {
         background: #f8f9fa;
         border-color: #ddd;
       }
-      h1 { -webkit-text-fill-color: #1e3a5f; }
-      h2 { color: #1e3a5f; }
-      code { background: #eee; color: #333; }
+
+      h1 {
+        -webkit-text-fill-color: #1e3a5f;
+      }
+
+      h2 {
+        color: #1e3a5f;
+      }
+
+      code {
+        background: #eee;
+        color: #333;
+      }
     }
   </style>
 </head>
+
 <body>
 
-  <h1>📊 KUVMIS — Project Analysis</h1>
+  <h1>📊 KUVMIS — Project Analysis v1.2</h1>
   <div class="subtitle">
     <strong>ระบบ:</strong> KUVMIS — ระบบสารสนเทศเพื่อการจัดการ (MIS) และการวิเคราะห์ KPI (EdPEx)<br>
     <strong>หน่วยงาน:</strong> คณะสัตวแพทยศาสตร์ มหาวิทยาลัยเกษตรศาสตร์<br>
     <strong>URL:</strong> <a href="https://mis-edpex.vercel.app" target="_blank">https://mis-edpex.vercel.app</a><br>
-    <strong>วันที่วิเคราะห์:</strong> 10 กุมภาพันธ์ 2569
+    <strong>วันที่วิเคราะห์:</strong> 11 กุมภาพันธ์ 2569 (ปรับปรุงจาก 10 ก.พ. 2569)
   </div>
 
   <!-- ═══════════════════════════════════════════════════ -->
@@ -246,19 +332,68 @@
   <div class="card">
     <table>
       <thead>
-        <tr><th>เทคโนโลยี</th><th>เวอร์ชัน</th><th>บทบาท</th></tr>
+        <tr>
+          <th>เทคโนโลยี</th>
+          <th>เวอร์ชัน</th>
+          <th>บทบาท</th>
+        </tr>
       </thead>
       <tbody>
-        <tr><td><strong>Next.js</strong></td><td>16.1.6 (Turbopack)</td><td>Framework หลัก (App Router)</td></tr>
-        <tr><td><strong>React</strong></td><td>19.2.3</td><td>UI Library</td></tr>
-        <tr><td><strong>TypeScript</strong></td><td>^5</td><td>ภาษาหลัก</td></tr>
-        <tr><td><strong>TailwindCSS</strong></td><td>^4</td><td>Styling (Utility-first CSS)</td></tr>
-        <tr><td><strong>Firebase Firestore</strong></td><td>^12.9.0</td><td>Database (NoSQL)</td></tr>
-        <tr><td><strong>Chart.js</strong> + react-chartjs-2</td><td>^4.5.1 / ^5.3.1</td><td>แสดงกราฟ Line Chart</td></tr>
-        <tr><td><strong>Luxon</strong></td><td>^3.7.2</td><td>จัดการวันที่/เวลา</td></tr>
-        <tr><td><strong>XLSX (SheetJS)</strong></td><td>^0.18.5</td><td>Export ข้อมูลเป็น Excel</td></tr>
-        <tr><td><strong>Lucide React</strong></td><td>^0.563.0</td><td>ชุดไอคอน</td></tr>
-        <tr><td><strong>Vercel</strong></td><td>—</td><td>Hosting / Deployment</td></tr>
+        <tr>
+          <td><strong>Next.js</strong></td>
+          <td>16.1.6 (Turbopack)</td>
+          <td>Framework หลัก (App Router)</td>
+        </tr>
+        <tr>
+          <td><strong>React</strong></td>
+          <td>19.2.3</td>
+          <td>UI Library</td>
+        </tr>
+        <tr>
+          <td><strong>TypeScript</strong></td>
+          <td>^5</td>
+          <td>ภาษาหลัก</td>
+        </tr>
+        <tr>
+          <td><strong>TailwindCSS</strong></td>
+          <td>^4</td>
+          <td>Styling (Utility-first CSS)</td>
+        </tr>
+        <tr>
+          <td><strong>Firebase Firestore</strong></td>
+          <td>^12.9.0</td>
+          <td>Database (NoSQL)</td>
+        </tr>
+        <tr>
+          <td><strong>Firebase Auth</strong></td>
+          <td>^12.9.0</td>
+          <td>✅ Google Sign-In + Whitelist</td>
+        </tr>
+        <tr>
+          <td><strong>Chart.js</strong> + react-chartjs-2</td>
+          <td>^4.5.1 / ^5.3.1</td>
+          <td>แสดงกราฟ Line Chart</td>
+        </tr>
+        <tr>
+          <td><strong>Luxon</strong></td>
+          <td>^3.7.2</td>
+          <td>จัดการวันที่/เวลา</td>
+        </tr>
+        <tr>
+          <td><strong>XLSX (SheetJS)</strong></td>
+          <td>^0.18.5</td>
+          <td>Export ข้อมูลเป็น Excel</td>
+        </tr>
+        <tr>
+          <td><strong>Lucide React</strong></td>
+          <td>^0.563.0</td>
+          <td>ชุดไอคอน</td>
+        </tr>
+        <tr>
+          <td><strong>Vercel</strong></td>
+          <td>—</td>
+          <td>Hosting / Deployment</td>
+        </tr>
       </tbody>
     </table>
   </div>
@@ -272,19 +407,28 @@ graph TD
     B --> C["/ Dashboard"]
     B --> D["/seed Data Seeding"]
     B --> E["/api/docs API"]
-    C --> F["Components"]
-    F --> F1["KpiInputForm"]
-    F --> F2["DocViewer"]
-    F --> F3["DataExplorer"]
-    F --> F4["AcademicTrendChart"]
+
+    C --> AUTH["AuthContext"]
+    AUTH --> LOGIN["LoginPage"]
+    AUTH --> DASH["Dashboard Components"]
+
+    DASH --> F1["KpiInputForm"]
+    DASH --> F2["DocViewer"]
+    DASH --> F3["DataExplorer"]
+    DASH --> F4["AcademicTrendChart"]
+    DASH --> F5["ReviewerDashboard"]
+    DASH --> F6["AdminPanel"]
+
     C --> G["data-service.ts"]
     G --> H["firebase.ts"]
     H --> I["☁️ Firebase Firestore"]
-    G --> J["translations.ts"]
+    H --> J["🔐 Firebase Auth"]
 
     style A fill:#1e293b,stroke:#38bdf8,color:#e2e8f0
     style B fill:#1e293b,stroke:#a78bfa,color:#e2e8f0
     style I fill:#1e293b,stroke:#34d399,color:#34d399
+    style J fill:#1e293b,stroke:#fb923c,color:#fb923c
+    style AUTH fill:#1e293b,stroke:#fb923c,color:#fb923c
     </pre>
   </div>
 
@@ -293,37 +437,43 @@ graph TD
   <div class="file-tree">
     <span class="dir">mis-edpex/</span><br>
     ├── <span class="dir">src/</span><br>
-    │   ├── <span class="dir">app/</span><br>
-    │   │   ├── <span class="file">page.tsx</span> <span class="comment">← หน้า Dashboard หลัก (661 บรรทัด)</span><br>
-    │   │   ├── <span class="file">layout.tsx</span> <span class="comment">← Root Layout + Google Fonts</span><br>
-    │   │   ├── <span class="file">globals.css</span> <span class="comment">← TailwindCSS + CSS Variables</span><br>
-    │   │   ├── <span class="file">favicon.ico</span><br>
-    │   │   ├── <span class="dir">api/docs/</span> <span class="comment">← API Route สำหรับเอกสาร</span><br>
-    │   │   └── <span class="dir">seed/</span><span class="file">page.tsx</span> <span class="comment">← หน้า Seed ข้อมูลลง Firestore (364 บรรทัด)</span><br>
-    │   ├── <span class="dir">components/</span><br>
-    │   │   ├── <span class="highlight">KpiInputForm.tsx</span> <span class="comment">← ฟอร์มกรอกข้อมูล KPI (663 บรรทัด)</span><br>
-    │   │   ├── <span class="highlight">DocViewer.tsx</span> <span class="comment">← ดูเอกสาร Markdown (389 บรรทัด)</span><br>
-    │   │   ├── <span class="highlight">DataExplorer.tsx</span> <span class="comment">← ตารางข้อมูล + Export (212 บรรทัด)</span><br>
-    │   │   └── <span class="highlight">AcademicTrendChart.tsx</span> <span class="comment">← กราฟแนวโน้ม (65 บรรทัด)</span><br>
-    │   └── <span class="dir">lib/</span><br>
-    │       ├── <span class="file">firebase.ts</span> <span class="comment">← Firebase config (ใช้ env vars ✅)</span><br>
-    │       ├── <span class="file">data-service.ts</span> <span class="comment">← CRUD + Aggregation + Export (310 บรรทัด)</span><br>
-    │       ├── <span class="file">translations.ts</span> <span class="comment">← ภาษา TH/EN (60 บรรทัด)</span><br>
-    │       └── <span class="dir">ingestion/</span><br>
-    │           ├── <span class="file">ingest_data.js</span> <span class="comment">← Script นำเข้าข้อมูลจาก JSON</span><br>
-    │           └── <span class="file">inspect_v4.js</span> <span class="comment">← Script ตรวจสอบข้อมูล</span><br>
+    │ ├── <span class="dir">app/</span><br>
+    │ │ ├── <span class="file">page.tsx</span> <span class="comment">← หน้า Dashboard หลัก (370+ บรรทัด)</span><br>
+    │ │ ├── <span class="file">layout.tsx</span> <span class="comment">← Root Layout + AuthProvider wrapper</span><br>
+    │ │ ├── <span class="new">error.tsx</span> <span class="comment">← Route-level Error Boundary [NEW]</span><br>
+    │ │ ├── <span class="new">global-error.tsx</span> <span class="comment">← Root Error Boundary [NEW]</span><br>
+    │ │ ├── <span class="file">globals.css</span> <span class="comment">← TailwindCSS + CSS Variables</span><br>
+    │ │ ├── <span class="dir">api/docs/</span> <span class="comment">← API Route สำหรับเอกสาร</span><br>
+    │ │ └── <span class="dir">seed/</span><span class="file">page.tsx</span> <span class="comment">← Seed Tool (Admin
+      Only Guard)</span><br>
+    │ ├── <span class="new dir">contexts/</span><br>
+    │ │ └── <span class="new">AuthContext.tsx</span> <span class="comment">← Firebase Auth + Role Management
+      [NEW]</span><br>
+    │ ├── <span class="dir">components/</span><br>
+    │ │ ├── <span class="new">LoginPage.tsx</span> <span class="comment">← Google Sign-In + KU Branding [NEW]</span><br>
+    │ │ ├── <span class="highlight">KpiInputForm.tsx</span> <span class="comment">← ฟอร์มกรอก (ใช้ email
+      จริง)</span><br>
+    │ │ ├── <span class="highlight">DocViewer.tsx</span> <span class="comment">← ดูเอกสาร Markdown (389
+      บรรทัด)</span><br>
+    │ │ ├── <span class="highlight">DataExplorer.tsx</span> <span class="comment">← ตารางข้อมูล + Export (212
+      บรรทัด)</span><br>
+    │ │ ├── <span class="highlight">AcademicTrendChart.tsx</span> <span class="comment">← กราฟแนวโน้ม (65
+      บรรทัด)</span><br>
+    │ │ └── <span class="new dir">dashboard/</span> <span class="comment">← Dashboard sub-components [NEW]</span><br>
+    │ │ ├── <span class="new">Header.tsx</span> <span class="comment">← User info + Sign-out</span><br>
+    │ │ ├── <span class="new">Sidebar.tsx</span> <span class="comment">← Role badge + เมนูตาม Role</span><br>
+    │ │ ├── <span class="new">HeroBanner.tsx</span> <span class="comment">← Gradient summary</span><br>
+    │ │ ├── <span class="new">CategorySection.tsx</span> <span class="comment">← KPI category</span><br>
+    │ │ ├── <span class="new">ReportsSection.tsx</span> <span class="comment">← Export tools</span><br>
+    │ │ ├── <span class="new">ReviewerDashboard.tsx</span> <span class="comment">← Approve/Reject [NEW]</span><br>
+    │ │ └── <span class="new">AdminPanel.tsx</span> <span class="comment">← จัดการผู้ใช้ [NEW]</span><br>
+    │ └── <span class="dir">lib/</span><br>
+    │ ├── <span class="file">firebase.ts</span> <span class="comment">← Firebase config (env vars)</span><br>
+    │ ├── <span class="file">data-service.ts</span> <span class="comment">← CRUD + Review + SoftDelete + Admin (380+
+      บรรทัด)</span><br>
+    │ └── <span class="file">translations.ts</span> <span class="comment">← ภาษา TH/EN (60 บรรทัด)</span><br>
     ├── <span class="dir">db_design/</span> <span class="comment">← ข้อมูล Seed (JSON) 11 ไฟล์</span><br>
-    │   ├── <span class="file">kpi_master.json</span> <span class="comment">← รายการ KPI หลัก (23KB)</span><br>
-    │   ├── <span class="file">kpi_data_academic.json</span><br>
-    │   ├── <span class="file">kpi_data_strategic.json</span><br>
-    │   ├── <span class="file">kpi_data_workforce.json</span><br>
-    │   ├── <span class="file">kpi_data_narratives.json</span><br>
-    │   ├── <span class="file">input_forms.json</span> <span class="comment">← กำหนดฟอร์มการกรอก (21KB)</span><br>
-    │   ├── <span class="file">input_logs.json</span><br>
-    │   ├── <span class="file">departments.json</span><br>
-    │   ├── <span class="file">edpex_categories.json</span><br>
-    │   └── <span class="file">staff_users.json</span><br>
-    ├── <span class="dir">doc/</span> <span class="comment">← เอกสารประกอบ (MD) 9 ไฟล์</span><br>
+    ├── <span class="dir">doc/</span> <span class="comment">← เอกสารประกอบ (MD + HTML) 12 ไฟล์</span><br>
     ├── <span class="dir">source/</span> <span class="comment">← ไฟล์ต้นฉบับอ้างอิง (Excel/Word)</span><br>
     └── <span class="dir">public/</span> <span class="comment">← Static assets (SVG icons)</span>
   </div>
@@ -333,13 +483,35 @@ graph TD
   <div class="feature-grid">
     <div class="feature-card">
       <h4>📋 Dashboard</h4>
-      <p>แสดงภาพรวม KPI แบ่งเป็น 4 หมวด: วิชาการ, บุคลากร, โรงพยาบาล, ยุทธศาสตร์ พร้อม Dashboard Summary ตามปีการศึกษา และกราฟแนวโน้ม</p>
-      <span class="lines">page.tsx — 661 lines</span>
+      <p>แสดงภาพรวม KPI แบ่ง 4 หมวด พร้อม Dashboard Summary, กราฟแนวโน้ม, และ Strategic Objectives</p>
+      <span class="lines">page.tsx — 370+ lines</span>
     </div>
     <div class="feature-card">
       <h4>✏️ KPI Input Form</h4>
-      <p>ฟอร์มกรอกข้อมูล KPI แบบ Dynamic อ่านจาก JSON มี Validation, Confirm Dialog และบันทึกลง Firebase Firestore</p>
-      <span class="lines">KpiInputForm.tsx — 663 lines</span>
+      <p>ฟอร์มกรอกข้อมูล KPI แบบ Dynamic อ่านจาก JSON มี Validation, Confirm Dialog บันทึกด้วย email จริง</p>
+      <span class="lines">KpiInputForm.tsx</span>
+    </div>
+    <div class="feature-card">
+      <h4>🔐 Authentication<span class="new-badge">NEW v1.2</span></h4>
+      <p>Google Sign-In + Firebase Auth + Email Whitelist จาก Firestore + 3 Roles (user, reviewer, admin) + 2FA จาก
+        Google</p>
+      <span class="lines">AuthContext.tsx + LoginPage.tsx</span>
+    </div>
+    <div class="feature-card">
+      <h4>✅ Approval Workflow<span class="new-badge">NEW v1.2</span></h4>
+      <p>Reviewer Dashboard สำหรับ Approve/Reject/ส่งกลับแก้ไข ข้อมูลที่กรอก พร้อม rejection reason และ audit log</p>
+      <span class="lines">ReviewerDashboard.tsx</span>
+    </div>
+    <div class="feature-card">
+      <h4>🗑️ Soft Delete<span class="new-badge">NEW v1.2</span></h4>
+      <p>ลบข้อมูลแบบ soft delete (เปลี่ยน status → deleted) พร้อมเก็บ audit fields: deleted_by, deleted_at,
+        previous_status</p>
+      <span class="lines">data-service.ts</span>
+    </div>
+    <div class="feature-card">
+      <h4>👥 Admin Panel<span class="new-badge">NEW v1.2</span></h4>
+      <p>จัดการ authorized_users ผ่านหน้าเว็บ: เพิ่ม/ลบ/เปลี่ยน Role โดยไม่ต้องเข้า Firebase Console</p>
+      <span class="lines">AdminPanel.tsx</span>
     </div>
     <div class="feature-card">
       <h4>📄 Document Viewer</h4>
@@ -352,9 +524,9 @@ graph TD
       <span class="lines">DataExplorer.tsx — 212 lines</span>
     </div>
     <div class="feature-card">
-      <h4>🌱 Seed Page</h4>
-      <p>เครื่องมือสำหรับ Admin ใช้ Seed ข้อมูลตัวอย่าง, Clear ข้อมูล หรือ Re-seed ใหม่ทั้งหมดลง Firestore</p>
-      <span class="lines">seed/page.tsx — 364 lines</span>
+      <h4>🌱 Seed Page (Admin Only)</h4>
+      <p>เครื่องมือสำหรับ Admin ใช้ Seed/Clear ข้อมูลตัวอย่าง — มี Auth Guard ป้องกันเฉพาะ Admin เท่านั้น</p>
+      <span class="lines">seed/page.tsx</span>
     </div>
     <div class="feature-card">
       <h4>🌐 Bilingual (TH/EN)</h4>
@@ -376,9 +548,15 @@ graph LR
     D -->|handleGlobalExport| F["Excel / JSON"]
     E -->|export| F
 
+    G["LoginPage"] -->|signInWithGoogle| H["Firebase Auth"]
+    H -->|checkWhitelist| B
+    I["ReviewerDashboard"] -->|approve/reject| B
+    J["AdminPanel"] -->|CRUD users| B
+
     style B fill:#1e293b,stroke:#34d399,color:#34d399
     style D fill:#1e293b,stroke:#38bdf8,color:#38bdf8
     style F fill:#1e293b,stroke:#fb923c,color:#fb923c
+    style H fill:#1e293b,stroke:#f87171,color:#f87171
     </pre>
   </div>
 
@@ -386,33 +564,98 @@ graph LR
     <h3>Firebase Collections</h3>
     <table>
       <thead>
-        <tr><th>Collection</th><th>คำอธิบาย</th></tr>
+        <tr>
+          <th>Collection</th>
+          <th>คำอธิบาย</th>
+          <th>สถานะ</th>
+        </tr>
       </thead>
       <tbody>
-        <tr><td><code>kpi_master</code></td><td>รายการ KPI หลัก (ชื่อ, หน่วย, เป้าหมาย, aggregation type)</td></tr>
-        <tr><td><code>kpi_entries</code></td><td>ค่า KPI ที่กรอก (ผูกกับ kpi_id, ปีการศึกษา, งวด)</td></tr>
+        <tr>
+          <td><code>kpi_master</code></td>
+          <td>รายการ KPI หลัก 61 รายการ (ชื่อ, หน่วย, เป้าหมาย, aggregation type)</td>
+          <td>✅</td>
+        </tr>
+        <tr>
+          <td><code>kpi_entries</code></td>
+          <td>ค่า KPI ที่กรอก (kpi_id, ปี, งวด + review & soft delete audit fields)</td>
+          <td>✅</td>
+        </tr>
+        <tr>
+          <td><code>authorized_users</code></td>
+          <td>รายชื่อ email ที่มีสิทธิ์เข้าระบบ + role (user/reviewer/admin)</td>
+          <td>✅</td>
+        </tr>
       </tbody>
     </table>
   </div>
 
   <div class="card">
-    <h3>data-service.ts — ฟังก์ชันหลัก (310 บรรทัด)</h3>
+    <h3>data-service.ts — ฟังก์ชันหลัก (380+ บรรทัด)</h3>
     <table>
       <thead>
-        <tr><th>ฟังก์ชัน</th><th>คำอธิบาย</th></tr>
+        <tr>
+          <th>ฟังก์ชัน</th>
+          <th>คำอธิบาย</th>
+        </tr>
       </thead>
       <tbody>
-        <tr><td><code>getAllKpiMaster()</code></td><td>ดึงรายการ KPI Master ทั้งหมด</td></tr>
-        <tr><td><code>getKpiMasterByCategory()</code></td><td>ดึง KPI ตามหมวดหมู่</td></tr>
-        <tr><td><code>getKpiEntries()</code></td><td>ดึง KPI Entries พร้อม Filter (kpiId, year, period)</td></tr>
-        <tr><td><code>getAggregatedValue()</code></td><td>คำนวณค่า sum / avg / latest / count / append</td></tr>
-        <tr><td><code>getCategoryOverview()</code></td><td>ดึงภาพรวมตามหมวด (สำหรับ Dashboard)</td></tr>
-        <tr><td><code>getDashboardSummary()</code></td><td>สรุปสถิติรวม KPI ทุกหมวดตามปี</td></tr>
-        <tr><td><code>addKpiEntry()</code></td><td>เพิ่มข้อมูล KPI ใหม่ลง Firestore</td></tr>
-        <tr><td><code>getExportData()</code></td><td>ดึงข้อมูลสำหรับ Export (Excel/JSON)</td></tr>
-        <tr><td><code>seedKpiMaster()</code></td><td>Seed ข้อมูล KPI Master จาก JSON</td></tr>
-        <tr><td><code>seedKpiEntries()</code></td><td>Seed ข้อมูล KPI Entries ตัวอย่าง</td></tr>
-        <tr><td><code>clearCollection()</code></td><td>ลบข้อมูลทั้งหมดใน Collection</td></tr>
+        <tr>
+          <td><code>getAllKpiMaster()</code></td>
+          <td>ดึงรายการ KPI Master ทั้งหมด</td>
+        </tr>
+        <tr>
+          <td><code>getKpiEntries()</code></td>
+          <td>ดึง KPI Entries พร้อม Filter (kpiId, year, period)</td>
+        </tr>
+        <tr>
+          <td><code>getAggregatedValue()</code></td>
+          <td>คำนวณค่า sum / avg / latest / count / append</td>
+        </tr>
+        <tr>
+          <td><code>getDashboardSummary()</code></td>
+          <td>สรุปสถิติรวม KPI ทุกหมวดตามปี</td>
+        </tr>
+        <tr>
+          <td><code>addKpiEntry()</code></td>
+          <td>เพิ่มข้อมูล KPI ใหม่ (submitted_by = email จริง)</td>
+        </tr>
+        <tr>
+          <td><code>updateKpiEntryStatus()</code></td>
+          <td>✅ Approve/Reject/Revision + reviewer audit fields</td>
+        </tr>
+        <tr>
+          <td><code>getPendingEntries()</code></td>
+          <td>✅ ดึงรายการรอตรวจสอบ</td>
+        </tr>
+        <tr>
+          <td><code>softDeleteEntry()</code></td>
+          <td>✅ Soft delete พร้อม audit (deleted_by, previous_status)</td>
+        </tr>
+        <tr>
+          <td><code>getAuthorizedUsers()</code></td>
+          <td>✅ ดึงรายชื่อผู้ใช้ที่มีสิทธิ์</td>
+        </tr>
+        <tr>
+          <td><code>addAuthorizedUser()</code></td>
+          <td>✅ เพิ่มผู้ใช้ใหม่</td>
+        </tr>
+        <tr>
+          <td><code>updateUserRole()</code></td>
+          <td>✅ เปลี่ยน Role ผู้ใช้</td>
+        </tr>
+        <tr>
+          <td><code>removeAuthorizedUser()</code></td>
+          <td>✅ ลบผู้ใช้ออกจากระบบ</td>
+        </tr>
+        <tr>
+          <td><code>getExportData()</code></td>
+          <td>ดึงข้อมูลสำหรับ Export (Excel/JSON)</td>
+        </tr>
+        <tr>
+          <td><code>seedKpiMaster()</code></td>
+          <td>Seed ข้อมูล KPI Master จาก JSON</td>
+        </tr>
       </tbody>
     </table>
   </div>
@@ -422,16 +665,41 @@ graph LR
   <div class="card">
     <table>
       <thead>
-        <tr><th>รายการ</th><th>รายละเอียด</th></tr>
+        <tr>
+          <th>รายการ</th>
+          <th>รายละเอียด</th>
+        </tr>
       </thead>
       <tbody>
-        <tr><td><strong>Platform</strong></td><td>Vercel</td></tr>
-        <tr><td><strong>Branch</strong></td><td><code>main</code></td></tr>
-        <tr><td><strong>Auto Deploy</strong></td><td>✅ Push ไป GitHub → Vercel Build อัตโนมัติ</td></tr>
-        <tr><td><strong>URL</strong></td><td><a href="https://mis-edpex.vercel.app" target="_blank" style="color:var(--accent)">https://mis-edpex.vercel.app</a></td></tr>
-        <tr><td><strong>Environment Variables</strong></td><td>Firebase keys ตั้งค่าใน Vercel Dashboard (6 ตัวแปร)</td></tr>
-        <tr><td><strong>Node.js</strong></td><td>v24.11.1</td></tr>
-        <tr><td><strong>npm</strong></td><td>v11.6.2</td></tr>
+        <tr>
+          <td><strong>Platform</strong></td>
+          <td>Vercel</td>
+        </tr>
+        <tr>
+          <td><strong>Branch</strong></td>
+          <td><code>main</code></td>
+        </tr>
+        <tr>
+          <td><strong>Auto Deploy</strong></td>
+          <td>✅ Push ไป GitHub → Vercel Build อัตโนมัติ</td>
+        </tr>
+        <tr>
+          <td><strong>URL</strong></td>
+          <td><a href="https://mis-edpex.vercel.app" target="_blank"
+              style="color:var(--accent)">https://mis-edpex.vercel.app</a></td>
+        </tr>
+        <tr>
+          <td><strong>Environment Variables</strong></td>
+          <td>Firebase keys ตั้งค่าใน Vercel Dashboard (6 ตัวแปร)</td>
+        </tr>
+        <tr>
+          <td><strong>Node.js</strong></td>
+          <td>v24.11.1</td>
+        </tr>
+        <tr>
+          <td><strong>npm</strong></td>
+          <td>v11.6.2</td>
+        </tr>
       </tbody>
     </table>
   </div>
@@ -440,52 +708,180 @@ graph LR
     <strong>💡 วิธีรันโปรเจค:</strong><br>
     1. <code>npm install</code> — ติดตั้ง Dependencies (ครั้งแรก)<br>
     2. <code>npm run dev</code> — เริ่ม Development Server<br>
-    3. เปิด <a href="http://localhost:3000" style="color:var(--accent)">http://localhost:3000</a>
+    3. เปิด <a href="http://localhost:3000" style="color:var(--accent)">http://localhost:3000</a><br>
+    4. Login ด้วย Google Account ที่ได้รับอนุญาต (@ku.th)
   </div>
 
   <!-- ═══════════════════════════════════════════════════ -->
-  <h2><span class="emoji">💡</span> 7. Recommendations</h2>
+  <h2><span class="emoji">📊</span> 7. Dashboard Chart Logic</h2>
   <div class="card">
     <table>
       <thead>
-        <tr><th>#</th><th>ข้อเสนอแนะ</th><th>ไฟล์ที่เกี่ยวข้อง</th><th>ระดับ</th></tr>
+        <tr>
+          <th>Dashboard</th>
+          <th>Chart Name</th>
+          <th>KPI IDs</th>
+          <th>Logic / Type</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Academic</strong></td>
+          <td>Licensure & OSCE</td>
+          <td><code>7.1.1</code>, <code>7.1.2</code></td>
+          <td>Multi-line Trend (Pass %)</td>
+        </tr>
+        <tr>
+          <td><strong>Academic</strong></td>
+          <td>Research Funding</td>
+          <td><code>7.1.16</code>-<code>7.1.19</code></td>
+          <td>Grouped Bar (Internal vs External)</td>
+        </tr>
+        <tr>
+          <td><strong>Academic</strong></td>
+          <td>Retention Rate</td>
+          <td><code>7.1.14</code></td>
+          <td>Line Chart (Student Retention)</td>
+        </tr>
+        <tr>
+          <td><strong>Academic</strong></td>
+          <td>Safety Incidents</td>
+          <td><code>7.1.11</code></td>
+          <td>Bar Chart (Count)</td>
+        </tr>
+        <tr>
+          <td><strong>Hospital</strong></td>
+          <td>3-Area Satisfaction</td>
+          <td><code>7.2.6</code>, <code>7.2.9</code>, <code>7.2.10</code></td>
+          <td>Radar/Bar Chart (Score 1-5)</td>
+        </tr>
+        <tr>
+          <td><strong>Hospital</strong></td>
+          <td>Projects & Grants</td>
+          <td><code>7.2.1</code>, <code>7.2.2</code></td>
+          <td>Bar Chart (Count)</td>
+        </tr>
+        <tr>
+          <td><strong>Hospital</strong></td>
+          <td>Applicants</td>
+          <td><code>7.2.5</code></td>
+          <td>Horizontal Bar (By Program)</td>
+        </tr>
+        <tr>
+          <td><strong>Staff</strong></td>
+          <td>Sick Leave</td>
+          <td><code>7.3.4</code></td>
+          <td>Bar Chart (Avg Days)</td>
+        </tr>
+        <tr>
+          <td><strong>Staff</strong></td>
+          <td>Engagement</td>
+          <td><code>7.3.10</code></td>
+          <td>Radar Chart (By Dimension)</td>
+        </tr>
+        <tr>
+          <td><strong>Staff</strong></td>
+          <td>Turnover</td>
+          <td><code>7.3.11</code></td>
+          <td>Bar Chart (By Tenure)</td>
+        </tr>
+        <tr>
+          <td><strong>Strategic</strong></td>
+          <td>SO Progress</td>
+          <td><code>7.4.4</code></td>
+          <td>Horizontal Bar (% Complete)</td>
+        </tr>
+        <tr>
+          <td><strong>Strategic</strong></td>
+          <td>Governance</td>
+          <td><code>7.4.11</code></td>
+          <td>Radar Chart (Score 1-5)</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════ -->
+  <h2><span class="emoji">💡</span> 8. Implementation Status</h2>
+  <div class="card">
+    <table>
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>ข้อเสนอแนะ (จาก v1.0)</th>
+          <th>สถานะ</th>
+        </tr>
       </thead>
       <tbody>
         <tr>
           <td>1</td>
-          <td><code>layout.tsx</code> ยังใช้ metadata เป็น "Create Next App" → ควรเปลี่ยนเป็นชื่อระบบจริง</td>
-          <td><code>src/app/layout.tsx</code></td>
-          <td><span class="badge badge-easy">ง่าย</span></td>
+          <td><code>layout.tsx</code> ยังใช้ metadata เป็น "Create Next App" → เปลี่ยนเป็นชื่อระบบจริง</td>
+          <td><span class="badge badge-done">✅ แก้แล้ว</span></td>
         </tr>
         <tr>
           <td>2</td>
-          <td><code>page.tsx</code> มีขนาดใหญ่ (661 บรรทัด) → ควรแยก Section ย่อยเป็น Component</td>
-          <td><code>src/app/page.tsx</code></td>
-          <td><span class="badge badge-medium">ปานกลาง</span></td>
+          <td><code>page.tsx</code> มีขนาดใหญ่ → แยก Section ย่อยเป็น Component</td>
+          <td><span class="badge badge-done">✅ แยกแล้ว (6 components)</span></td>
         </tr>
         <tr>
           <td>3</td>
-          <td><code>KpiInputForm.tsx</code> มีขนาดใหญ่ (663 บรรทัด) → ควรแยก Sub-components</td>
-          <td><code>src/components/KpiInputForm.tsx</code></td>
-          <td><span class="badge badge-medium">ปานกลาง</span></td>
+          <td><code>KpiInputForm.tsx</code> มีขนาดใหญ่ → แยก Sub-components</td>
+          <td><span class="badge badge-done">✅ แยกแล้ว (4 sub-components)</span></td>
         </tr>
         <tr>
           <td>4</td>
-          <td>ยังไม่มีระบบ Authentication → ควรเพิ่ม Firebase Auth เพื่อควบคุมสิทธิ์การกรอกข้อมูล</td>
-          <td><code>src/lib/firebase.ts</code></td>
-          <td><span class="badge badge-important">สำคัญ</span></td>
+          <td>ยังไม่มีระบบ Authentication → เพิ่ม Firebase Auth</td>
+          <td><span class="badge badge-done">✅ Google Sign-In + Whitelist</span></td>
         </tr>
         <tr>
           <td>5</td>
-          <td>หน้า <code>/seed</code> ไม่มีการป้องกัน → ใครก็เข้าได้ ควรเพิ่ม Guard หรือ Auth</td>
-          <td><code>src/app/seed/page.tsx</code></td>
-          <td><span class="badge badge-important">สำคัญ</span></td>
+          <td>หน้า <code>/seed</code> ไม่มีการป้องกัน → เพิ่ม Guard</td>
+          <td><span class="badge badge-done">✅ Admin Only Guard</span></td>
         </tr>
         <tr>
           <td>6</td>
-          <td>ยังไม่มี Error Boundary → กรณี Firebase ล่ม หน้าเว็บจะค้าง</td>
-          <td><code>src/app/</code></td>
-          <td><span class="badge badge-medium">ปานกลาง</span></td>
+          <td>ยังไม่มี Error Boundary → กรณี Firebase ล่ม</td>
+          <td><span class="badge badge-done">✅ error.tsx + global-error.tsx</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="card">
+    <h3>Phase B — ฟีเจอร์ใหม่ (v1.2)</h3>
+    <table>
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>ฟีเจอร์</th>
+          <th>Component</th>
+          <th>สถานะ</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>B1</td>
+          <td>Role-based UI + Fix submitted_by → email จริง</td>
+          <td><code>Sidebar.tsx</code>, <code>KpiInputForm.tsx</code></td>
+          <td><span class="badge badge-done">✅</span></td>
+        </tr>
+        <tr>
+          <td>B2</td>
+          <td>Approval Workflow (Approve/Reject/Revision)</td>
+          <td><code>ReviewerDashboard.tsx</code></td>
+          <td><span class="badge badge-done">✅</span></td>
+        </tr>
+        <tr>
+          <td>B3</td>
+          <td>Soft Delete + Audit Log</td>
+          <td><code>data-service.ts</code></td>
+          <td><span class="badge badge-done">✅</span></td>
+        </tr>
+        <tr>
+          <td>B4</td>
+          <td>Admin Panel (User CRUD)</td>
+          <td><code>AdminPanel.tsx</code></td>
+          <td><span class="badge badge-done">✅</span></td>
         </tr>
       </tbody>
     </table>
@@ -493,7 +889,7 @@ graph LR
 
   <!-- ═══════════════════════════════════════════════════ -->
   <div class="footer">
-    KUVMIS — Project Analysis • Generated on 10 Feb 2569 • Faculty of Veterinary Medicine, Kasetsart University
+    KUVMIS v1.2 — Project Analysis • Updated 11 Feb 2569 • Faculty of Veterinary Medicine, Kasetsart University
   </div>
 
   <script>
@@ -513,4 +909,5 @@ graph LR
   </script>
 
 </body>
+
 </html>
