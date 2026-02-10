@@ -3,6 +3,8 @@
 import { useState } from "react";
 import { seedKpiMaster, seedKpiEntries, clearCollection } from "@/lib/data-service";
 import type { KpiMaster } from "@/lib/data-service";
+import { useAuth } from "@/contexts/AuthContext";
+import { ShieldX, Loader2 } from "lucide-react";
 import kpiMasterRaw from "../../../db_design/kpi_master.json";
 
 // ─── Aggregation map by data_pattern ───────────────────────────
@@ -25,33 +27,33 @@ function generateSampleEntries() {
   const now = new Date().toISOString();
 
   const yearData: Record<string, number[]> = {
-    "7.1.1":  [76.3, 78.5, 79.2, 80.1, 81.7],
-    "7.1.2":  [70.0, 72.5, 75.0, 77.3, 79.8],
-    "7.1.3":  [150, 165, 180, 192, 210],
-    "7.1.7":  [800, 850, 920, 980, 1050],
+    "7.1.1": [76.3, 78.5, 79.2, 80.1, 81.7],
+    "7.1.2": [70.0, 72.5, 75.0, 77.3, 79.8],
+    "7.1.3": [150, 165, 180, 192, 210],
+    "7.1.7": [800, 850, 920, 980, 1050],
     "7.1.13": [85, 90, 95, 98, 105],
     "7.1.14": [92.5, 93.0, 93.8, 94.2, 95.1],
     "7.1.16": [15, 17, 19, 21, 23],
     "7.1.17": [3500000, 4200000, 4800000, 5100000, 5500000],
     "7.1.18": [6, 8, 9, 10, 12],
     "7.1.19": [7000000, 8500000, 9200000, 10500000, 11200000],
-    "7.2.3":  [85, 88, 90, 93, 95],
-    "7.2.6":  [3.8, 3.9, 4.0, 4.1, 4.2],
-    "7.2.7":  [12000, 13500, 14200, 15000, 15800],
-    "7.2.8":  [1200000, 1500000, 1800000, 2100000, 2400000],
-    "7.2.9":  [4.2, 4.3, 4.4, 4.5, 4.6],
+    "7.2.3": [85, 88, 90, 93, 95],
+    "7.2.6": [3.8, 3.9, 4.0, 4.1, 4.2],
+    "7.2.7": [12000, 13500, 14200, 15000, 15800],
+    "7.2.8": [1200000, 1500000, 1800000, 2100000, 2400000],
+    "7.2.9": [4.2, 4.3, 4.4, 4.5, 4.6],
     "7.2.10": [3.9, 4.0, 4.1, 4.1, 4.2],
     "7.2.11": [450, 480, 520, 550, 600],
     "7.2.14": [120, 145, 160, 180, 210],
     "7.2.12": [200, 220, 250, 280, 310],
-    "7.3.3":  [320, 325, 330, 335, 340],
-    "7.3.4":  [5.2, 4.8, 4.5, 4.2, 3.9],
-    "7.3.5":  [2, 1, 1, 0, 0],
-    "7.3.7":  [8, 9, 10, 11, 12],
-    "7.3.9":  [88, 89, 90, 91, 92],
+    "7.3.3": [320, 325, 330, 335, 340],
+    "7.3.4": [5.2, 4.8, 4.5, 4.2, 3.9],
+    "7.3.5": [2, 1, 1, 0, 0],
+    "7.3.7": [8, 9, 10, 11, 12],
+    "7.3.9": [88, 89, 90, 91, 92],
     "7.3.10": [3.8, 3.9, 4.0, 4.1, 4.33],
-    "7.4.5":  [3, 2, 1, 0, 0],
-    "7.4.6":  [0, 0, 0, 0, 0],
+    "7.4.5": [3, 2, 1, 0, 0],
+    "7.4.6": [0, 0, 0, 0, 0],
     "7.4.11": [3.8, 4.0, 4.2, 4.3, 4.5],
     "7.4.12": [1, 1, 2, 2, 3],
     "7.4.14": [4, 5, 6, 7, 8],
@@ -73,9 +75,9 @@ function generateSampleEntries() {
 
   // Quarterly data (2568 only)
   const quarterlyKpis: Record<string, number[]> = {
-    "7.1.1":  [78.5, 80.2, 81.7, 86.4],
-    "7.3.4":  [4.5, 3.8, 3.2, 4.1],
-    "7.2.7":  [3800, 4100, 3900, 4000],
+    "7.1.1": [78.5, 80.2, 81.7, 86.4],
+    "7.3.4": [4.5, 3.8, 3.2, 4.1],
+    "7.2.7": [3800, 4100, 3900, 4000],
   };
   for (const [kpiId, values] of Object.entries(quarterlyKpis)) {
     const master = (kpiMasterRaw as any[]).find((k: any) => k.kpi_id === kpiId);
@@ -157,7 +159,7 @@ function generateSampleEntries() {
 
   // Resignation data (7.3.11)
   const resignationBands = ["0-3 ปี", "3-7 ปี", "7+ ปี"];
-  const resignationVals = [[3,2,2,1,1], [1,1,0,1,0], [0,1,0,0,0]];
+  const resignationVals = [[3, 2, 2, 1, 1], [1, 1, 0, 1, 0], [0, 1, 0, 0, 0]];
   for (let b = 0; b < resignationBands.length; b++) {
     for (let i = 0; i < years.length; i++) {
       entries.push({
@@ -174,11 +176,40 @@ function generateSampleEntries() {
 
 // ─── Seed Page Component ───────────────────────────────────────
 export default function SeedPage() {
+  const { user, userRole, loading: authLoading } = useAuth();
   const [logs, setLogs] = useState<string[]>([]);
   const [isRunning, setIsRunning] = useState(false);
   const [masterCount, setMasterCount] = useState(0);
   const [entryCount, setEntryCount] = useState(0);
   const [mode, setMode] = useState<"idle" | "seed" | "clear" | "reseed">("idle");
+
+  // ── Auth Guard: Admin only ──
+  if (authLoading) {
+    return (
+      <div className="min-h-screen bg-slate-50 flex items-center justify-center">
+        <Loader2 size={32} className="animate-spin text-blue-600" />
+      </div>
+    );
+  }
+
+  if (!user || userRole !== "admin") {
+    return (
+      <div className="min-h-screen bg-slate-50 flex items-center justify-center p-8">
+        <div className="bg-white rounded-3xl shadow-xl border border-slate-200 p-10 max-w-md w-full text-center space-y-4">
+          <div className="w-16 h-16 bg-red-100 rounded-2xl flex items-center justify-center mx-auto">
+            <ShieldX size={32} className="text-red-500" />
+          </div>
+          <h1 className="text-xl font-bold text-slate-800">ไม่มีสิทธิ์เข้าถึง</h1>
+          <p className="text-sm text-slate-500">
+            หน้านี้สำหรับ Admin เท่านั้น
+          </p>
+          <a href="/" className="inline-block mt-4 text-sm text-blue-600 hover:underline">
+            ← กลับไปหน้า Dashboard
+          </a>
+        </div>
+      </div>
+    );
+  }
 
   const log = (msg: string) => setLogs((prev) => [...prev, `[${new Date().toLocaleTimeString("th-TH")}] ${msg}`]);
 
@@ -288,10 +319,9 @@ export default function SeedPage() {
           <button
             onClick={handleSeed}
             disabled={isRunning}
-            className={`py-4 rounded-2xl font-bold transition-all ${
-              isRunning ? "bg-slate-200 text-slate-400 cursor-not-allowed"
-                : "bg-blue-600 text-white hover:bg-blue-700 shadow-lg shadow-blue-600/20 hover:scale-[1.02] active:scale-95"
-            }`}
+            className={`py-4 rounded-2xl font-bold transition-all ${isRunning ? "bg-slate-200 text-slate-400 cursor-not-allowed"
+              : "bg-blue-600 text-white hover:bg-blue-700 shadow-lg shadow-blue-600/20 hover:scale-[1.02] active:scale-95"
+              }`}
           >
             {isRunning && mode === "seed" ? "⏳ กำลัง seed..." : "🚀 Seed เพิ่ม"}
           </button>
@@ -299,10 +329,9 @@ export default function SeedPage() {
           <button
             onClick={handleClear}
             disabled={isRunning}
-            className={`py-4 rounded-2xl font-bold transition-all ${
-              isRunning ? "bg-slate-200 text-slate-400 cursor-not-allowed"
-                : "bg-red-500 text-white hover:bg-red-600 shadow-lg shadow-red-500/20 hover:scale-[1.02] active:scale-95"
-            }`}
+            className={`py-4 rounded-2xl font-bold transition-all ${isRunning ? "bg-slate-200 text-slate-400 cursor-not-allowed"
+              : "bg-red-500 text-white hover:bg-red-600 shadow-lg shadow-red-500/20 hover:scale-[1.02] active:scale-95"
+              }`}
           >
             {isRunning && mode === "clear" ? "⏳ กำลังลบ..." : "🗑️ ล้างข้อมูลทั้งหมด"}
           </button>
@@ -310,10 +339,9 @@ export default function SeedPage() {
           <button
             onClick={handleReseed}
             disabled={isRunning}
-            className={`py-4 rounded-2xl font-bold transition-all ${
-              isRunning ? "bg-slate-200 text-slate-400 cursor-not-allowed"
-                : "bg-emerald-600 text-white hover:bg-emerald-700 shadow-lg shadow-emerald-600/20 hover:scale-[1.02] active:scale-95"
-            }`}
+            className={`py-4 rounded-2xl font-bold transition-all ${isRunning ? "bg-slate-200 text-slate-400 cursor-not-allowed"
+              : "bg-emerald-600 text-white hover:bg-emerald-700 shadow-lg shadow-emerald-600/20 hover:scale-[1.02] active:scale-95"
+              }`}
           >
             {isRunning && mode === "reseed" ? "⏳ กำลัง re-seed..." : "♻️ ล้าง + Seed ใหม่"}
           </button>
