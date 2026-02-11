@@ -302,7 +302,7 @@ export default function Dashboard() {
                     icon={kpi.icon}
                     iconColor={kpi.color}
                     iconBg={kpi.bg}
-                    logic={t(kpi.logicKey as TranslationKey) || kpi.logic}
+                    logic={kpi.logic}
                     source={kpi.source}
                     isLoading={dataLoading}
                   />
