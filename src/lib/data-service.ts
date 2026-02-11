@@ -331,7 +331,14 @@ export async function getLoginLogs(limitCount?: number): Promise<LoginLog[]> {
   if (limitCount) constraints.push(firestoreLimit(limitCount));
   const q = query(collection(db, "login_logs"), ...constraints);
   const snap = await getDocs(q);
-  return snap.docs.map(d => ({ id: d.id, ...d.data() } as LoginLog));
+  return snap.docs.map(d => {
+    const data = d.data();
+    // Convert Firestore Timestamp to ISO string for safe Date parsing in UI
+    if (data.timestamp && typeof data.timestamp.toDate === "function") {
+      data.timestamp = data.timestamp.toDate().toISOString();
+    }
+    return { id: d.id, ...data } as LoginLog;
+  });
 }
 
 // ─── Dashboard Summary ────────────────────────────────────────
