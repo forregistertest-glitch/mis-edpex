@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>KUVMIS — Project Analysis v1.2</title>
+  <title>KUVMIS — Project Analysis v1.4</title>
   <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
   <style>
     :root {
@@ -319,7 +319,7 @@
 
 <body>
 
-  <h1>📊 KUVMIS — Project Analysis v1.2</h1>
+  <h1>📊 KUVMIS — Project Analysis v1.4</h1>
   <div class="subtitle">
     <strong>ระบบ:</strong> KUVMIS — ระบบสารสนเทศเพื่อการจัดการ (MIS) และการวิเคราะห์ KPI (EdPEx)<br>
     <strong>หน่วยงาน:</strong> คณะสัตวแพทยศาสตร์ มหาวิทยาลัยเกษตรศาสตร์<br>
@@ -327,8 +327,8 @@
     <strong>วันที่วิเคราะห์:</strong> 11 กุมภาพันธ์ 2569 (ปรับปรุงจาก 10 ก.พ. 2569)
   </div>
 
-  <div class="subtitle">Last Updated: 2026-02-11T08:48:18+07:00</div>
-  <div class="subtitle">Version 1.3.0</div>
+  <div class="subtitle">Last Updated: 2026-02-12T00:30:00+07:00</div>
+  <div class="subtitle">Version 1.4.0</div>
 
   <div class="grid">
     <!-- Status Card -->
@@ -527,24 +527,24 @@ graph TD
       <span class="lines">KpiInputForm.tsx</span>
     </div>
     <div class="feature-card">
-      <h4>🔐 Authentication<span class="new-badge">NEW v1.2</span></h4>
+      <h4>🔐 Authentication<span class="new-badge">NEW v1.4</span></h4>
       <p>Google Sign-In + Firebase Auth + Email Whitelist จาก Firestore + 3 Roles (user, reviewer, admin) + 2FA จาก
         Google</p>
       <span class="lines">AuthContext.tsx + LoginPage.tsx</span>
     </div>
     <div class="feature-card">
-      <h4>✅ Approval Workflow<span class="new-badge">NEW v1.2</span></h4>
+      <h4>✅ Approval Workflow<span class="new-badge">NEW v1.4</span></h4>
       <p>Reviewer Dashboard สำหรับ Approve/Reject/ส่งกลับแก้ไข ข้อมูลที่กรอก พร้อม rejection reason และ audit log</p>
       <span class="lines">ReviewerDashboard.tsx</span>
     </div>
     <div class="feature-card">
-      <h4>🗑️ Soft Delete<span class="new-badge">NEW v1.2</span></h4>
+      <h4>🗑️ Soft Delete<span class="new-badge">NEW v1.4</span></h4>
       <p>ลบข้อมูลแบบ soft delete (เปลี่ยน status → deleted) พร้อมเก็บ audit fields: deleted_by, deleted_at,
         previous_status</p>
       <span class="lines">data-service.ts</span>
     </div>
     <div class="feature-card">
-      <h4>👥 Admin Panel<span class="new-badge">NEW v1.2</span></h4>
+      <h4>👥 Admin Panel<span class="new-badge">NEW v1.4</span></h4>
       <p>จัดการ authorized_users ผ่านหน้าเว็บ: เพิ่ม/ลบ/เปลี่ยน Role โดยไม่ต้องเข้า Firebase Console</p>
       <span class="lines">AdminPanel.tsx</span>
     </div>
@@ -621,6 +621,11 @@ graph LR
           <td>รายชื่อ email ที่มีสิทธิ์เข้าระบบ + role (user/reviewer/admin)</td>
           <td>✅</td>
         </tr>
+        <tr>
+          <td><code>login_logs</code></td>
+          <td>บันทึกการเข้าใช้งาน (email, IP, user agent, geo location)</td>
+          <td>✅</td>
+        </tr>
       </tbody>
     </table>
   </div>
@@ -682,6 +687,14 @@ graph LR
         <tr>
           <td><code>removeAuthorizedUser()</code></td>
           <td>✅ ลบผู้ใช้ออกจากระบบ</td>
+        </tr>
+        <tr>
+          <td><code>addLoginLog()</code></td>
+          <td>✅ บันทึก Login Log พร้อม IP + Geolocation</td>
+        </tr>
+        <tr>
+          <td><code>getLoginLogs()</code></td>
+          <td>✅ ดึงประวัติการเข้าใช้งานทั้งหมด</td>
         </tr>
         <tr>
           <td><code>getExportData()</code></td>
@@ -883,7 +896,7 @@ graph LR
   </div>
 
   <div class="card">
-    <h3>Phase B — ฟีเจอร์ใหม่ (v1.2)</h3>
+    <h3>Phase B — ฟีเจอร์ใหม่ (v1.4)</h3>
     <table>
       <thead>
         <tr>
@@ -924,7 +937,7 @@ graph LR
 
   <!-- ═══════════════════════════════════════════════════ -->
   <div class="footer">
-    KUVMIS v1.2 — Project Analysis • Updated 11 Feb 2569 • Faculty of Veterinary Medicine, Kasetsart University
+    KUVMIS v1.4 — Project Analysis • Updated 12 Feb 2569 • Faculty of Veterinary Medicine, Kasetsart University
   </div>
 
   <script>

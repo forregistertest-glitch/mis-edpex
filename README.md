@@ -1,36 +1,104 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# KUVMIS — ระบบสารสนเทศเพื่อการจัดการ (MIS)
 
-## Getting Started
+> **ระบบจัดการตัวชี้วัด EdPEx สำหรับคณะสัตวแพทยศาสตร์ มหาวิทยาลัยเกษตรศาสตร์**
 
-First, run the development server:
+| Field | Value |
+|:------|:------|
+| **Version** | 1.4.0 |
+| **URL** | [https://mis-edpex.vercel.app](https://mis-edpex.vercel.app) |
+| **Platform** | Vercel (Auto Deploy from `main` branch) |
+| **License** | Internal Use Only |
+
+---
+
+## 🛠 Technology Stack
+
+| Technology | Version | Role |
+|:-----------|:--------|:-----|
+| Next.js | 16.x (Turbopack) | Framework (App Router) |
+| React | 19.x | UI Library |
+| TypeScript | ^5 | Type-safe Language |
+| Tailwind CSS | ^4 | Styling |
+| Firebase Firestore | ^12.9.0 | NoSQL Database |
+| Firebase Auth | ^12.9.0 | Authentication (Google Sign-In) |
+| Chart.js + react-chartjs-2 | latest | Data Visualization |
+| SheetJS (XLSX) | ^0.18.5 | Excel Export |
+| Lucide React | ^0.563.0 | Icons |
+
+---
+
+## ✨ Features
+
+- 📊 **Executive Dashboard** — ภาพรวม KPI 4 หมวด พร้อมกราฟแนวโน้ม
+- ✏️ **KPI Input Forms** — 7 ประเภทฟอร์มรองรับข้อมูลหลากหลาย
+- 🔐 **Authentication** — Google Sign-In + Email Whitelist + 3 Roles (user/reviewer/admin)
+- ✅ **Approval Workflow** — Reviewer สามารถ Approve/Reject/ส่งกลับแก้ไข
+- 👥 **Admin Panel** — จัดการผู้ใช้ + บันทึกการเข้าใช้งาน (Login Logs)
+- 📍 **IP Geolocation** — แสดงจังหวัด + ISP ของผู้เข้าใช้งาน
+- 📈 **Annual Report** — เปรียบเทียบผลกับเป้าหมายอัตโนมัติ
+- 📄 **Document Viewer** — แสดงเอกสาร Markdown ในระบบ
+- 📊 **Data Explorer** — ตาราง + Export (Excel / JSON / CSV)
+- 🌐 **Bilingual** — รองรับ ภาษาไทย / English
+
+---
+
+## 🚀 Getting Started
 
 ```bash
+# Install dependencies
+npm install
+
+# Start development server
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+
+# Open in browser
+open http://localhost:3000
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+> **Note:** ต้องมี Firebase Environment Variables ตั้งค่าใน `.env.local`
+> ดูรายละเอียดใน `doc/database_design.md`
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+---
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## 📁 Project Structure
 
-## Learn More
+```
+mis-edpex/
+├── src/
+│   ├── app/          ← Pages + API Routes
+│   ├── contexts/     ← AuthContext (Firebase Auth)
+│   ├── components/   ← UI Components
+│   └── lib/          ← data-service, firebase, utils
+├── db_design/        ← JSON blueprints (Seed Data)
+├── doc/              ← Documentation (14 files)
+├── source/           ← Reference files (Excel/Word)
+└── public/           ← Static assets
+```
 
-To learn more about Next.js, take a look at the following resources:
+---
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## 📚 Documentation
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+เอกสารทั้งหมดอยู่ใน `doc/` folder:
 
-## Deploy on Vercel
+| Doc ID | File | Description |
+|:-------|:-----|:------------|
+| DOC-001 | `app_architecture.md` | Software Architecture |
+| DOC-002 | `user_guide.md` | คู่มือการใช้งาน |
+| DOC-003 | `features_list.md` | รายการ Features |
+| DOC-004 | `data_dictionary.md` | Data Dictionary & Schema |
+| DOC-005 | `database_design.md` | Database Design |
+| DOC-006 | `input_manual.md` | คู่มือกรอกข้อมูล |
+| DOC-007 | `qa.md` | Data QA & Authenticity |
+| DOC-008 | `auth_and_workflow.md` | Auth & Approval Workflow |
+| DOC-009 | `kpi_master_data.md` | KPI Master Data |
+| DOC-010 | `performance_seed_data.md` | Seed Data Description |
+| DOC-011 | `firebase_capacity.md` | Firebase Capacity Plan |
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+---
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## 👥 Team
+
+- **Developer:** KUVMIS Development Team
+- **Organization:** คณะสัตวแพทยศาสตร์ มหาวิทยาลัยเกษตรศาสตร์
+- **Contact:** nipon.w@ku.th

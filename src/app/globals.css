@@ -1,15 +1,46 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #f8fafc;
+  /* Slate-50 equivalent */
+  --foreground: #0f172a;
+  /* Slate-900 equivalent */
+
+  /* KU Vet Colors */
+  --ku-vet-blue: #71C5E8;
+  /* PMS 297 C */
+  --ku-vet-blue-dark: #5ab0d5;
+  /* Slightly darker for hover */
+  --ku-vet-blue-light: #e0f2fb;
+  /* Light background */
 }
 
-@theme inline {
+@theme {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: var(--font-sarabun), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, SFMono-Regular, monospace;
+
+
+  /* Custom Color Extensions */
+  --color-ku-blue: var(--ku-vet-blue);
+  --color-ku-blue-dark: var(--ku-vet-blue-dark);
+  --color-ku-blue-light: var(--ku-vet-blue-light);
+
+  /* Override Default Blue to KU Vet Tone */
+  --color-blue-50: #f2fbfe;
+  --color-blue-100: #e3f6fc;
+  --color-blue-200: #c1eaf9;
+  --color-blue-300: #93dbf5;
+  --color-blue-400: #71c5e8;
+  /* Main Identity Color */
+  --color-blue-500: #4ba6d6;
+  --color-blue-600: #2d86b8;
+  /* Darker for buttons/text */
+  --color-blue-700: #236c96;
+  --color-blue-800: #205a7d;
+  --color-blue-900: #1e4b67;
+  --color-blue-950: #133045;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -22,5 +53,6 @@
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-sarabun), "Sarabun", "Bai Jamjuree", sans-serif;
+  font-feature-settings: "ss01", "ss02", "cv01", "cv02";
 }

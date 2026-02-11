@@ -3,8 +3,8 @@
 | Field | Value |
 |:------|:------|
 | **Doc ID** | KUVMIS-DOC-011 |
-| **Version** | 1.3.0 |
-| **Last Updated** | 2026-02-11T08:48:18+07:00 |
+| **Version** | 1.4.0 |
+| **Last Updated** | 2026-02-12T00:30:00+07:00 |
 | **Author** | KUVMIS Development Team |
 | **Status** | Released |
 
@@ -42,9 +42,9 @@
 สำหรับ 1-2 เดือนแรกไม่เป็นปัญหา เพราะเป็นการทดสอบภายใน
 แต่ถ้าจะเปิดใช้จริง ควรเพิ่ม Security Rules
 
-### 2. ไม่มีระบบ Login
-ยังไม่มีระบบ Authentication — คนกรอกข้อมูลใส่ชื่อเอง
-ใช้ได้สำหรับ pilot test ที่ทุกคนรู้จักกัน
+### 2. ระบบ Login (ดำเนินการแล้ว ✅)
+ระบบมี Firebase Authentication + Google Sign-In + Email Whitelist เรียบร้อยแล้ว
+รวมถึง Role-based Access Control (user / reviewer / admin) และ Login Logs พร้อม IP Geolocation
 
 ### 3. ข้อมูลจริง
 ข้อมูลที่กรอกเข้าไปจะถูกเก็บบน Firestore จริงทั้งหมด
@@ -52,16 +52,9 @@
 - ดึงออกมา export เป็น Excel ได้ตลอดผ่านหน้า Reports
 - มี audit trail (ใครกรอก, เมื่อไหร่, ค่าอะไร)
 
----
-
-## แผนเพิ่มความปลอดภัย (Phase ถัดไป)
-
-เมื่อทดสอบเสร็จแล้วต้องการขยายไปใช้จริง สามารถเพิ่ม:
-
-1. **Firebase Authentication** — Login ด้วย Google / Email
-2. **Firestore Security Rules** — เฉพาะคนที่ login แล้วเท่านั้นถึงกรอกได้
-3. **Role-based Access** — แต่ละคนเห็น/แก้ไขเฉพาะข้อมูลของตัวเอง
-4. **คำนวณ Quota** — ถ้าเกิน Free Tier ก็ upgrade เป็น Blaze (Pay-as-you-go)
+### 4. Geolocation API (ip-api.com)
+ระบบใช้ ip-api.com (Free Tier) สำหรับดึงตำแหน่ง IP → จำกัด 45 requests/นาที
+เพียงพอสำหรับ 5-10 คนเข้าสู่ระบบ ไม่มีค่าใช้จ่าย
 
 ---
 

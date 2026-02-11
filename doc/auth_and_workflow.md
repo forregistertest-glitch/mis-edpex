@@ -4,8 +4,8 @@
 | Field | Value |
 |:------|:------|
 | **Doc ID** | KUVMIS-DOC-008 |
-| **Version** | 1.3.0 |
-| **Last Updated** | 2026-02-11T08:48:18+07:00 |
+| **Version** | 1.4.0 |
+| **Last Updated** | 2026-02-12T00:30:00+07:00 |
 | **Author** | KUVMIS Development Team |
 | **Status** | Released |
 
@@ -200,6 +200,7 @@ src/
 | `kpi_master` | รายการ KPI หลัก (61 KPIs) |
 | `kpi_entries` | ค่า KPI ที่กรอก (มี status, review, delete fields) |
 | `authorized_users` | รายชื่อ email ที่มีสิทธิ์ + role |
+| `login_logs` | บันทึกการเข้าใช้งาน (email, IP, user agent, geo location) |
 
 ---
 
@@ -221,4 +222,4 @@ src/
 
 ---
 
-*เอกสารนี้ปรับปรุงล่าสุดเมื่อ 11 ก.พ. 2569 — KUVMIS Project*
+*เอกสารนี้ปรับปรุงล่าสุดเมื่อ 12 ก.พ. 2569 — KUVMIS v1.4*

@@ -26,6 +26,7 @@ import {
     type TrendPoint,
     type AvailableFilters,
 } from "@/lib/data-service";
+import { formatNumber } from "@/lib/utils";
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, BarElement, Title, Tooltip, Legend, Filler);
 
@@ -238,7 +239,7 @@ export default function AcademicDashboard({ lang }: AcademicDashboardProps) {
                         <DashboardCard
                             key={card.label}
                             title={card.label}
-                            value={card.value !== null && card.value !== undefined ? `${card.value}${card.unit === "%" ? "%" : ` ${card.unit}`}` : "—"}
+                            value={card.value !== null && card.value !== undefined ? `${formatNumber(card.value)}${card.unit === "%" ? "%" : ` ${card.unit}`}` : "—"}
                             trend={card.target !== null && card.target !== undefined ? (met ? "✓ Met Target" : "→ Tracking") : undefined}
                             icon={card.icon}
                             iconColor={colorMap[card.color].t}
@@ -384,9 +385,9 @@ export default function AcademicDashboard({ lang }: AcademicDashboardProps) {
                                         <td className="px-6 py-3 font-mono text-xs text-blue-600 font-bold">{kpi.kpi_id}</td>
                                         <td className="px-6 py-3 text-slate-700 text-sm max-w-[300px]">{th ? kpi.name_th : kpi.name_en}</td>
                                         <td className="px-6 py-3 text-right font-bold text-slate-800">
-                                            {kpi.latestValue !== null ? kpi.latestValue : <span className="text-slate-300">—</span>}
+                                            {kpi.latestValue !== null ? formatNumber(kpi.latestValue) : <span className="text-slate-300">—</span>}
                                         </td>
-                                        <td className="px-6 py-3 text-right text-slate-500">{hasTarget ? kpi.target_value : "—"}</td>
+                                        <td className="px-6 py-3 text-right text-slate-500">{hasTarget ? formatNumber(kpi.target_value) : "—"}</td>
                                         <td className="px-6 py-3">
                                             {kpi.latestValue === null ? (
                                                 <span className="px-2.5 py-1 text-xs font-semibold rounded-full bg-slate-100 text-slate-400">{th ? "ไม่มีข้อมูล" : "No data"}</span>
@@ -431,7 +432,7 @@ function SimpleTable({ data, labels }: { data: Record<string, TrendPoint[]>; lab
                             <td className="px-4 py-2 text-slate-700 font-medium">{name}</td>
                             {sorted.map((y) => {
                                 const pt = (data[kpiId] || []).find((p) => p.year === y);
-                                return <td key={y} className="px-4 py-2 text-right font-bold text-slate-800">{pt?.value ?? "—"}</td>;
+                                return <td key={y} className="px-4 py-2 text-right font-bold text-slate-800">{pt?.value !== undefined ? formatNumber(pt.value) : "—"}</td>;
                             })}
                         </tr>
                     ))}

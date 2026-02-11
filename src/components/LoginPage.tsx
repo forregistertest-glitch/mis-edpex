@@ -10,13 +10,16 @@ interface LoginPageProps {
 
 export default function LoginPage({ onSignIn, loading, error }: LoginPageProps) {
     return (
-        <div className="min-h-screen bg-gradient-to-br from-blue-800 via-blue-900 to-indigo-950 flex items-center justify-center p-4 relative overflow-hidden">
-            {/* Background decorations */}
-            <div className="absolute top-0 right-0 w-96 h-96 bg-blue-400/10 rounded-full -mr-48 -mt-48 blur-3xl animate-pulse" />
-            <div className="absolute bottom-0 left-0 w-80 h-80 bg-indigo-500/10 rounded-full -ml-40 -mb-40 blur-3xl" />
+        <div className="min-h-screen flex items-center justify-center p-4 relative overflow-hidden"
+            style={{ backgroundColor: '#71C5E8' }}>
+            {/* Subtle decorations — lighter/darker circles */}
+            <div className="absolute top-0 right-0 w-96 h-96 rounded-full -mr-48 -mt-48 blur-3xl animate-pulse"
+                style={{ backgroundColor: 'rgba(255,255,255,0.15)' }} />
+            <div className="absolute bottom-0 left-0 w-80 h-80 rounded-full -ml-40 -mb-40 blur-3xl"
+                style={{ backgroundColor: 'rgba(19,48,69,0.10)' }} />
 
             <div className="w-full max-w-md relative z-10">
-                {/* Logo & Title */}
+                {/* Logo & Title — White + text-shadow */}
                 <div className="text-center mb-8">
                     <div className="inline-flex items-center gap-3 mb-4">
                         <img
@@ -25,31 +28,36 @@ export default function LoginPage({ onSignIn, loading, error }: LoginPageProps) 
                             className="w-16 h-16 object-contain drop-shadow-lg"
                         />
                     </div>
-                    <h1 className="text-3xl font-bold text-white mb-2">KUVMIS</h1>
-                    <p className="text-blue-200/80 text-sm leading-relaxed">
+                    <h1 className="text-3xl font-bold text-white mb-2"
+                        style={{ textShadow: '0 2px 4px rgba(0,0,0,0.2)' }}>
+                        KUVMIS
+                    </h1>
+                    <p className="text-sm leading-relaxed"
+                        style={{ color: 'rgba(255,255,255,0.85)', textShadow: '0 1px 2px rgba(0,0,0,0.15)' }}>
                         ระบบสารสนเทศเพื่อการจัดการ (MIS)<br />
                         และการวิเคราะห์ KPI (EdPEx)
                     </p>
-                    <p className="text-blue-300/50 text-xs mt-2">
+                    <p className="text-xs mt-2" style={{ color: '#133045' }}>
                         คณะสัตวแพทยศาสตร์ มหาวิทยาลัยเกษตรศาสตร์
                     </p>
                 </div>
 
-                {/* Login Card */}
-                <div className="bg-white/10 backdrop-blur-xl rounded-3xl p-8 border border-white/20 shadow-2xl">
+                {/* Login Card — White card on light blue bg */}
+                <div className="bg-white/90 backdrop-blur-xl rounded-3xl p-8 border border-white/50 shadow-2xl">
                     <div className="text-center mb-6">
-                        <div className="w-14 h-14 bg-white/10 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                            <ShieldCheck size={28} className="text-blue-300" />
+                        <div className="w-14 h-14 rounded-2xl flex items-center justify-center mx-auto mb-4"
+                            style={{ backgroundColor: '#71C5E8' }}>
+                            <ShieldCheck size={28} className="text-white" style={{ filter: 'drop-shadow(0 1px 2px rgba(0,0,0,0.2))' }} />
                         </div>
-                        <h2 className="text-xl font-bold text-white mb-1">เข้าสู่ระบบ</h2>
-                        <p className="text-blue-200/60 text-sm">ใช้ Google Account ที่ได้รับอนุญาต</p>
+                        <h2 className="text-xl font-bold mb-1" style={{ color: '#133045' }}>เข้าสู่ระบบ</h2>
+                        <p className="text-sm" style={{ color: '#5ab0d5' }}>ใช้ Google Account ที่ได้รับอนุญาต</p>
                     </div>
 
                     {/* Error Message */}
                     {error && (
-                        <div className="mb-6 p-4 bg-red-500/20 border border-red-400/30 rounded-2xl flex items-start gap-3">
-                            <AlertCircle size={18} className="text-red-300 mt-0.5 flex-shrink-0" />
-                            <p className="text-red-200 text-sm leading-relaxed">{error}</p>
+                        <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-2xl flex items-start gap-3">
+                            <AlertCircle size={18} className="text-red-500 mt-0.5 flex-shrink-0" />
+                            <p className="text-red-600 text-sm leading-relaxed">{error}</p>
                         </div>
                     )}
 
@@ -57,7 +65,8 @@ export default function LoginPage({ onSignIn, loading, error }: LoginPageProps) 
                     <button
                         onClick={onSignIn}
                         disabled={loading}
-                        className="w-full flex items-center justify-center gap-3 px-6 py-4 bg-white hover:bg-gray-50 text-slate-800 rounded-2xl font-bold text-sm transition-all shadow-lg hover:shadow-xl hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="w-full flex items-center justify-center gap-3 px-6 py-4 bg-white hover:bg-gray-50 rounded-2xl font-bold text-sm transition-all shadow-lg hover:shadow-xl hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed border border-slate-200"
+                        style={{ color: '#133045' }}
                     >
                         {loading ? (
                             <Loader2 size={20} className="animate-spin" />
@@ -72,13 +81,13 @@ export default function LoginPage({ onSignIn, loading, error }: LoginPageProps) 
                         {loading ? "กำลังเข้าสู่ระบบ..." : "Sign in with Google"}
                     </button>
 
-                    <p className="text-center text-blue-300/40 text-xs mt-6">
+                    <p className="text-center text-xs mt-6" style={{ color: '#5ab0d5' }}>
                         เฉพาะบุคลากรที่ได้รับอนุญาตเท่านั้น (@ku.th)
                     </p>
                 </div>
 
                 {/* Footer */}
-                <p className="text-center text-blue-300/30 text-[11px] mt-6">
+                <p className="text-center text-[11px] mt-6" style={{ color: '#133045', opacity: 0.6 }}>
                     KUVMIS v1.0 · ปีการศึกษา 2568
                 </p>
             </div>

@@ -8,7 +8,10 @@ import {
     Loader2,
     Users,
     ChevronDown,
+    ChevronLeft,
+    ChevronRight,
     AlertCircle,
+    Calendar,
 } from "lucide-react";
 import {
     getAuthorizedUsers,
@@ -71,7 +74,7 @@ export default function AdminPanel({ lang }: Props) {
         setLoading(true);
         try {
             const { getLoginLogs } = await import("@/lib/data-service");
-            const logs = await getLoginLogs(100);
+            const logs = await getLoginLogs();
             setLoginLogs(logs);
         } catch (err) {
             console.error("Load logs error:", err);
@@ -172,13 +175,13 @@ export default function AdminPanel({ lang }: Props) {
             <div className="flex gap-4 border-b border-slate-200">
                 <button
                     onClick={() => setActiveTab('users')}
-                    className={`pb-3 text-sm font-bold transition-all px-2 border-b-2 ${activeTab === 'users' ? 'text-blue-600 border-blue-600' : 'text-slate-400 border-transparent hover:text-slate-600'}`}
+                    className={`pb-3 text-sm font-bold transition-all px-2 border-b-2 ${activeTab === 'users' ? 'text-[#133045] border-[#71C5E8]' : 'text-slate-400 border-transparent hover:text-slate-600'}`}
                 >
                     {lang === 'th' ? 'ผู้ใช้งาน (Users)' : 'Users'}
                 </button>
                 <button
                     onClick={() => setActiveTab('logs')}
-                    className={`pb-3 text-sm font-bold transition-all px-2 border-b-2 ${activeTab === 'logs' ? 'text-blue-600 border-blue-600' : 'text-slate-400 border-transparent hover:text-slate-600'}`}
+                    className={`pb-3 text-sm font-bold transition-all px-2 border-b-2 ${activeTab === 'logs' ? 'text-[#133045] border-[#71C5E8]' : 'text-slate-400 border-transparent hover:text-slate-600'}`}
                 >
                     {lang === 'th' ? 'ประวัติการเข้าใช้งาน (Login Logs)' : 'Login Logs'}
                 </button>
@@ -203,7 +206,7 @@ export default function AdminPanel({ lang }: Props) {
                         </div>
                         <button
                             onClick={() => setShowAddForm(!showAddForm)}
-                            className="flex items-center gap-2 px-4 py-2.5 bg-blue-600 text-white rounded-xl text-sm font-medium hover:bg-blue-700 transition-all shadow-lg shadow-blue-600/20 hover:scale-[1.02] active:scale-95"
+                            className="flex items-center gap-2 px-4 py-2.5 bg-[#71C5E8] text-white rounded-xl text-sm font-medium hover:bg-[#5ab0d5] transition-all shadow-lg shadow-[#71C5E8]/20 hover:scale-[1.02] active:scale-95"
                         >
                             <UserPlus size={16} />
                             {lang === "th" ? "เพิ่มผู้ใช้" : "Add User"}
@@ -341,34 +344,7 @@ export default function AdminPanel({ lang }: Props) {
                             <Loader2 size={28} className="animate-spin text-blue-600" />
                         </div>
                     ) : (
-                        <table className="w-full text-sm">
-                            <thead>
-                                <tr className="bg-slate-50 border-b border-slate-200">
-                                    <th className="text-left px-5 py-3 font-semibold text-slate-600">Time</th>
-                                    <th className="text-left px-5 py-3 font-semibold text-slate-600">Email</th>
-                                    <th className="text-left px-5 py-3 font-semibold text-slate-600">Status</th>
-                                    <th className="text-left px-5 py-3 font-semibold text-slate-600">Method</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {loginLogs.map((log) => (
-                                    <tr key={log.id} className="border-b border-slate-100 hover:bg-slate-50/50">
-                                        <td className="px-5 py-3 text-slate-500 font-mono text-xs">
-                                            {new Date(log.timestamp).toLocaleString("th-TH")}
-                                        </td>
-                                        <td className="px-5 py-3 text-slate-700">{log.email}</td>
-                                        <td className="px-5 py-3">
-                                            {log.success ? (
-                                                <span className="text-green-600 bg-green-50 px-2 py-0.5 rounded text-xs font-bold">Success</span>
-                                            ) : (
-                                                <span className="text-red-600 bg-red-50 px-2 py-0.5 rounded text-xs font-bold">Failed</span>
-                                            )}
-                                        </td>
-                                        <td className="px-5 py-3 text-slate-400 text-xs">{log.method}</td>
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </table>
+                        <LogsTable logs={loginLogs} lang={lang} />
                     )}
                 </div>
             )}
@@ -454,6 +430,176 @@ export default function AdminPanel({ lang }: Props) {
                             </button>
                         </div>
                     </div>
+                </div>
+            )}
+        </div>
+    );
+}
+
+/* ─── LogsTable Sub-Component ──────────────────────────────── */
+const PAGE_SIZE = 100;
+
+function LogsTable({ logs, lang }: { logs: any[]; lang: "th" | "en" }) {
+    const th = lang === "th";
+    const [page, setPage] = useState(1);
+    const [selectedMonth, setSelectedMonth] = useState<string>("latest");
+
+    // Extract unique months from logs (format: YYYY-MM)
+    const months = Array.from(
+        new Set(
+            logs.map(log => {
+                const d = new Date(log.timestamp);
+                return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+            })
+        )
+    ).sort().reverse();
+
+    // Resolve "latest" to actual latest month
+    const activeMonth = selectedMonth === "latest" ? (months[0] || "") : selectedMonth;
+
+    // Filter logs by selected month
+    const filtered = activeMonth
+        ? logs.filter(log => {
+            const d = new Date(log.timestamp);
+            const m = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+            return m === activeMonth;
+        })
+        : logs;
+
+    const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
+    const currentPage = Math.min(page, totalPages);
+    const start = (currentPage - 1) * PAGE_SIZE;
+    const pageData = filtered.slice(start, start + PAGE_SIZE);
+
+    // Reset page when month changes
+    useEffect(() => { setPage(1); }, [selectedMonth]);
+
+    // Format month label for dropdown
+    const monthLabel = (ym: string) => {
+        const [y, m] = ym.split('-');
+        const monthNames = th
+            ? ['ม.ค.', 'ก.พ.', 'มี.ค.', 'เม.ย.', 'พ.ค.', 'มิ.ย.', 'ก.ค.', 'ส.ค.', 'ก.ย.', 'ต.ค.', 'พ.ย.', 'ธ.ค.']
+            : ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+        return `${monthNames[parseInt(m) - 1]} ${th ? parseInt(y) + 543 : y}`;
+    };
+
+    return (
+        <div>
+            {/* Toolbar: Month Filter + Stats */}
+            <div className="flex flex-wrap items-center gap-3 px-5 py-3 bg-slate-50 border-b border-slate-200">
+                <div className="flex items-center gap-2">
+                    <Calendar size={14} className="text-slate-400" />
+                    <select
+                        value={selectedMonth}
+                        onChange={(e) => setSelectedMonth(e.target.value)}
+                        className="text-sm border border-slate-200 rounded-lg px-3 py-1.5 text-slate-700 bg-white focus:ring-2 focus:ring-blue-200 outline-none"
+                    >
+                        <option value="latest">{th ? 'เดือนล่าสุด' : 'Latest Month'}</option>
+                        {months.map(m => (
+                            <option key={m} value={m}>{monthLabel(m)}</option>
+                        ))}
+                    </select>
+                </div>
+                <span className="text-xs text-slate-500">
+                    {th ? `ทั้งหมด ${filtered.length.toLocaleString()} รายการ` : `Total: ${filtered.length.toLocaleString()} records`}
+                    {filtered.length > PAGE_SIZE && (
+                        <> · {th ? `หน้า ${currentPage}/${totalPages}` : `Page ${currentPage}/${totalPages}`}</>
+                    )}
+                </span>
+                <span className="text-xs text-slate-400 ml-auto">
+                    {th ? `(ข้อมูลทั้งระบบ ${logs.length.toLocaleString()} รายการ)` : `(${logs.length.toLocaleString()} total in system)`}
+                </span>
+            </div>
+
+            {/* Scrollable Table */}
+            <div className="overflow-x-auto">
+                <table className="w-full text-sm min-w-[1100px]">
+                    <thead>
+                        <tr className="bg-slate-50 border-b border-slate-200">
+                            <th className="text-left px-5 py-3 font-semibold text-slate-600 whitespace-nowrap">Time</th>
+                            <th className="text-left px-5 py-3 font-semibold text-slate-600 whitespace-nowrap">Email</th>
+                            <th className="text-left px-5 py-3 font-semibold text-slate-600 whitespace-nowrap">Status</th>
+                            <th className="text-left px-5 py-3 font-semibold text-slate-600 whitespace-nowrap">IP Address</th>
+                            <th className="text-left px-5 py-3 font-semibold text-slate-600 whitespace-nowrap">Reason</th>
+                            <th className="text-left px-5 py-3 font-semibold text-slate-600 whitespace-nowrap">📍 Location</th>
+                            <th className="text-left px-5 py-3 font-semibold text-slate-600 whitespace-nowrap">User Agent</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {pageData.length === 0 ? (
+                            <tr><td colSpan={7} className="px-5 py-8 text-center text-slate-400 text-sm">{th ? 'ไม่มีข้อมูล' : 'No data'}</td></tr>
+                        ) : pageData.map((log) => (
+                            <tr key={log.id} className="border-b border-slate-100 hover:bg-slate-50/50">
+                                <td className="px-5 py-3 text-slate-500 font-mono text-xs whitespace-nowrap">
+                                    {new Date(log.timestamp).toLocaleString("th-TH")}
+                                </td>
+                                <td className="px-5 py-3 text-slate-700 whitespace-nowrap">{log.email}</td>
+                                <td className="px-5 py-3">
+                                    {log.success ? (
+                                        <span className="text-green-600 bg-green-50 px-2 py-0.5 rounded text-xs font-bold">Success</span>
+                                    ) : (
+                                        <span className="text-red-600 bg-red-50 px-2 py-0.5 rounded text-xs font-bold">Failed</span>
+                                    )}
+                                </td>
+                                <td className="px-5 py-3 text-slate-600 text-xs font-mono whitespace-nowrap">{log.ip_address || "—"}</td>
+                                <td className="px-5 py-3 text-slate-500 text-xs whitespace-nowrap">{log.reason || log.method}</td>
+                                <td className="px-5 py-3 text-xs whitespace-nowrap">
+                                    {log.geo_location ? (
+                                        <span className="text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded">{log.geo_location}</span>
+                                    ) : (
+                                        <span className="text-slate-300">—</span>
+                                    )}
+                                </td>
+                                <td className="px-5 py-3 text-slate-400 text-xs">
+                                    {log.user_agent === "unknown" ? "—" : log.user_agent || "—"}
+                                </td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
+            </div>
+
+            {/* Pagination Footer */}
+            {totalPages > 1 && (
+                <div className="flex items-center justify-between px-5 py-3 bg-slate-50 border-t border-slate-200">
+                    <button
+                        onClick={() => setPage(p => Math.max(1, p - 1))}
+                        disabled={currentPage === 1}
+                        className="flex items-center gap-1 text-xs text-slate-500 hover:text-slate-700 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                    >
+                        <ChevronLeft size={14} /> {th ? 'ก่อนหน้า' : 'Previous'}
+                    </button>
+                    <div className="flex items-center gap-1">
+                        {Array.from({ length: Math.min(totalPages, 7) }, (_, i) => {
+                            let p: number;
+                            if (totalPages <= 7) {
+                                p = i + 1;
+                            } else if (currentPage <= 4) {
+                                p = i + 1;
+                            } else if (currentPage >= totalPages - 3) {
+                                p = totalPages - 6 + i;
+                            } else {
+                                p = currentPage - 3 + i;
+                            }
+                            return (
+                                <button
+                                    key={p}
+                                    onClick={() => setPage(p)}
+                                    className={`w-8 h-8 rounded-lg text-xs font-bold transition-all ${p === currentPage ? 'bg-[#71C5E8] text-white shadow' : 'text-slate-500 hover:bg-slate-100'
+                                        }`}
+                                >
+                                    {p}
+                                </button>
+                            );
+                        })}
+                    </div>
+                    <button
+                        onClick={() => setPage(p => Math.min(totalPages, p + 1))}
+                        disabled={currentPage === totalPages}
+                        className="flex items-center gap-1 text-xs text-slate-500 hover:text-slate-700 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                    >
+                        {th ? 'ถัดไป' : 'Next'} <ChevronRight size={14} />
+                    </button>
                 </div>
             )}
         </div>

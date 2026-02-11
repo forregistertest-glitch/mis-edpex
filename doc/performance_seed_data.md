@@ -3,8 +3,8 @@
 | Field | Value |
 |:------|:------|
 | **Doc ID** | KUVMIS-DOC-010 |
-| **Version** | 1.3.0 |
-| **Last Updated** | 2026-02-11T08:48:18+07:00 |
+| **Version** | 1.4.0 |
+| **Last Updated** | 2026-02-12T00:30:00+07:00 |
 | **Author** | KUVMIS Development Team |
 | **Status** | Released |
 

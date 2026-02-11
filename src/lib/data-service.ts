@@ -279,29 +279,57 @@ export interface LoginLog {
   timestamp: string;
   success: boolean;
   method: string;
+  ip_address: string;
   user_agent: string;
+  reason: string;
+  geo_location?: string;
 }
 
+// ─── Logging ───────────────────────────────────────────────────
 export async function addLoginLog(email: string, success: boolean, method: string = "google"): Promise<void> {
   try {
+    // 1. Get Client Info (IP/UA/Geo) from our own API
+    let ip = "unknown";
+    let userAgent = "unknown";
+    let geoLocation = "";
+
+    try {
+      const res = await fetch("/api/auth/whoami");
+      if (res.ok) {
+        const data = await res.json();
+        ip = data.ip;
+        userAgent = data.userAgent;
+        // Build geo string e.g. "Bangkok, Bangkok, Thailand (True Internet)"
+        if (data.geo && (data.geo.city || data.geo.region)) {
+          const parts = [data.geo.city, data.geo.region, data.geo.country].filter(Boolean);
+          geoLocation = parts.join(", ");
+          if (data.geo.isp) geoLocation += ` (${data.geo.isp})`;
+        }
+      }
+    } catch (e) {
+      console.warn("Failed to fetch client info for log:", e);
+    }
+
+    // 2. Save to Firestore
     await addDoc(collection(db, "login_logs"), {
       email,
-      timestamp: new Date().toISOString(),
+      timestamp: Timestamp.now(),
       success,
       method,
-      user_agent: typeof navigator !== 'undefined' ? navigator.userAgent : 'unknown'
+      ip_address: ip,
+      user_agent: userAgent,
+      geo_location: geoLocation || "",
+      reason: success ? "Login Successful" : "Unauthorized Email or Login Failed",
     });
-  } catch (error) {
-    console.error("Error logging login:", error);
+  } catch (err) {
+    console.error("Error adding login log:", err);
   }
 }
 
-export async function getLoginLogs(limitCount: number = 50): Promise<LoginLog[]> {
-  const q = query(
-    collection(db, "login_logs"),
-    orderBy("timestamp", "desc"),
-    firestoreLimit(limitCount)
-  );
+export async function getLoginLogs(limitCount?: number): Promise<LoginLog[]> {
+  const constraints: any[] = [orderBy("timestamp", "desc")];
+  if (limitCount) constraints.push(firestoreLimit(limitCount));
+  const q = query(collection(db, "login_logs"), ...constraints);
   const snap = await getDocs(q);
   return snap.docs.map(d => ({ id: d.id, ...d.data() } as LoginLog));
 }

@@ -3,8 +3,8 @@
 | Field | Value |
 |:------|:------|
 | **Doc ID** | KUVMIS-DOC-004 |
-| **Version** | 1.3.1 |
-| **Last Updated** | 2026-02-11T08:48:18+07:00 |
+| **Version** | 1.4.0 |
+| **Last Updated** | 2026-02-12T00:30:00+07:00 |
 | **Author** | KUVMIS Development Team |
 | **Status** | Released |
 
@@ -12,6 +12,8 @@
 ## 1. Firestore Collections
 - **kpi_master_data**: Defines the structure and metadata for each Key Performance Indicator (KPI).
 - **performance_data**: Stores the actual performance values, linked by `kpi_id`, `year`, `period`, and `dimension`.
+- **authorized_users**: รายชื่อ Email ที่อนุญาตเข้าระบบ พร้อม role (user/reviewer/admin).
+- **login_logs**: บันทึกการเข้าใช้งาน (email, timestamp, IP, user agent, geo location, success, reason).
 
 ## 2. KPI JSON Blueprint
 ```json
@@ -56,7 +58,7 @@
 - `getKpiMatrixData(kpiIds, year, dimension)`: Aggregates data by dimension for radar/pie charts.
 - `getAvailableFilters(categoryId)`: dynamic generation of dropdown options based on existing data.
 
-## 6. Dashboard Chart ↔ Data-Service Mapping — v1.3.1
+## 6. Dashboard Chart ↔ Data-Service Mapping — v1.4
 | Dashboard | Chart | KPI ID(s) | Data Function | Data Pattern |
 |:----------|:------|:----------|:--------------|:-------------|
 | **Academic** | Licensure & OSCE | 7.1.1, 7.1.2 | `getKpiTrendData` | year_series |

@@ -13,6 +13,7 @@ import {
     Shield,
     UserCheck,
     User,
+    BarChart3,
 } from "lucide-react";
 import type { Language, TranslationKey } from "@/lib/translations";
 
@@ -30,7 +31,7 @@ interface SidebarProps {
 const roleBadge: Record<string, { label: string; color: string; bg: string; icon: typeof Shield }> = {
     admin: { label: "Admin", color: "text-red-600", bg: "bg-red-50 border-red-200", icon: Shield },
     reviewer: { label: "Reviewer", color: "text-amber-600", bg: "bg-amber-50 border-amber-200", icon: UserCheck },
-    user: { label: "User", color: "text-blue-600", bg: "bg-blue-50 border-blue-200", icon: User },
+    user: { label: "User", color: "text-[#236c96]", bg: "bg-[#e0f2fb] border-[#c1eaf9]", icon: User },
 };
 
 export default function Sidebar({ activeTab, setActiveTab, setShowDocs, t, lang, onSignOut, userRole, userName }: SidebarProps) {
@@ -45,6 +46,7 @@ export default function Sidebar({ activeTab, setActiveTab, setShowDocs, t, lang,
         { id: 'Input', name: t('inputData'), icon: ClipboardEdit, show: true },
         { id: 'Review', name: lang === 'th' ? 'ตรวจสอบข้อมูล' : 'Review', icon: UserCheck, show: isReviewer },
         { id: 'Reports', name: t('reports'), icon: FileText, show: true },
+        { id: 'AnnualReport', name: lang === 'th' ? 'รายงานประจำปี' : 'Annual Report', icon: BarChart3, show: true },
         { id: 'Docs', name: t('documentation'), icon: BookOpen, show: true },
     ].filter(item => item.show);
 
@@ -79,7 +81,7 @@ export default function Sidebar({ activeTab, setActiveTab, setShowDocs, t, lang,
                     <button
                         key={item.id}
                         onClick={() => item.id === 'Docs' ? setShowDocs(true) : setActiveTab(item.id)}
-                        className={`flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-medium w-full transition-all duration-200 ${activeTab === item.id ? 'bg-blue-600 text-white shadow-md scale-105' : 'text-slate-500 hover:bg-slate-100'}`}
+                        className={`flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-medium w-full transition-all duration-200 ${activeTab === item.id ? 'bg-[#71C5E8] text-white shadow-md scale-105' : 'text-slate-500 hover:bg-slate-100'}`}
                     >
                         <item.icon size={18} />
                         {item.name}

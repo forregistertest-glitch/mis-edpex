@@ -4,8 +4,8 @@
 | Field | Value |
 |:------|:------|
 | **Doc ID** | KUVMIS-DOC-001 |
-| **Version** | 1.3.0 |
-| **Last Updated** | 2026-02-11T08:48:18+07:00 |
+| **Version** | 1.4.0 |
+| **Last Updated** | 2026-02-12T00:30:00+07:00 |
 | **Author** | KUVMIS Development Team |
 | **Status** | Released |
 
@@ -48,6 +48,7 @@ mis-edpex/
 │   │   ├── globals.css          ← Tailwind base styles
 │   │   ├── favicon.ico
 │   │   ├── api/docs/route.ts    ← API Route สำหรับเอกสาร
+│   │   ├── api/auth/whoami/route.ts ← IP + User Agent + Geolocation API
 │   │   └── seed/page.tsx        ← Seed Tool (Admin Only Guard)
 │   ├── contexts/
 │   │   └── AuthContext.tsx      ← Firebase Auth + Role Management
@@ -64,8 +65,9 @@ mis-edpex/
 │   │   │   ├── CategorySection.tsx ← KPI category display
 │   │   │   ├── ReportsSection.tsx  ← Export tools
 │   │   │   ├── ReviewerDashboard.tsx ← Approve/Reject (Reviewer+Admin)
-│   │   │   ├── AdminPanel.tsx   ← จัดการผู้ใช้ (Admin only)
-│   │   │   └── DashboardCard.tsx ← [NEW] Standard Card with Logic/Source
+│   │   │   ├── AdminPanel.tsx   ← จัดการผู้ใช้ + Login Logs (Admin only)
+│   │   │   ├── DashboardCard.tsx ← Standard Card with Logic/Source
+│   │   │   └── AnnualReportDashboard.tsx ← รายงานประจำปี
 │   │   └── kpi-input/           ← Sub-components ของ KpiInputForm
 │   │       ├── FormSelector.tsx
 │   │       ├── FormEntry.tsx
@@ -79,7 +81,7 @@ mis-edpex/
 │           ├── ingest_data.js   ← Script นำเข้าข้อมูลจาก JSON
 │           └── inspect_v4.js    ← Script ตรวจสอบข้อมูล
 ├── db_design/                   ← ข้อมูล Seed (JSON) 11 ไฟล์
-├── doc/                         ← เอกสารประกอบ (MD + HTML) 12 ไฟล์
+├── doc/                         ← เอกสารประกอบ (MD + HTML) 14 ไฟล์
 ├── source/                      ← ไฟล์ต้นฉบับอ้างอิง (Excel/Word)
 ├── public/                      ← Static assets (SVG icons)
 ├── package.json
@@ -133,6 +135,7 @@ Main single-page application ประกอบด้วย:
 | **Add User** | ฟอร์มเพิ่ม email, ชื่อ, Role |
 | **Change Role** | Dropdown เปลี่ยน Role ทันที |
 | **Remove User** | ลบผู้ใช้ (ป้องกันลบตัวเอง) |
+| **Login Logs** | ตาราง log การเข้าใช้งาน: paging 100/หน้า, filter ตามเดือน, แสดง IP + Location + User Agent |
 
 ### 4.5 KpiInputForm (`KpiInputForm.tsx`)
 
@@ -185,7 +188,7 @@ Dynamic form component ที่อ่าน spec จาก `input_forms.json`:
 
 ---
 
-## 6. Features ปัจจุบัน (v1.2)
+## 6. Features ปัจจุบัน (v1.4)
 
 | # | Feature | Component | สถานะ |
 |:-:|---------|-----------|:---:|
@@ -199,14 +202,18 @@ Dynamic form component ที่อ่าน spec จาก `input_forms.json`:
 | 8 | KPI Input Forms (7 types) | `KpiInputForm.tsx` | ✅ |
 | 9 | Dynamic Field Rendering | `KpiInputForm.tsx` | ✅ |
 | 10 | Form Validation | `KpiInputForm.tsx` | ✅ |
-| 11 | **Firebase Auth + Google Sign-In** | `AuthContext.tsx` | ✅ |
-| 12 | **Email Whitelist + Role** | `AuthContext.tsx` | ✅ |
-| 13 | **Role Badge + Conditional Menu** | `Sidebar.tsx` | ✅ |
-| 14 | **Seed Page Guard (Admin Only)** | `seed/page.tsx` | ✅ |
-| 15 | **Error Boundary (Route+Global)** | `error.tsx` / `global-error.tsx` | ✅ |
-| 16 | **Approval Workflow** | `ReviewerDashboard.tsx` | ✅ |
-| 17 | **Soft Delete** | `data-service.ts` | ✅ |
-| 18 | **Admin Panel (User CRUD)** | `AdminPanel.tsx` | ✅ |
+| 11 | Firebase Auth + Google Sign-In | `AuthContext.tsx` | ✅ |
+| 12 | Email Whitelist + Role | `AuthContext.tsx` | ✅ |
+| 13 | Role Badge + Conditional Menu | `Sidebar.tsx` | ✅ |
+| 14 | Seed Page Guard (Admin Only) | `seed/page.tsx` | ✅ |
+| 15 | Error Boundary (Route+Global) | `error.tsx` / `global-error.tsx` | ✅ |
+| 16 | Approval Workflow | `ReviewerDashboard.tsx` | ✅ |
+| 17 | Soft Delete | `data-service.ts` | ✅ |
+| 18 | Admin Panel (User CRUD) | `AdminPanel.tsx` | ✅ |
+| 19 | **Login Logs Enhanced** (Paging, Filter, Full UA) | `AdminPanel.tsx` | ✅ |
+| 20 | **Annual Report Dashboard** | `AnnualReportDashboard.tsx` | ✅ |
+| 21 | **IP Geolocation** (จังหวัด + ISP) | `whoami/route.ts` | ✅ |
+| 22 | **Firestore Composite Indexes** | `firestore.indexes.json` | ✅ |
 
 ---
 
@@ -241,6 +248,7 @@ Config File:       src/lib/firebase.ts
 - `kpi_master` — รายการ KPI หลัก (61 KPIs)
 - `kpi_entries` — ข้อมูล KPI ที่กรอก (พร้อม review + soft delete fields)
 - `authorized_users` — รายชื่อ email ที่มีสิทธิ์ + role
+- `login_logs` — บันทึกการเข้าใช้งาน (email, timestamp, IP, user agent, geo location)
 
 ---
 
@@ -254,9 +262,11 @@ Config File:       src/lib/firebase.ts
 | Phase 4 | Firebase Auth + Access Control | ✅ |
 | Phase 5 | Approval Workflow + Soft Delete | ✅ |
 | Phase 6 | Admin Panel (User Management) | ✅ |
-| Phase 7 | Real-time Data Sync | ⬜ |
-| Phase 8 | Automated SAR Report Generation | ⬜ |
+| Phase 7 | Login Logs + IP Geolocation + Annual Report | ✅ |
+| Phase 8 | Firestore Composite Indexes | ✅ |
+| Phase 9 | Firebase Storage (File Uploads) | ⬜ |
+| Phase 10 | Automated SAR Report Generation | ⬜ |
 
 ---
 
-*เอกสารนี้ปรับปรุงล่าสุดเมื่อ 11 ก.พ. 2569 — KUVMIS v1.2*
+*เอกสารนี้ปรับปรุงล่าสุดเมื่อ 12 ก.พ. 2569 — KUVMIS v1.4*

@@ -13,7 +13,9 @@ import type { Language } from "@/lib/translations";
 import {
     getKpiTrendData, getKpiMatrixData, getAvailableFilters, getCategoryOverview,
     type TrendPoint, type MatrixPoint, type AvailableFilters,
-} from "@/lib/data-service";
+}
+    from "@/lib/data-service";
+import { formatNumber } from "@/lib/utils";
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, BarElement, Title, Tooltip, Legend, Filler, RadialLinearScale);
 
@@ -108,10 +110,10 @@ export default function StaffDashboard({ lang }: StaffDashboardProps) {
     const latestSafety = safetyD.length > 0 ? safetyD[safetyD.length - 1] : null;
 
     const cards = [
-        { label: th ? "ความผูกพัน" : "Engagement", value: engScore, unit: th ? "คะแนน" : "pts", icon: HeartPulse, color: "from-purple-500 to-purple-600" },
-        { label: th ? "วันลาป่วยเฉลี่ย" : "Avg Sick Leave", value: latestSick?.value, unit: th ? "วัน" : "days", icon: Users, color: "from-blue-500 to-blue-600" },
-        { label: th ? "อุบัติเหตุ" : "Incidents", value: latestSafety?.value, unit: th ? "ครั้ง" : "cases", icon: Shield, color: "from-red-500 to-red-600" },
-        { label: th ? "Talent Pool" : "Talent Pool", value: talentMatrix.reduce((s, m) => s + m.value, 0) || null, unit: th ? "คน" : "ppl", icon: Award, color: "from-teal-500 to-teal-600" },
+        { label: th ? "ความผูกพัน" : "Engagement", value: engScore, unit: th ? "คะแนน" : "pts", icon: HeartPulse, color: "from-purple-500 to-purple-600", kpiId: "7.3.10" },
+        { label: th ? "วันลาป่วยเฉลี่ย" : "Avg Sick Leave", value: latestSick?.value ?? null, unit: th ? "วัน" : "days", icon: Users, color: "from-blue-500 to-blue-600", kpiId: "7.3.4" },
+        { label: th ? "อุบัติเหตุ" : "Incidents", value: latestSafety?.value ?? null, unit: th ? "ครั้ง" : "cases", icon: Shield, color: "from-red-500 to-red-600", kpiId: "7.3.5" },
+        { label: th ? "Talent Pool" : "Talent Pool", value: talentMatrix.reduce((s, m) => s + m.value, 0) || null, unit: th ? "คน" : "ppl", icon: Award, color: "from-teal-500 to-teal-600", kpiId: "7.3.12" },
     ];
 
     if (loading) return <div className="p-12 text-center"><Loader2 className="animate-spin mx-auto text-blue-400 mb-3" size={32} /><p className="text-sm text-slate-400">{th ? "กำลังโหลด..." : "Loading..."}</p></div>;
@@ -133,12 +135,16 @@ export default function StaffDashboard({ lang }: StaffDashboardProps) {
                     else if (card.icon === Shield) { logic = th ? "จำนวนอุบัติเหตุ" : "Safety Incidents"; source = "KPI-7.3.5"; }
                     else if (card.icon === Award) { logic = th ? "จำนวนผู้สืบทอดตำแหน่ง" : "Successors Count"; source = "KPI-7.3.12"; }
 
+                    const kpiData = categoryData.find(k => k.kpi_id === card.kpiId);
+                    const target = kpiData?.target_value ?? null;
+                    const met = target !== null && card.value !== null && card.value >= target;
+
                     return (
                         <DashboardCard
                             key={card.label}
                             title={card.label}
-                            value={card.value !== null && card.value !== undefined ? `${card.value} ${card.unit}` : "—"}
-                            trend="→ Tracking"
+                            value={card.value !== null && card.value !== undefined ? (typeof card.value === 'string' ? card.value : `${formatNumber(Number(card.value))}${card.unit === "%" ? "%" : ` ${card.unit}`}`) : "—"}
+                            trend={target !== null ? (met ? "✓ Met" : "→ Tracking") : undefined}
                             icon={card.icon}
                             iconColor="text-white"
                             iconBg={`bg-gradient-to-br ${card.color}`}
@@ -264,8 +270,8 @@ export default function StaffDashboard({ lang }: StaffDashboardProps) {
                                     <tr key={kpi.kpi_id} className="hover:bg-slate-50/50 transition-colors">
                                         <td className="px-6 py-3 font-mono text-xs text-blue-600 font-bold">{kpi.kpi_id}</td>
                                         <td className="px-6 py-3 text-slate-700 text-sm max-w-[300px]">{th ? kpi.name_th : kpi.name_en}</td>
-                                        <td className="px-6 py-3 text-right font-bold text-slate-800">{kpi.latestValue ?? <span className="text-slate-300">—</span>}</td>
-                                        <td className="px-6 py-3 text-right text-slate-500">{hasTarget ? kpi.target_value : "—"}</td>
+                                        <td className="px-6 py-3 text-right font-bold text-slate-800">{kpi.latestValue !== null ? formatNumber(kpi.latestValue) : <span className="text-slate-300">—</span>}</td>
+                                        <td className="px-6 py-3 text-right text-slate-500">{hasTarget ? formatNumber(kpi.target_value) : "—"}</td>
                                         <td className="px-6 py-3">{kpi.latestValue == null ? <span className="px-2.5 py-1 text-xs font-semibold rounded-full bg-slate-100 text-slate-400">{th ? "ไม่มีข้อมูล" : "No data"}</span> : met ? <span className="px-2.5 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-700">✓ {th ? "ถึงเป้า" : "Met"}</span> : hasTarget ? <span className="px-2.5 py-1 text-xs font-semibold rounded-full bg-amber-100 text-amber-700">→ {th ? "ยังไม่ถึง" : "Below"}</span> : <span className="px-2.5 py-1 text-xs font-semibold rounded-full bg-blue-50 text-blue-600">{th ? "ติดตาม" : "Track"}</span>}</td>
                                         <td className="px-6 py-3 text-center"><span className="text-xs bg-slate-100 px-2 py-0.5 rounded-full font-semibold text-slate-600">{kpi.entryCount}</span></td>
                                     </tr>

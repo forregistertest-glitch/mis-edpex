@@ -16,6 +16,7 @@ import StaffDashboard from "@/components/dashboard/StaffDashboard";
 import HospitalDashboard from "@/components/dashboard/HospitalDashboard";
 import StrategicDashboard from "@/components/dashboard/StrategicDashboard";
 import ChartGallery from "@/components/dashboard/ChartGallery";
+import AnnualReportDashboard from "@/components/dashboard/AnnualReportDashboard";
 import DashboardCard from "@/components/dashboard/DashboardCard";
 import { useAuth } from "@/contexts/AuthContext";
 import { translations, Language, TranslationKey } from "@/lib/translations";
@@ -38,6 +39,7 @@ import {
   getCategoryOverview,
   getEntriesByCategory,
 } from "@/lib/data-service";
+import { formatNumber } from "@/lib/utils";
 import type { KpiEntry, KpiMaster } from "@/lib/data-service";
 
 export default function Dashboard() {
@@ -188,14 +190,27 @@ export default function Dashboard() {
     }
   };
 
-  // Format display values
+  // Format display values using global utility
   const fmtVal = (v: number | null, unit?: string, agg?: string) => {
     if (v === null) return "—";
-    if (unit === "ร้อยละ" || unit === "%") return `${v.toFixed(1)}%`;
-    if (unit === "คะแนน") return `${v.toFixed(2)}/5`;
-    if (v >= 1000000) return `${(v / 1000000).toFixed(2)}M`;
-    if (v >= 1000) return v.toLocaleString(undefined, { minimumFractionDigits: agg === "avg" ? 2 : 0, maximumFractionDigits: 2 });
-    return agg === "avg" ? v.toFixed(2) : v.toString();
+
+    // Check if unit is percentage
+    if (unit === "ร้อยละ" || unit === "%") {
+      return `${formatNumber(v, 1)}%`;
+    }
+
+    // Check if unit is score (max 5)
+    if (unit === "คะแนน") {
+      return `${formatNumber(v, 2)}/5`;
+    }
+
+    // Large numbers (Millions)
+    if (v >= 1000000) {
+      return `${formatNumber(v / 1000000, 2)}M`;
+    }
+
+    // Standard formatting
+    return formatNumber(v, agg === "avg" ? 2 : 0);
   };
 
   // Build KPI cards from real data
@@ -204,10 +219,13 @@ export default function Dashboard() {
       title: t('academicPassRate'),
       value: fmtVal(dashboardData?.academicPassRate ?? null, "%", "avg"),
       trend: dashboardData?.academicPassRate && dashboardData.academicPassRate > 80 ? "✓ On Target" : "→ Tracking",
-      icon: GraduationCap, color: "text-blue-600", bg: "bg-blue-100",
+      icon: GraduationCap,
+      color: "text-[var(--ku-vet-blue-dark)]", // Customized KU Blue
+      bg: "bg-[var(--ku-vet-blue-light)]",
       logic: lang === 'th' ? "ร้อยละของผู้สำเร็จการศึกษาที่สอบผ่านใบประกอบวิชาชีพ" : "Percentage of graduates passing licensure exam",
       source: "KPI-7.1.1"
     },
+
     {
       title: t('customerSatisfaction'),
       value: fmtVal(dashboardData?.customerSatisfaction ?? null, "คะแนน", "avg"),
@@ -366,6 +384,10 @@ export default function Dashboard() {
             </div>
           ) : activeTab === 'Reports' ? (
             <ReportsSection dashboardData={dashboardData} handleGlobalExport={handleGlobalExport} handleJsonExport={handleJsonExport} lang={lang} />
+          ) : activeTab === 'AnnualReport' ? (
+            <div className="animate-in fade-in duration-500">
+              <AnnualReportDashboard lang={lang} />
+            </div>
           ) : (
             <div className="bg-white p-12 rounded-3xl border border-slate-200/60 shadow-sm text-center">
               <h3 className="text-2xl font-bold text-slate-800 mb-4">{activeTab} Section</h3>

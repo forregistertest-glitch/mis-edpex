@@ -4,8 +4,8 @@
 | Field | Value |
 |:------|:------|
 | **Doc ID** | KUVMIS-DOC-005 |
-| **Version** | 1.3.0 |
-| **Last Updated** | 2026-02-11T08:48:18+07:00 |
+| **Version** | 1.4.0 |
+| **Last Updated** | 2026-02-12T00:30:00+07:00 |
 | **Author** | KUVMIS Development Team |
 | **Status** | Released |
 
@@ -39,6 +39,7 @@ Region: Default
 | `kpi_master` | รายการ KPI หลัก 61 รายการ (ชื่อ, หน่วย, เป้าหมาย, aggregation) | ✅ |
 | `kpi_entries` | ค่า KPI ที่กรอก (ผูกกับ kpi_id, ปี, งวด + review & soft delete fields) | ✅ |
 | `authorized_users` | รายชื่อ email ที่มีสิทธิ์เข้าระบบ + role (user/reviewer/admin) | ✅ |
+| `login_logs` | บันทึกการเข้าใช้งาน (email, IP, user agent, geo location, timestamp) | ✅ |
 
 ### 2.2 Document Schema — kpi_entries
 
@@ -100,7 +101,23 @@ Region: Default
 }
 ```
 
-### 2.3 Firebase Config
+### 2.3 Document Schema — login_logs
+
+```json
+// Document ID = auto-generated
+{
+  "email": "nipon.w@ku.th",
+  "timestamp": "2026-02-12T00:30:00Z",
+  "success": true,
+  "method": "google",
+  "ip_address": "171.97.xxx.xxx",
+  "user_agent": "Mozilla/5.0 ...",
+  "geo_location": "Bangkok, Bangkok, Thailand (True Internet)",
+  "reason": "Login Successful"
+}
+```
+
+### 2.4 Firebase Config
 
 | Key | Value |
 |-----|-------|
@@ -199,4 +216,4 @@ input_forms (7 ฟอร์ม)
 | 6 | Real-time data sync | ⬜ |
 
 ---
-*เอกสารนี้ปรับปรุงล่าสุดเมื่อ 11 ก.พ. 2569 — KUVMIS v1.2*
+*เอกสารนี้ปรับปรุงล่าสุดเมื่อ 12 ก.พ. 2569 — KUVMIS v1.4*
