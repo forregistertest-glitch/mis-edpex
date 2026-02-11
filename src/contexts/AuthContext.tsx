@@ -66,31 +66,44 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     // Listen to auth state
     useEffect(() => {
-        const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
-            if (firebaseUser) {
-                const authorized = await checkAuthorization(firebaseUser);
-                if (authorized) {
-                    setUser(firebaseUser);
-                    setError(null);
+        const initAuth = async () => {
+            // Force session persistence (User must login every time tab/browser is closed)
+            // Force session persistence (User must login every time tab/browser is closed or refreshed)
+            const { setPersistence, inMemoryPersistence } = await import("firebase/auth");
+            await setPersistence(auth, inMemoryPersistence);
+
+            const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
+                if (firebaseUser) {
+                    const authorized = await checkAuthorization(firebaseUser);
+                    if (authorized) {
+                        setUser(firebaseUser);
+                        setError(null);
+                        // Log Success
+                        import("@/lib/data-service").then(m => m.addLoginLog(firebaseUser.email!, true));
+                    } else {
+                        // Not in whitelist — sign out immediately
+                        // Log Failure
+                        import("@/lib/data-service").then(m => m.addLoginLog(firebaseUser.email!, false));
+                        await firebaseSignOut(auth);
+                        setUser(null);
+                        setUserRole(null);
+                        setUserName(null);
+                        setError(
+                            `อีเมล ${firebaseUser.email} ไม่มีสิทธิ์เข้าใช้งานระบบ กรุณาติดต่อผู้ดูแลระบบ`
+                        );
+                    }
                 } else {
-                    // Not in whitelist — sign out immediately
-                    await firebaseSignOut(auth);
                     setUser(null);
                     setUserRole(null);
                     setUserName(null);
-                    setError(
-                        `อีเมล ${firebaseUser.email} ไม่มีสิทธิ์เข้าใช้งานระบบ กรุณาติดต่อผู้ดูแลระบบ`
-                    );
                 }
-            } else {
-                setUser(null);
-                setUserRole(null);
-                setUserName(null);
-            }
-            setLoading(false);
-        });
+                setLoading(false);
+            });
+            return unsubscribe;
+        };
 
-        return () => unsubscribe();
+        const cleanup = initAuth();
+        return () => { cleanup.then(unsub => unsub && unsub()); };
     }, []);
 
     // Google Sign-In
@@ -98,6 +111,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setError(null);
         try {
             const provider = new GoogleAuthProvider();
+            // Persistence is already set in useEffect, but setting it here again ensures it applies to this sign-in flow
+            // Persistence is already set in useEffect, but setting it here again ensures it applies to this sign-in flow
+            const { setPersistence, inMemoryPersistence } = await import("firebase/auth");
+            await setPersistence(auth, inMemoryPersistence);
+
             await signInWithPopup(auth, provider);
             // onAuthStateChanged will handle the rest
         } catch (err: any) {

@@ -5,7 +5,7 @@
 |:------|:------|
 | **Doc ID** | KUVMIS-DOC-008 |
 | **Version** | 1.3.0 |
-| **Last Updated** | 2026-02-11T01:34:00+07:00 |
+| **Last Updated** | 2026-02-11T08:48:18+07:00 |
 | **Author** | KUVMIS Development Team |
 | **Status** | Released |
 
@@ -13,8 +13,10 @@
 
 ## 1. ภาพรวมระบบยืนยันตัวตน (Authentication)
 
-### 1.1 วิธีการ Login
-ระบบใช้ **Google Sign-In** ผ่าน Firebase Authentication — ผู้ใช้กดปุ่ม "Sign in with Google" แล้วเลือก Google Account
+### 1.1 Authentication Flow
+- **Provider**: Google Sign-In via Firebase Auth.
+- **Persistence**: `inMemoryPersistence` (User must login every time tab is refreshed or closed for security).
+- **Domain Restriction**: Only emails listed in `authorized_users` collection are allowed access.
 
 ### 1.2 การควบคุมสิทธิ์ (Email Whitelist)
 ไม่ใช่ทุก Google Account ที่เข้าระบบได้ — ต้องอยู่ใน **รายชื่อที่อนุญาต** ซึ่งเก็บไว้ใน Firestore collection `authorized_users`

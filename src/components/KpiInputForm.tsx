@@ -72,6 +72,8 @@ export default function KpiInputForm({ lang }: { lang: "th" | "en" }) {
   const [submitted, setSubmitted] = useState(false);
   const [submitting, setSubmitting] = useState(false);
 
+  const [file, setFile] = useState<File | null>(null);
+
   // Audit Trail State
   const [recentLogs, setRecentLogs] = useState<KpiEntry[]>([]);
   const [kpiMasters, setKpiMasters] = useState<KpiMaster[]>([]);
@@ -88,31 +90,33 @@ export default function KpiInputForm({ lang }: { lang: "th" | "en" }) {
   const t = lang === "th";
 
   // Load data from Firestore
+  const loadData = async () => {
+    setLoadingLogs(true);
+    try {
+      const [filteredResults, masters] = await Promise.all([
+        import("@/lib/data-service").then(m => m.getRecentEntriesFiltered({
+          ...filters,
+          year: filters.year === 0 ? undefined : filters.year
+        }, page, 20)),
+        getAllKpiMaster(),
+      ]);
+      setRecentLogs(filteredResults.entries);
+      setTotalCount(filteredResults.total);
+      setKpiMasters(masters);
+    } catch (err) {
+      console.error("Error loading data:", err);
+    } finally {
+      setLoadingLogs(false);
+    }
+  };
+
   useEffect(() => {
-    const loadData = async () => {
-      setLoadingLogs(true);
-      try {
-        const [filteredResults, masters] = await Promise.all([
-          import("@/lib/data-service").then(m => m.getRecentEntriesFiltered({
-            ...filters,
-            year: filters.year === 0 ? undefined : filters.year
-          }, page, 20)),
-          getAllKpiMaster(),
-        ]);
-        setRecentLogs(filteredResults.entries);
-        setTotalCount(filteredResults.total);
-        setKpiMasters(masters);
-      } catch (err) {
-        console.error("Error loading data:", err);
-      } finally {
-        setLoadingLogs(false);
-      }
-    };
     loadData();
   }, [submitted, filters, page]);
 
   const resetForm = () => {
     setFormValues({});
+    setFile(null);
     setErrors({});
     setShowPreview(false);
     setSubmitted(false);
@@ -135,16 +139,13 @@ export default function KpiInputForm({ lang }: { lang: "th" | "en" }) {
     const newErrors: Record<string, boolean> = {};
     let valid = true;
     for (const field of selectedForm.fields) {
-      if (field.required && (!formValues[field.field_id] || formValues[field.field_id].trim() === "")) {
-        newErrors[field.field_id] = true;
-        valid = false;
-      }
       if (field.type === "number" && formValues[field.field_id]) {
         const num = parseFloat(formValues[field.field_id]);
         if (field.min !== undefined && num < field.min) { newErrors[field.field_id] = true; valid = false; }
         if (field.max !== undefined && num > field.max) { newErrors[field.field_id] = true; valid = false; }
       }
     }
+    // No required fields as per user request
     setErrors(newErrors);
     return valid;
   };
@@ -158,6 +159,27 @@ export default function KpiInputForm({ lang }: { lang: "th" | "en" }) {
     if (!selectedForm) return;
     setSubmitting(true);
     try {
+      // Mock File Upload (since we might not have Storage configured fully yet or want to save complexity)
+      // In production, upload to Firebase Storage here and get URL
+      let attachmentUrl = "";
+      let attachmentName = "";
+
+      if (file) {
+        // Simulating upload... 
+        // For now we just store the name. 
+        // TODO: Implement actual storage upload
+        attachmentName = file.name;
+        attachmentUrl = "#"; // Placeholder
+      }
+
+      // Collect extra data (non-KPI fields like project names, descriptions)
+      const extraData: Record<string, any> = {};
+      selectedForm.fields.forEach(f => {
+        if (f.type !== 'number' && f.type !== 'file' && f.field_id !== 'notes' && formValues[f.field_id]) {
+          extraData[f.field_id] = formValues[f.field_id];
+        }
+      });
+
       for (const field of selectedForm.fields) {
         if (field.type === "number" && formValues[field.field_id]) {
           const kpiId = field.target_kpi || selectedForm.kpi_ids[0];
@@ -174,6 +196,9 @@ export default function KpiInputForm({ lang }: { lang: "th" | "en" }) {
             submitted_by: user?.email || "unknown",
             submitted_at: new Date().toISOString(),
             status: "pending",
+            attachment_url: attachmentUrl || undefined,
+            attachment_name: attachmentName || undefined,
+            extra_data: Object.keys(extraData).length > 0 ? extraData : undefined,
           });
         }
       }
@@ -185,6 +210,28 @@ export default function KpiInputForm({ lang }: { lang: "th" | "en" }) {
     } finally {
       setSubmitting(false);
     }
+  };
+
+  // ── Edit / Delete ──
+  const handleDelete = async (id: string, status: string) => {
+    if (!confirm(t ? "ยืนยันการลบรายการนี้?" : "Are you sure you want to delete this entry?")) return;
+    try {
+      const { softDeleteEntry } = await import("@/lib/data-service");
+      await softDeleteEntry(id, user?.email || "unknown", status);
+      loadData(); // Refresh logs
+    } catch (err) {
+      alert("Error deleting entry");
+    }
+  };
+
+  const handleEdit = (entry: KpiEntry) => {
+    // Populate form with entry data
+    // This is complex for multi-field forms, simplifying for single-value updates
+    if (!selectedForm) return;
+
+    // Find the field that matches this KPI
+    // For now, we just alert
+    alert(t ? "ฟีเจอร์แก้ไขกำลังพัฒนา (สามารถลบและกรอกใหม่ได้)" : "Edit feature coming soon (Please delete and resubmit)");
   };
 
   // ── Render Field ──
@@ -219,12 +266,35 @@ export default function KpiInputForm({ lang }: { lang: "th" | "en" }) {
               <option key={String(opt)} value={String(opt)} className="text-black font-normal bg-white">{String(opt)}</option>
             ))}
           </select>
+        ) : field.type === "file" ? (
+          <div className={`relative ${baseInputCls} border-dashed flex flex-col items-center justify-center py-6 cursor-pointer hover:bg-slate-50 transition-colors`}>
+            <input
+              type="file"
+              accept=".pdf"
+              className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+              onChange={(e) => {
+                const f = e.target.files?.[0];
+                if (f) {
+                  if (f.size > 10 * 1024 * 1024) {
+                    alert("File too large > 10MB");
+                    return;
+                  }
+                  setFile(f);
+                }
+              }}
+            />
+            <div className="text-center space-y-2 pointer-events-none">
+              <FileText className={`mx-auto h-8 w-8 ${file ? "text-blue-500" : "text-slate-300"}`} />
+              <span className="text-sm font-medium text-slate-600 block">
+                {file ? file.name : (t ? "คลิกเพื่อแนบไฟล์ PDF" : "Click to attach PDF")}
+              </span>
+              <span className="text-xs text-slate-400 block">
+                {file ? (Math.round(file.size / 1024) + " KB") : "Max 10MB"}
+              </span>
+            </div>
+          </div>
         ) : field.type === "textarea" ? (
           <textarea className={`${baseInputCls} min-h-[80px] resize-y`} value={value} onChange={(e) => setFormValues({ ...formValues, [field.field_id]: e.target.value })} placeholder={t ? "กรุณากรอกข้อมูล..." : "Enter data..."} />
-        ) : field.type === "file" ? (
-          <div className={`${baseInputCls} flex items-center justify-center py-6 cursor-pointer border-dashed`}>
-            <span className="text-slate-400 text-sm">{t ? "คลิกเพื่อแนบไฟล์" : "Click to attach file"}</span>
-          </div>
         ) : (
           <input type={field.type === "number" ? "number" : "text"} className={baseInputCls} value={value} min={field.min} max={field.max} onChange={(e) => setFormValues({ ...formValues, [field.field_id]: e.target.value })} placeholder={field.type === "number" ? `${field.min ?? 0}${field.max ? ` – ${field.max}` : ""}` : t ? "กรุณากรอก..." : "Enter..."} />
         )}
@@ -293,6 +363,9 @@ export default function KpiInputForm({ lang }: { lang: "th" | "en" }) {
       goBack={goBack}
       handleSubmit={handleSubmit}
       meta={meta}
+      recentLogs={recentLogs}
+      onDelete={handleDelete}
+      onEdit={handleEdit}
       t={t}
     />
   );

@@ -5,7 +5,7 @@
 |:------|:------|
 | **Doc ID** | KUVMIS-DOC-005 |
 | **Version** | 1.3.0 |
-| **Last Updated** | 2026-02-11T01:34:00+07:00 |
+| **Last Updated** | 2026-02-11T08:48:18+07:00 |
 | **Author** | KUVMIS Development Team |
 | **Status** | Released |
 
@@ -52,6 +52,10 @@ Region: Default
   "value": 81.70,
   "target": 100,
   "unit": "ร้อยละ",
+  "extra_data": {
+    "field1": "value1",
+    "field2": 123
+  },
   "submitted_by": "staff@ku.th",
   "submitted_at": "2026-02-10T10:00:00Z",
   "status": "pending",
@@ -63,6 +67,26 @@ Region: Default
   "previous_status": null
 }
 ```
+**Field Definition for `kpi_entries`:**
+| Field | Type | Description |
+|---|---|---|
+| `id` | String | Auto-generated document ID |
+| `kpi_id` | String | ID ของ KPI (เช่น "7.1.1") |
+| `fiscal_year` | Number | ปีงบประมาณ (พ.ศ.) |
+| `period` | String | งวดข้อมูล (เช่น "Q1", "S1", "Annual") |
+| `value` | Number | ค่าตัวเลขที่กรอก |
+| `target` | Number | ค่าเป้าหมายของ KPI |
+| `unit` | String | หน่วยนับ (เช่น "ร้อยละ", "คน", "บาท") |
+| `extra_data` | Map | ข้อมูลเพิ่มเติม (JSON object) สำหรับฟอร์มที่มีหลาย field |
+| `submitted_by` | String | Email ผู้บันทึกข้อมูล |
+| `submitted_at` | Timestamp | วันที่และเวลาที่บันทึกข้อมูล |
+| `status` | String | สถานะของข้อมูล ("pending", "approved", "rejected") |
+| `reviewed_by` | String | Email ผู้ตรวจสอบข้อมูล |
+| `reviewed_at` | Timestamp | วันที่และเวลาที่ตรวจสอบข้อมูล |
+| `rejection_reason` | String | เหตุผลในการปฏิเสธข้อมูล |
+| `deleted_by` | String | Email ผู้ลบข้อมูล (soft delete) |
+| `deleted_at` | Timestamp | วันที่และเวลาที่ลบข้อมูล (soft delete) |
+| `previous_status` | String | สถานะก่อนหน้าการลบ (สำหรับ soft delete) |
 
 ### 2.3 Document Schema — authorized_users
 

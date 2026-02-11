@@ -4,7 +4,7 @@
 |:------|:------|
 | **Doc ID** | KUVMIS-DOC-004 |
 | **Version** | 1.3.1 |
-| **Last Updated** | 2026-02-11T01:58:00+07:00 |
+| **Last Updated** | 2026-02-11T08:48:18+07:00 |
 | **Author** | KUVMIS Development Team |
 | **Status** | Released |
 
@@ -48,6 +48,8 @@
 | Period | Dropdown | `period` | Q1-Q4, S1-S2, or All |
 | Dimension | Dropdown | `dimension_value` | Context (Dept, Hospital, Strategy) |
 | Value | Number | `value` | The actual performance metric |
+| Text Fields (Extra) | Text | `extra_data` | Optional descriptive fields |
+| Submitted By | Email | `submitted_by` | User ID / Email |
 
 ## 5. Data Services (`@/lib/data-service`)
 - `getKpiTrendData(kpiIds, filters)`: Fetches historical data points for line/bar charts.

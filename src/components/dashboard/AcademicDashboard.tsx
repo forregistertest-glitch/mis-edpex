@@ -16,6 +16,7 @@ import {
 import { Line, Bar } from "react-chartjs-2";
 import { GraduationCap, Loader2, RefreshCw, TrendingUp, BookOpen, FlaskConical, Users, Shield } from "lucide-react";
 import ChartFilterBar, { ChartViewMode } from "./ChartFilterBar";
+import DashboardCard from "./DashboardCard";
 import type { Language } from "@/lib/translations";
 import {
     getKpiTrendData,
@@ -218,26 +219,33 @@ export default function AcademicDashboard({ lang }: AcademicDashboardProps) {
             {/* Summary Cards */}
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
                 {summaryCards.map((card) => {
-                    const colorMap: Record<string, string> = {
-                        blue: "from-blue-500 to-blue-600", purple: "from-purple-500 to-purple-600",
-                        green: "from-green-500 to-green-600", red: "from-red-500 to-red-600",
+                    const colorMap: Record<string, { t: string, b: string }> = {
+                        blue: { t: "text-blue-600", b: "bg-blue-100" },
+                        purple: { t: "text-purple-600", b: "bg-purple-100" },
+                        green: { t: "text-green-600", b: "bg-green-100" },
+                        red: { t: "text-red-600", b: "bg-red-100" },
                     };
                     const met = card.target !== null && card.target !== undefined && card.value !== null && card.value !== undefined && card.value >= card.target;
+
+                    // Logic & Source Mapping
+                    let logic = "", source = "";
+                    if (card.icon === GraduationCap) { logic = th ? "ร้อยละผู้สอบผ่านใบประกอบวิชาชีพ" : "% Passing Licensure Exam"; source = "KPI-7.1.1"; }
+                    else if (card.icon === BookOpen) { logic = th ? "ร้อยละผู้สอบผ่าน OSCE" : "% Passing OSCE"; source = "KPI-7.1.2"; }
+                    else if (card.icon === Users) { logic = th ? "อัตราการคงอยู่ของนิสิต" : "Student Retention Rate"; source = "KPI-7.1.14"; }
+                    else if (card.icon === Shield) { logic = th ? "จำนวนอุบัติเหตุ" : "Safety Incidents"; source = "KPI-7.1.11"; }
+
                     return (
-                        <div key={card.label} className="bg-white p-5 rounded-2xl border border-slate-200/60 shadow-sm hover:shadow-md transition-all">
-                            <div className="flex items-center gap-2 mb-3">
-                                <div className={`p-2 rounded-xl bg-gradient-to-br ${colorMap[card.color]} text-white`}><card.icon size={16} /></div>
-                                <span className="text-xs font-bold text-slate-400 uppercase">{card.label}</span>
-                            </div>
-                            <p className="text-2xl font-black text-slate-800">
-                                {card.value !== null && card.value !== undefined ? `${card.value}${card.unit === "%" ? "%" : ` ${card.unit}`}` : "—"}
-                            </p>
-                            {card.target !== null && card.target !== undefined && (
-                                <p className={`text-xs mt-1 font-semibold ${met ? "text-green-600" : "text-amber-600"}`}>
-                                    {met ? "✓" : "→"} {th ? "เป้า" : "Target"}: {card.target}{card.unit === "%" ? "%" : ""}
-                                </p>
-                            )}
-                        </div>
+                        <DashboardCard
+                            key={card.label}
+                            title={card.label}
+                            value={card.value !== null && card.value !== undefined ? `${card.value}${card.unit === "%" ? "%" : ` ${card.unit}`}` : "—"}
+                            trend={card.target !== null && card.target !== undefined ? (met ? "✓ Met Target" : "→ Tracking") : undefined}
+                            icon={card.icon}
+                            iconColor={colorMap[card.color].t}
+                            iconBg={colorMap[card.color].b}
+                            logic={logic}
+                            source={source}
+                        />
                     );
                 })}
             </div>
@@ -245,7 +253,11 @@ export default function AcademicDashboard({ lang }: AcademicDashboardProps) {
             {/* Charts Grid */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 {/* 1. Licensure Exam + OSCE Trend */}
-                <div className="bg-white p-6 rounded-2xl border border-slate-200/60 shadow-sm">
+                <DashboardCard
+                    title={th ? "แนวโน้มสอบใบประกอบ & OSCE" : "Licensure & OSCE Trend"}
+                    logic={th ? "เปรียบเทียบผลสอบใบประกอบวิชาชีพและ OSCE ย้อนหลัง 5 ปี" : "5-Year trend of Licensure and OSCE pass rates"}
+                    source={th ? "ฝ่ายวิชาการ / สัตวแพทยสภา" : "Academic Affairs / Vet Council"}
+                >
                     <div className="h-[320px]">
                         {viewMode === "table" ? (
                             <SimpleTable data={examTrend} labels={{ "7.1.1": th ? "สอบใบประกอบ (%)" : "Licensure (%)", "7.1.2": th ? "OSCE (%)" : "OSCE (%)" }} />
@@ -261,10 +273,14 @@ export default function AcademicDashboard({ lang }: AcademicDashboardProps) {
                             })} />
                         )}
                     </div>
-                </div>
+                </DashboardCard>
 
                 {/* 2. Research Funding */}
-                <div className="bg-white p-6 rounded-2xl border border-slate-200/60 shadow-sm">
+                <DashboardCard
+                    title={th ? "ทุนวิจัย: ภายใน vs ภายนอก" : "Research Funding: Internal vs External"}
+                    logic={th ? "เปรียบเทียบจำนวนเงินและจำนวนโครงการทุนวิจัยแยกตามแหล่งทุน" : "Comparison of funding amounts and grants by source"}
+                    source={th ? "ฝ่ายวิจัยและนวัตกรรม" : "Research & Innovation Dept"}
+                >
                     <div className="h-[320px]">
                         {viewMode === "table" ? (
                             <SimpleTable data={researchTrend} labels={{
@@ -282,10 +298,14 @@ export default function AcademicDashboard({ lang }: AcademicDashboardProps) {
                             })} />
                         )}
                     </div>
-                </div>
+                </DashboardCard>
 
                 {/* 3. Retention Rate */}
-                <div className="bg-white p-6 rounded-2xl border border-slate-200/60 shadow-sm">
+                <DashboardCard
+                    title={th ? "อัตราคงอยู่นิสิต (ปี 2 ขึ้นไป)" : "Student Retention Rate (Year 2+)"}
+                    logic={th ? "ร้อยละของนิสิตที่คงอยู่เทียบกับจำนวนรับเข้าในรุ่นเดียวกัน" : "Percentage of retained students vs intake cohort"}
+                    source={th ? "งานบริการการศึกษา" : "Education Service Division"}
+                >
                     <div className="h-[320px]">
                         {viewMode === "table" ? (
                             <SimpleTable data={retentionTrend} labels={{ "7.1.14": th ? "อัตราคงอยู่ (%)" : "Retention (%)" }} />
@@ -295,10 +315,14 @@ export default function AcademicDashboard({ lang }: AcademicDashboardProps) {
                             })} />
                         )}
                     </div>
-                </div>
+                </DashboardCard>
 
                 {/* 4. Supply Chain / Network Schools */}
-                <div className="bg-white p-6 rounded-2xl border border-slate-200/60 shadow-sm">
+                <DashboardCard
+                    title={th ? "เครือข่ายโรงเรียนมัธยม (Supply Chain)" : "High School Network (Supply Chain)"}
+                    logic={th ? "จำนวนโรงเรียนมัธยมในเครือข่ายความร่วมมือทางวิชาการ" : "Number of high schools in academic partnership network"}
+                    source={th ? "งานประชาสัมพันธ์และสื่อสารองค์กร" : "PR & Corp Comm"}
+                >
                     <div className="h-[320px]">
                         {viewMode === "table" ? (
                             <SimpleTable data={supplyTrend} labels={{ "7.1.13": th ? "โรงเรียนเครือข่าย" : "Network Schools" }} />
@@ -308,19 +332,25 @@ export default function AcademicDashboard({ lang }: AcademicDashboardProps) {
                             })} />
                         )}
                     </div>
-                </div>
+                </DashboardCard>
 
                 {/* 5. Safety Incidents */}
-                <div className="bg-white p-6 rounded-2xl border border-slate-200/60 shadow-sm lg:col-span-2">
-                    <div className="h-[280px]">
-                        {viewMode === "table" ? (
-                            <SimpleTable data={safetyTrend} labels={{ "7.1.11": th ? "อุบัติเหตุ (ครั้ง)" : "Incidents" }} />
-                        ) : (
-                            <Bar options={barOpts(th ? "อุบัติเหตุด้านความปลอดภัย" : "Safety Incidents")} data={buildTrendChart(safetyTrend, {
-                                "7.1.11": { name: th ? "จำนวนอุบัติเหตุ" : "Incidents", color: COLORS.red },
-                            })} />
-                        )}
-                    </div>
+                <div className="lg:col-span-2">
+                    <DashboardCard
+                        title={th ? "อุบัติเหตุด้านความปลอดภัย" : "Safety Incidents"}
+                        logic={th ? "จำนวนอุบัติเหตุที่เกิดขึ้นกับนิสิตและบุคลากรในคณะ" : "Number of safety incidents involving students and staff"}
+                        source={th ? "คณะกรรมการความปลอดภัย (Safety Committee)" : "Safety Committee"}
+                    >
+                        <div className="h-[280px]">
+                            {viewMode === "table" ? (
+                                <SimpleTable data={safetyTrend} labels={{ "7.1.11": th ? "อุบัติเหตุ (ครั้ง)" : "Incidents" }} />
+                            ) : (
+                                <Bar options={barOpts(th ? "อุบัติเหตุด้านความปลอดภัย" : "Safety Incidents")} data={buildTrendChart(safetyTrend, {
+                                    "7.1.11": { name: th ? "จำนวนอุบัติเหตุ" : "Incidents", color: COLORS.red },
+                                })} />
+                            )}
+                        </div>
+                    </DashboardCard>
                 </div>
             </div>
 

@@ -45,10 +45,15 @@ export interface KpiEntry {
   reviewed_by?: string;
   reviewed_at?: string;
   rejection_reason?: string;
+  // Attachment fields
+  attachment_url?: string;
+  attachment_name?: string;
   // Soft delete fields
   deleted_by?: string;
   deleted_at?: string;
   previous_status?: string;
+  // Extra form data (for context like Project Name, etc.)
+  extra_data?: Record<string, any>;
 }
 
 // ─── KPI Master ────────────────────────────────────────────────
@@ -261,6 +266,44 @@ export async function removeAuthorizedUser(email: string): Promise<void> {
 
 export async function updateUserRole(email: string, newRole: string): Promise<void> {
   await setDoc(doc(db, "authorized_users", email), { role: newRole }, { merge: true });
+}
+
+export async function updateUserDetails(email: string, name: string, role: string): Promise<void> {
+  await setDoc(doc(db, "authorized_users", email), { name, role }, { merge: true });
+}
+
+// ─── Login Logs ────────────────────────────────────────────────
+export interface LoginLog {
+  id: string;
+  email: string;
+  timestamp: string;
+  success: boolean;
+  method: string;
+  user_agent: string;
+}
+
+export async function addLoginLog(email: string, success: boolean, method: string = "google"): Promise<void> {
+  try {
+    await addDoc(collection(db, "login_logs"), {
+      email,
+      timestamp: new Date().toISOString(),
+      success,
+      method,
+      user_agent: typeof navigator !== 'undefined' ? navigator.userAgent : 'unknown'
+    });
+  } catch (error) {
+    console.error("Error logging login:", error);
+  }
+}
+
+export async function getLoginLogs(limitCount: number = 50): Promise<LoginLog[]> {
+  const q = query(
+    collection(db, "login_logs"),
+    orderBy("timestamp", "desc"),
+    firestoreLimit(limitCount)
+  );
+  const snap = await getDocs(q);
+  return snap.docs.map(d => ({ id: d.id, ...d.data() } as LoginLog));
 }
 
 // ─── Dashboard Summary ────────────────────────────────────────

@@ -8,6 +8,7 @@ import {
 import { Line, Bar, Radar } from "react-chartjs-2";
 import { Users, Loader2, RefreshCw, HeartPulse, Shield, Award, UserCheck } from "lucide-react";
 import ChartFilterBar, { ChartViewMode } from "./ChartFilterBar";
+import DashboardCard from "./DashboardCard";
 import type { Language } from "@/lib/translations";
 import {
     getKpiTrendData, getKpiMatrixData, getAvailableFilters, getCategoryOverview,
@@ -124,26 +125,43 @@ export default function StaffDashboard({ lang }: StaffDashboardProps) {
 
             {/* Summary Cards */}
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-                {cards.map(card => (
-                    <div key={card.label} className="bg-white p-5 rounded-2xl border border-slate-200/60 shadow-sm hover:shadow-md transition-all">
-                        <div className="flex items-center gap-2 mb-3">
-                            <div className={`p-2 rounded-xl bg-gradient-to-br ${card.color} text-white`}><card.icon size={16} /></div>
-                            <span className="text-xs font-bold text-slate-400 uppercase">{card.label}</span>
-                        </div>
-                        <p className="text-2xl font-black text-slate-800">{card.value !== null && card.value !== undefined ? `${card.value} ${card.unit}` : "—"}</p>
-                    </div>
-                ))}
+                {cards.map(card => {
+                    // Logic & Source Mapping
+                    let logic = "", source = "";
+                    if (card.icon === HeartPulse) { logic = th ? "คะแนนความผูกพันเฉลี่ย" : "Avg Engagement Score"; source = "KPI-7.3.10"; }
+                    else if (card.icon === Users) { logic = th ? "จำนวนวันลาป่วยเฉลี่ย" : "Avg Sick Leave Days"; source = "KPI-7.3.4"; }
+                    else if (card.icon === Shield) { logic = th ? "จำนวนอุบัติเหตุ" : "Safety Incidents"; source = "KPI-7.3.5"; }
+                    else if (card.icon === Award) { logic = th ? "จำนวนผู้สืบทอดตำแหน่ง" : "Successors Count"; source = "KPI-7.3.12"; }
+
+                    return (
+                        <DashboardCard
+                            key={card.label}
+                            title={card.label}
+                            value={card.value !== null && card.value !== undefined ? `${card.value} ${card.unit}` : "—"}
+                            trend="→ Tracking"
+                            icon={card.icon}
+                            iconColor="text-white"
+                            iconBg={`bg-gradient-to-br ${card.color}`}
+                            logic={logic}
+                            source={source}
+                        />
+                    );
+                })}
             </div>
 
             {/* Charts */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 {/* Engagement Radar */}
-                <div className="bg-white p-6 rounded-2xl border border-slate-200/60 shadow-sm">
+                <DashboardCard
+                    title={th ? "ความผูกพันบุคลากร (7.3.10)" : "Staff Engagement (7.3.10)"}
+                    logic={th ? "คะแนนความผูกพันแยกตามรายด้าน" : "Engagement score by dimension"}
+                    source={th ? "สำรวจความผูกพัน (HR)" : "Engagement Survey (HR)"}
+                >
                     <div className="h-[320px]">
                         {engagementMatrix.length > 0 ? (
                             <Radar options={{
                                 responsive: true, maintainAspectRatio: false,
-                                plugins: { title: { display: true, text: th ? "ความผูกพันบุคลากร (7.3.10)" : "Staff Engagement (7.3.10)", font: { size: 14, weight: "bold" as const } } },
+                                plugins: { title: { display: false } },
                                 scales: { r: { beginAtZero: true, max: 5, ticks: { stepSize: 1 } } },
                             }} data={{
                                 labels: engagementMatrix.map(m => m.dimension_value.length > 20 ? m.dimension_value.slice(0, 20) + "…" : m.dimension_value),
@@ -151,17 +169,25 @@ export default function StaffDashboard({ lang }: StaffDashboardProps) {
                             }} />
                         ) : <div className="flex flex-col items-center justify-center h-full text-slate-400"><p className="font-bold text-sm mb-1">{th ? "ความผูกพันบุคลากร (7.3.10)" : "Staff Engagement (7.3.10)"}</p><p className="text-xs">{th ? "ยังไม่มีข้อมูล — กรุณากรอกข้อมูลในแบบฟอร์ม" : "No data — please submit via input form"}</p></div>}
                     </div>
-                </div>
+                </DashboardCard>
 
                 {/* Sick Leave */}
-                <div className="bg-white p-6 rounded-2xl border border-slate-200/60 shadow-sm">
+                <DashboardCard
+                    title={th ? "วันลาป่วยเฉลี่ย (7.3.4)" : "Avg Sick Leave Days (7.3.4)"}
+                    logic={th ? "จำนวนวันลาป่วยเฉลี่ยต่อคนต่อปี" : "Average sick leave days per person per year"}
+                    source={th ? "ระบบการลา (HR)" : "Leave System (HR)"}
+                >
                     <div className="h-[320px]">
                         <Bar options={chartOpts(th ? "วันลาป่วยเฉลี่ย (7.3.4)" : "Avg Sick Leave Days (7.3.4)")} data={buildTrend(sickLeaveTrend, { "7.3.4": th ? "วัน/คน" : "Days/Person" })} />
                     </div>
-                </div>
+                </DashboardCard>
 
                 {/* Turnover by tenure */}
-                <div className="bg-white p-6 rounded-2xl border border-slate-200/60 shadow-sm">
+                <DashboardCard
+                    title={th ? "อาจารย์/สัตวแพทย์ลาออก (7.3.11)" : "Faculty Turnover (7.3.11)"}
+                    logic={th ? "จำนวนบุคลากรสายวิชาการที่ลาออกแยกตามอายุงาน" : "Academic staff resignation count by tenure"}
+                    source={th ? "งานบริหารทรัพยากรบุคคล" : "HR Division"}
+                >
                     <div className="h-[320px]">
                         {turnoverMatrix.length > 0 ? (
                             <Bar options={chartOpts(th ? "อาจารย์/สัตวแพทย์ลาออก (7.3.11)" : "Faculty Turnover (7.3.11)")} data={{
@@ -170,10 +196,14 @@ export default function StaffDashboard({ lang }: StaffDashboardProps) {
                             }} />
                         ) : <div className="flex flex-col items-center justify-center h-full text-slate-400"><p className="font-bold text-sm mb-1">{th ? "อาจารย์/สัตวแพทย์ลาออก (7.3.11)" : "Faculty Turnover (7.3.11)"}</p><p className="text-xs">{th ? "ยังไม่มีข้อมูล — กรุณากรอกข้อมูลในแบบฟอร์ม" : "No data — please submit via input form"}</p></div>}
                     </div>
-                </div>
+                </DashboardCard>
 
                 {/* Talent Pipeline */}
-                <div className="bg-white p-6 rounded-2xl border border-slate-200/60 shadow-sm">
+                <DashboardCard
+                    title={th ? "Talent Successor (7.3.12)" : "Talent Successor (7.3.12)"}
+                    logic={th ? "จำนวนผู้สืบทอดตำแหน่งในกลุ่ม Talent" : "Number of successors in talent pool"}
+                    source={th ? "คณะกรรมการบริหารงานบุคคล" : "HR Committee"}
+                >
                     <div className="h-[320px]">
                         {talentMatrix.length > 0 ? (
                             <Bar options={{ ...chartOpts(th ? "Talent Successor (7.3.12)" : "Talent Successor (7.3.12)"), indexAxis: "y" as const }} data={{
@@ -182,21 +212,29 @@ export default function StaffDashboard({ lang }: StaffDashboardProps) {
                             }} />
                         ) : <div className="flex flex-col items-center justify-center h-full text-slate-400"><p className="font-bold text-sm mb-1">{th ? "Talent Successor (7.3.12)" : "Talent Successor (7.3.12)"}</p><p className="text-xs">{th ? "ยังไม่มีข้อมูล — กรุณากรอกข้อมูลในแบบฟอร์ม" : "No data — please submit via input form"}</p></div>}
                     </div>
-                </div>
+                </DashboardCard>
 
                 {/* Safety */}
-                <div className="bg-white p-6 rounded-2xl border border-slate-200/60 shadow-sm">
+                <DashboardCard
+                    title={th ? "อุบัติเหตุจากการทำงาน (7.3.5)" : "Workplace Incidents (7.3.5)"}
+                    logic={th ? "สถิติอุบัติเหตุจากการทำงานรายเดือน/ปี" : "Workplace accident statistics by month/year"}
+                    source={th ? "คณะกรรมการความปลอดภัย" : "Safety Committee"}
+                >
                     <div className="h-[320px]">
                         <Bar options={chartOpts(th ? "อุบัติเหตุจากการทำงาน (7.3.5)" : "Workplace Incidents (7.3.5)")} data={buildTrend(safetyTrend, { "7.3.5": th ? "ครั้ง" : "Cases" })} />
                     </div>
-                </div>
+                </DashboardCard>
 
                 {/* Benefits */}
-                <div className="bg-white p-6 rounded-2xl border border-slate-200/60 shadow-sm">
+                <DashboardCard
+                    title={th ? "สิทธิประโยชน์เพิ่มขึ้น (7.3.7)" : "Additional Benefits (7.3.7)"}
+                    logic={th ? "จำนวนสิทธิประโยชน์ใหม่ที่เพิ่มขึ้นในแต่ละปี" : "Number of new benefits added per year"}
+                    source={th ? "สวัสดิการคณะ" : "Faculty Welfare"}
+                >
                     <div className="h-[320px]">
                         <Bar options={chartOpts(th ? "สิทธิประโยชน์เพิ่มขึ้น (7.3.7)" : "Additional Benefits (7.3.7)")} data={buildTrend(benefitsTrend, { "7.3.7": th ? "รายการ" : "Items" })} />
                     </div>
-                </div>
+                </DashboardCard>
             </div>
 
             {/* KPI Table */}

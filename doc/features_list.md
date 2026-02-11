@@ -5,13 +5,18 @@
 |:------|:------|
 | **Doc ID** | KUVMIS-DOC-003 |
 | **Version** | 1.3.1 |
-| **Last Updated** | 2026-02-11T01:55:00+07:00 |
+| **Last Updated** | 2026-02-11T08:48:18+07:00 |
 | **Author** | KUVMIS Development Team |
 | **Status** | Released |
 
 ---
 
 ## 1. Dashboard System
+
+- [x] **Dashboard Cards**: Generic component with Chart + Tooltip (Logic/Source).
+- [x] **Charts**: Bar / Line / Radar / KPI Cards.
+- [x] **Filters**: Years / Quarters / Org Units.
+- [x] **Entry History**: Dynamic Columns + Status Badges.em
 
 ### 1.1 Executive Dashboard (Main)
 **Structure:**

@@ -5,7 +5,7 @@
 |:------|:------|
 | **Doc ID** | KUVMIS-DOC-001 |
 | **Version** | 1.3.0 |
-| **Last Updated** | 2026-02-11T01:34:00+07:00 |
+| **Last Updated** | 2026-02-11T08:48:18+07:00 |
 | **Author** | KUVMIS Development Team |
 | **Status** | Released |
 
@@ -64,7 +64,8 @@ mis-edpex/
 │   │   │   ├── CategorySection.tsx ← KPI category display
 │   │   │   ├── ReportsSection.tsx  ← Export tools
 │   │   │   ├── ReviewerDashboard.tsx ← Approve/Reject (Reviewer+Admin)
-│   │   │   └── AdminPanel.tsx   ← จัดการผู้ใช้ (Admin only)
+│   │   │   ├── AdminPanel.tsx   ← จัดการผู้ใช้ (Admin only)
+│   │   │   └── DashboardCard.tsx ← [NEW] Standard Card with Logic/Source
 │   │   └── kpi-input/           ← Sub-components ของ KpiInputForm
 │   │       ├── FormSelector.tsx
 │   │       ├── FormEntry.tsx

@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EdPEx Data Entry Forms Prototype</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Sarabun', sans-serif;
+        }
+    </style>
+</head>
+
+<body class="bg-gray-50 p-8">
+
+    <div class="max-w-4xl mx-auto space-y-12">
+
+        <!-- Header -->
+        <div class="text-center mb-10">
+            <h1 class="text-3xl font-bold text-gray-800">KUVMIS EdPEx Data Entry</h1>
+            <p class="text-gray-600 mt-2">แบบฟอร์มบันทึกข้อมูลตามเกณฑ์ EdPEx (จำลองข้อมูลจริง)</p>
+        </div>
+
+        <!-- Block A: Standard Numeric -->
+        <div class="bg-white rounded-xl shadow-md overflow-hidden border border-gray-100">
+            <div class="bg-blue-600 px-6 py-4">
+                <h2 class="text-white text-lg font-semibold flex items-center">
+                    <span
+                        class="bg-white text-blue-600 rounded-full w-6 h-6 flex items-center justify-center text-sm mr-2">A</span>
+                    Standard Numeric Form (ข้อมูลตัวเลข)
+                </h2>
+            </div>
+            <div class="p-6 grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Common Fields -->
+                <div class="col-span-2 md:col-span-1">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">KPI Selection</label>
+                    <select
+                        class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 border p-2 bg-gray-50">
+                        <option>7.1.1 ร้อยละนิสิตสอบผ่านใบประกอบวิชาชีพ</option>
+                        <option>7.3.4 อัตราการลาออกของบุคลากร</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Fiscal Year</label>
+                    <select
+                        class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 border p-2">
+                        <option>2568</option>
+                        <option>2567</option>
+                    </select>
+                </div>
+
+                <!-- Measure Fields -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Target Value (เป้าหมาย)</label>
+                    <div class="flex">
+                        <input type="number" class="w-full rounded-l-md border-gray-300 border p-2"
+                            placeholder="100.00">
+                        <span
+                            class="inline-flex items-center px-3 rounded-r-md border border-l-0 border-gray-300 bg-gray-50 text-gray-500 text-sm">ร้อยละ</span>
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Performance Value (ผลลัพธ์)</label>
+                    <div class="flex">
+                        <input type="number" class="w-full rounded-l-md border-gray-300 border p-2" placeholder="85.50">
+                        <span
+                            class="inline-flex items-center px-3 rounded-r-md border border-l-0 border-gray-300 bg-gray-50 text-gray-500 text-sm">ร้อยละ</span>
+                    </div>
+                </div>
+
+                <div class="col-span-2">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Variance Explanation
+                        (คำอธิบายผลการดำเนินงาน)</label>
+                    <textarea
+                        class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 border p-2"
+                        rows="2"
+                        placeholder="ผลการสอบต่ำกว่าเป้าหมายเล็กน้อยเนื่องจากการปรับเกณฑ์ข้อสอบสภาฯ ใหม่ที่มีความยากขึ้นในหมวด Clinical Thinking"></textarea>
+                </div>
+            </div>
+        </div>
+
+        <!-- Block B: Dimensional Data -->
+        <div class="bg-white rounded-xl shadow-md overflow-hidden border border-gray-100">
+            <div class="bg-green-600 px-6 py-4">
+                <h2 class="text-white text-lg font-semibold flex items-center">
+                    <span
+                        class="bg-white text-green-600 rounded-full w-6 h-6 flex items-center justify-center text-sm mr-2">B</span>
+                    Matrix / Dimensional Form (ข้อมูลแยกกลุ่ม)
+                </h2>
+            </div>
+            <div class="p-6 grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="col-span-2">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">KPI Selection</label>
+                    <select
+                        class="w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500 border p-2 bg-gray-50">
+                        <option>7.1.5 จำนวนบัณฑิตแยกตามหลักสูตร</option>
+                        <option>7.2.6 ความพึงพอใจแยกตามกลุ่มลูกค้า</option>
+                    </select>
+                </div>
+
+                <!-- Matrix Fields -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Dimension Category (ประเภทกลุ่ม)</label>
+                    <input type="text" class="w-full rounded-md border-gray-300 border p-2 bg-gray-100"
+                        value="หลักสูตร/สาขาวิชา" readonly>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Dimension Value (ชื่อกลุ่มย่อย)</label>
+                    <select class="w-full rounded-md border-gray-300 border p-2">
+                        <option>สัตวแพทยศาสตรบัณฑิต (สพ.บ.)</option>
+                        <option>วิทยาศาสตร์สุขภาพสัตว์ (ป.โท)</option>
+                        <option>ปรสิตวิทยา (ป.เอก)</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Value (จำนวน/คะแนน)</label>
+                    <input type="number" class="w-full rounded-md border-gray-300 border p-2" placeholder="125">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Target (เป้าหมายย่อย)</label>
+                    <input type="number" class="w-full rounded-md border-gray-300 border p-2" placeholder="120">
+                </div>
+            </div>
+        </div>
+
+        <!-- Block C: Milestone & Project -->
+        <div class="bg-white rounded-xl shadow-md overflow-hidden border border-gray-100 ring-2 ring-orange-400">
+            <div class="bg-orange-500 px-6 py-4 flex justify-between items-center">
+                <h2 class="text-white text-lg font-semibold flex items-center">
+                    <span
+                        class="bg-white text-orange-500 rounded-full w-6 h-6 flex items-center justify-center text-sm mr-2">C</span>
+                    Milestone Project Form [NEW]
+                </h2>
+                <span class="bg-orange-700 text-white text-xs px-2 py-1 rounded">Complex Data</span>
+            </div>
+            <div class="p-6 grid grid-cols-1 gap-6">
+                <!-- Project Header -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">KPI ID</label>
+                        <input type="text" class="w-full rounded-md border-gray-300 border p-2 bg-gray-100"
+                            value="7.4.13" readonly>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Project Name (ชื่อโครงการ)</label>
+                        <input type="text" class="w-full rounded-md border-gray-300 border p-2"
+                            placeholder="โครงการพัฒนาวัคซีนป้องกันโรคอุบัติใหม่ในสุกร">
+                    </div>
+                </div>
+
+                <!-- Phase Tracking -->
+                <div class="border rounded-lg p-4 bg-orange-50">
+                    <h3 class="font-semibold text-orange-800 mb-3">Project Phase Tracking</h3>
+
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-500 uppercase">Current Phase</label>
+                            <select class="w-full rounded-md border-orange-200 border p-2 mt-1">
+                                <option>Phase 1: รับคำขอผลิตวัคซีน</option>
+                                <option>Phase 2: แยกเชื้อและยืนยันสายพันธุ์</option>
+                                <option>Phase 3: ผลิต Pilot Batch</option>
+                                <option selected>Phase 4: ทดสอบคุณภาพและความปลอดภัย</option>
+                                <option>Phase 5: นำไปใช้จริง</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-500 uppercase">Phase Status</label>
+                            <select
+                                class="w-full rounded-md border-orange-200 border p-2 mt-1 bg-white text-green-700 font-medium">
+                                <option>On Track (ตามแผน)</option>
+                                <option>Delayed (ล่าช้า)</option>
+                                <option>Completed (เสร็จสิ้น)</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-500 uppercase">Completion %</label>
+                            <div class="flex items-center mt-2">
+                                <input type="range"
+                                    class="w-full mr-2 h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
+                                    value="85">
+                                <span class="text-sm font-bold text-orange-600">85%</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Sub-milestones Checklist -->
+                    <div class="bg-white rounded border border-orange-100 p-3">
+                        <label class="block text-xs font-semibold text-gray-500 uppercase mb-2">Sub-Milestones
+                            (รายละเอียด)</label>
+                        <div class="space-y-2">
+                            <label class="flex items-center space-x-2">
+                                <input type="checkbox" checked class="rounded text-orange-500 focus:ring-orange-500"
+                                    disabled>
+                                <span class="text-sm text-gray-500 line-through">M1 ทดสอบความเป็นพิษในห้องปฏิบัติการ
+                                    (Completed)</span>
+                            </label>
+                            <label class="flex items-center space-x-2">
+                                <input type="checkbox" checked class="rounded text-orange-500 focus:ring-orange-500">
+                                <span class="text-sm text-gray-700">M2 ยื่นขอรับรองจริยธรรมการวิจัยในสัตว์</span>
+                            </label>
+                            <label class="flex items-center space-x-2">
+                                <input type="checkbox" class="rounded text-orange-500 focus:ring-orange-500">
+                                <span class="text-sm text-gray-700">M3 ส่งมอบวัคซีนให้ฟาร์มทดลอง 8 แห่ง</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Evidence Link (เอกสารอ้างอิง)</label>
+                    <input type="url" class="w-full rounded-md border-gray-300 border p-2 text-blue-600"
+                        placeholder="https://drive.google.com/drive/folders/vaccine-project-2568">
+                </div>
+            </div>
+        </div>
+
+        <!-- Block D: Narrative -->
+        <div class="bg-white rounded-xl shadow-md overflow-hidden border border-gray-100">
+            <div class="bg-purple-600 px-6 py-4">
+                <h2 class="text-white text-lg font-semibold flex items-center">
+                    <span
+                        class="bg-white text-purple-600 rounded-full w-6 h-6 flex items-center justify-center text-sm mr-2">D</span>
+                    Narrative / Qualitative Form (เชิงบรรยาย)
+                </h2>
+            </div>
+            <div class="p-6 grid grid-cols-1 gap-6">
+                <!-- Topic -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Change Topic
+                        (หัวข้อการเปลี่ยนแปลง)</label>
+                    <input type="text" class="w-full rounded-md border-gray-300 border p-2"
+                        placeholder="การปรับปรุงโครงสร้างหลักสูตร (2562 vs 2568)"
+                        value="การปรับปรุงโครงสร้างหลักสูตร (2562 vs 2568)">
+                </div>
+
+                <!-- Comparison Grid -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-600 mb-1">Previous State (หลักสูตรเดิม
+                            2562)</label>
+                        <textarea class="w-full h-32 rounded-md border-gray-300 border p-2 text-sm bg-gray-50"
+                            placeholder="- หน่วยกิตรวม 240 หน่วยกิต
+- เน้นการบรรยาย (Lecture Base) 50%
+- การฝึกงานแยกส่วน ไม่ต่อเนื่อง">
+- หน่วยกิตรวม 240 หน่วยกิต
+- เน้นการบรรยาย (Lecture Base) 50%
+- การฝึกงานแยกส่วน ไม่ต่อเนื่อง</textarea>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-purple-600 mb-1">Current State (หลักสูตรใหม่
+                            2568)</label>
+                        <textarea
+                            class="w-full h-32 rounded-md border-purple-200 border p-2 text-sm focus:ring-purple-500"
+                            placeholder="- หน่วยกิตรวมลดเหลือ 218 หน่วยกิต
+- เน้น Outcome Based & Competency
+- เพิ่มสัดส่วนคลินิกปฏิบัติเป็น 45%">
+- หน่วยกิตรวมลดเหลือ 218 หน่วยกิต
+- เน้น Outcome Based & Competency
+- เพิ่มสัดส่วนคลินิกปฏิบัติเป็น 45%</textarea>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Impact / Benefit
+                        (ผลลัพธ์ที่คาดว่าจะได้รับ)</label>
+                    <textarea class="w-full rounded-md border-gray-300 border p-2" rows="2"
+                        placeholder="บัณฑิตมีความพร้อมในการทำงานจริง (Day-1 Skills) เพิ่มขึ้น ลดภาระการเรียนในห้องเรียนแต่เพิ่มทักษะปฏิบัติ"></textarea>
+                </div>
+            </div>
+        </div>
+
+        <!-- Block E: Financial (New) -->
+        <div class="bg-white rounded-xl shadow-md overflow-hidden border border-gray-100 ring-2 ring-teal-400">
+            <div class="bg-teal-600 px-6 py-4 flex justify-between items-center">
+                <h2 class="text-white text-lg font-semibold flex items-center">
+                    <span
+                        class="bg-white text-teal-600 rounded-full w-6 h-6 flex items-center justify-center text-sm mr-2">E</span>
+                    Financial & Strategy Form [NEW]
+                </h2>
+                <span class="bg-teal-800 text-white text-xs px-2 py-1 rounded">Category 7.5</span>
+            </div>
+            <div class="p-6 grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="col-span-2">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">KPI Selection</label>
+                    <select class="w-full rounded-md border-gray-300 border p-2 bg-gray-50">
+                        <option>7.5.2 ประสิทธิภาพการรับจ่ายเงินรายได้</option>
+                        <option>7.5.15 QS Ranking (Vet Sci)</option>
+                    </select>
+                </div>
+
+                <!-- Financial Fields -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Financial Category
+                        (หมวดงบประมาณ)</label>
+                    <select class="w-full rounded-md border-gray-300 border p-2">
+                        <option>รายได้จากค่าธรรมเนียมการศึกษา</option>
+                        <option>รายได้จากการบริการวิชาการ (รพ.สัตว์)</option>
+                        <option>รายได้จากงานวิจัยและนวัตกรรม</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Amount (จำนวนเงิน)</label>
+                    <div class="relative rounded-md shadow-sm">
+                        <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+                            <span class="text-gray-500 sm:text-sm">฿</span>
+                        </div>
+                        <input type="text"
+                            class="block w-full rounded-md border-gray-300 pl-7 p-2 focus:border-teal-500 focus:ring-teal-500"
+                            placeholder="15,000,000.00">
+                    </div>
+                </div>
+
+                <!-- Ranking Fields (Alternative View) -->
+                <div class="col-span-2 border-t pt-4 mt-2">
+                    <h3 class="text-sm font-semibold text-gray-500 mb-3 uppercase">Alternative for Ranking</h3>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Ranking Metric</label>
+                            <input type="text" class="w-full rounded-md border-gray-300 border p-2"
+                                value="QS World University Rankings by Subject" readonly>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Rank / Score</label>
+                            <input type="text" class="w-full rounded-md border-gray-300 border p-2"
+                                placeholder="#48 (Asia)">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Block C: Entry History (Dynamic Columns) -->
+        <div class="bg-white rounded-xl shadow-md overflow-hidden border border-gray-100">
+            <div class="bg-indigo-600 px-6 py-4">
+                <h2 class="text-white text-lg font-semibold flex items-center">
+                    <span
+                        class="bg-white text-indigo-600 rounded-full w-6 h-6 flex items-center justify-center text-sm mr-2">C</span>
+                    Entry History (ประวัติการบันทึก)
+                </h2>
+            </div>
+            <div class="p-6">
+                <div class="overflow-x-auto">
+                    <table class="w-full text-sm text-left text-gray-500">
+                        <thead class="text-xs text-gray-700 uppercase bg-gray-50">
+                            <tr>
+                                <th class="px-6 py-3">Submitted At</th>
+                                <th class="px-6 py-3">Period</th>
+                                <th class="px-6 py-3">KPI Value</th>
+                                <th class="px-6 py-3">Project Name (Dynamic)</th>
+                                <th class="px-6 py-3">Status</th>
+                                <th class="px-6 py-3 text-right">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="bg-white border-b hover:bg-gray-50">
+                                <td class="px-6 py-4 whitespace-nowrap">11 Feb 2026, 08:35</td>
+                                <td class="px-6 py-4">Annual/2568</td>
+                                <td class="px-6 py-4 font-bold text-blue-600">85.50 %</td>
+                                <td class="px-6 py-4">EdPEx Awareness Camp</td>
+                                <td class="px-6 py-4"><span
+                                        class="bg-yellow-100 text-yellow-800 text-xs font-medium px-2.5 py-0.5 rounded">Pending</span>
+                                </td>
+                                <td class="px-6 py-4 text-right">
+                                    <button class="text-red-600 hover:text-red-900">Delete</button>
+                                </td>
+                            </tr>
+                            <tr class="bg-white border-b hover:bg-gray-50">
+                                <td class="px-6 py-4 whitespace-nowrap">10 Feb 2026, 14:20</td>
+                                <td class="px-6 py-4">Q1/2568</td>
+                                <td class="px-6 py-4 font-bold text-blue-600">92.00 %</td>
+                                <td class="px-6 py-4">-</td>
+                                <td class="px-6 py-4"><span
+                                        class="bg-green-100 text-green-800 text-xs font-medium px-2.5 py-0.5 rounded">Approved</span>
+                                </td>
+                                <td class="px-6 py-4 text-right text-gray-400">Locked</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="flex justify-end space-x-4 py-8">
+            <button
+                class="px-6 py-2 border border-gray-300 rounded-md text-gray-700 bg-white hover:bg-gray-50">Cancel</button>
+            <button
+                class="px-6 py-2 border border-transparent rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700">Save
+                Data Entry</button>
+        </div>
+
+        <!-- Footer -->
+        <div class="text-center text-gray-400 text-sm mt-10 pb-10">
+            <p>KUVMIS EdPEx Prototype v1.2</p>
+            <p>Last Updated: 2026-02-11T08:48:18+07:00</p>
+        </div>
+
+    </div>
+
+</body>
+
+</html>
+
+<div class="mt-12 bg-gray-100 rounded-xl p-8 border border-gray-200">
+    <h2 class="text-2xl font-bold text-gray-800 mb-4">Module Explanation: EdPEx Data Entry System</h2>
+    <div class="prose max-w-none text-gray-600 space-y-4">
+        <p>
+            <strong>Concept:</strong> ระบบนี้ถูกออกแบบมาเพื่อรองรับการกรอกข้อมูลตามเกณฑ์ EdPEx
+            ที่มีความหลากหลายของข้อมูล โดยแบ่ง Form ออกเป็น 5 Block หลัก (A-E) เพื่อให้ครอบคลุมทุกมิติของตัวชี้วัด
+        </p>
+        <ul class="list-disc pl-5 space-y-2">
+            <li><strong>Block A (Standard Numeric):</strong> ใช้สำหรับเก็บข้อมูลตัวเลขทั่วไปที่เป็น Time-Series เช่น
+                ร้อยละผลสอบ, จำนวนผู้รับบริการ</li>
+            <li><strong>Block B (Matrix/Dimensional):</strong> ใช้สำหรับข้อมูลที่มีการจำแนกกลุ่มย่อย เช่น
+                จำนวนบัณฑิตแยกตามสาขา, ความพึงพอใจแยกตามกลุ่มลูกค้า</li>
+            <li><strong>Block C (Milestone Project) [NEW]:</strong> ออกแบบใหม่เพื่อรองรับ KPI
+                เชิงโครงการที่มีความซับซ้อน เช่น โครงการวัคซีน (7.4.13) ที่ต้องติดตาม Phase, Status, และ % Progress</li>
+            <li><strong>Block D (Narrative):</strong> ใช้สำหรับข้อมูลเชิงบรรยาย เปรียบเทียบ Before/After เช่น
+                การปรับปรุงหลักสูตร</li>
+            <li><strong>Block E (Financial & Strategy) [NEW]:</strong> เพิ่มเข้ามาเพื่อรองรับหมวด 7.5 ที่ขาดหายไป
+                เน้นข้อมูลการเงินและ Ranking</li>
+        </ul>
+        <p class="mt-4">
+            <strong>Data Processing:</strong> เมื่อผู้ใช้กรอกข้อมูล ระบบจะแปลงเป็น JSON Object และบันทึกลงใน Collection
+            <code>kpi_entries</code> โดยมี field <code>type</code> เป็นตัวระบุโครงสร้างข้อมูล (numeric, matrix,
+            milestone, narrative, financial) เพื่อให้สามารถ Query ไปแสดงผลบน Dashboard ได้อย่างถูกต้อง
+        </p>
+    </div>
+</div>
+</div>
+</body>
+
+</html>
+
+<div class="mt-8 bg-white border border-gray-200 rounded-xl p-8 shadow-sm">
+    <h2 class="text-2xl font-bold text-gray-800 mb-6 flex items-center">
+        <span class="bg-gray-800 text-white rounded-lg p-2 mr-3"><svg width="24" height="24" viewBox="0 0 24 24"
+                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 12V7a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h6" />
+                <path d="M21 12h-6" />
+                <path d="M21 12v9a2 2 0 0 1-2 2h-1" />
+                <path d="M3 7h18" />
+                <path d="M12 22v-9" />
+            </svg></span>
+        Data Mapping (UI to Database)
+    </h2>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+
+        <!-- Block A -->
+        <div class="border rounded-lg p-4 bg-gray-50">
+            <h3 class="font-bold text-blue-600 mb-2">Block A: Numeric</h3>
+            <pre class="bg-gray-800 text-green-400 p-3 rounded text-xs font-mono overflow-auto">{
+  "type": "numeric",
+  "data": {
+    "target": 100.00,
+    "value": 85.50
+  }
+}</pre>
+        </div>
+
+        <!-- Block B -->
+        <div class="border rounded-lg p-4 bg-gray-50">
+            <h3 class="font-bold text-green-600 mb-2">Block B: Matrix</h3>
+            <pre class="bg-gray-800 text-green-400 p-3 rounded text-xs font-mono overflow-auto">{
+  "type": "matrix",
+  "dimension": "Program",
+  "dimension_value": "Vet Tech",
+  "data": { "value": 125 }
+}</pre>
+        </div>
+
+        <!-- Block C -->
+        <div class="border rounded-lg p-4 bg-gray-50 ring-1 ring-orange-200">
+            <h3 class="font-bold text-orange-600 mb-2">Block C: Milestone [NEW]</h3>
+            <pre class="bg-gray-800 text-green-400 p-3 rounded text-xs font-mono overflow-auto">{
+  "type": "milestone",
+  "data": {
+    "current_phase": "Phase 4",
+    "status": "on_track",
+    "progress": 85,
+    "milestones": [ ... ]
+  }
+}</pre>
+        </div>
+
+        <!-- Block D -->
+        <div class="border rounded-lg p-4 bg-gray-50">
+            <h3 class="font-bold text-purple-600 mb-2">Block D: Narrative</h3>
+            <pre class="bg-gray-800 text-green-400 p-3 rounded text-xs font-mono overflow-auto">{
+  "type": "narrative",
+  "data": {
+    "old": "240 Credits...",
+    "new": "218 Credits..."
+  }
+}</pre>
+        </div>
+
+        <!-- Block E -->
+        <div class="border rounded-lg p-4 bg-gray-50 ring-1 ring-teal-200">
+            <h3 class="font-bold text-teal-600 mb-2">Block E: Financial [NEW]</h3>
+            <pre class="bg-gray-800 text-green-400 p-3 rounded text-xs font-mono overflow-auto">{
+  "type": "financial",
+  "category": "Service Revenue",
+  "data": {
+    "amount": 15000000,
+    "currency": "THB"
+  }
+}</pre>
+        </div>
+
+    </div>
+</div>

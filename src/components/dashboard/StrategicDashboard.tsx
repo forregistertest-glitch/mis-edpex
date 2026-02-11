@@ -8,6 +8,7 @@ import {
 import { Line, Bar, Radar } from "react-chartjs-2";
 import { TrendingUp, Loader2, RefreshCw, Award, Globe, Shield, Landmark, PawPrint } from "lucide-react";
 import ChartFilterBar, { ChartViewMode } from "./ChartFilterBar";
+import DashboardCard from "./DashboardCard";
 import type { Language } from "@/lib/translations";
 import {
     getKpiTrendData, getKpiMatrixData, getAvailableFilters, getCategoryOverview,
@@ -117,43 +118,66 @@ export default function StrategicDashboard({ lang }: StrategicDashboardProps) {
 
             {/* Summary Cards */}
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-                {cards.map(card => (
-                    <div key={card.label} className="bg-white p-5 rounded-2xl border border-slate-200/60 shadow-sm hover:shadow-md transition-all">
-                        <div className="flex items-center gap-2 mb-3">
-                            <div className={`p-2 rounded-xl bg-gradient-to-br ${card.color} text-white`}><card.icon size={16} /></div>
-                            <span className="text-xs font-bold text-slate-400 uppercase">{card.label}</span>
-                        </div>
-                        <p className="text-2xl font-black text-slate-800">{card.value ?? "—"}</p>
-                    </div>
-                ))}
+                {cards.map(card => {
+                    // Logic & Source Mapping
+                    let logic = "", source = "";
+                    if (card.icon === TrendingUp) { logic = th ? "ความสำเร็จตามแผนยุทธศาสตร์" : "Strategic Plan Success"; source = "KPI-7.4.4"; }
+                    else if (card.icon === Landmark) { logic = th ? "มูลค่าแหล่งรายได้ใหม่" : "New Revenue Value"; source = "KPI-7.4.7"; }
+                    else if (card.icon === PawPrint) { logic = th ? "จำนวนสัตว์ที่ทำหมัน" : "Sterilized Animals Count"; source = "KPI-7.4.15"; }
+                    else if (card.icon === Shield) { logic = th ? "คะแนนการประเมินธรรมาภิบาล" : "Governance Score"; source = "KPI-7.4.11"; }
+
+                    return (
+                        <DashboardCard
+                            key={card.label}
+                            title={card.label}
+                            value={card.value || "—"}
+                            trend="→ Tracking"
+                            icon={card.icon}
+                            iconColor="text-white"
+                            iconBg={`bg-gradient-to-br ${card.color}`}
+                            logic={logic}
+                            source={source}
+                        />
+                    );
+                })}
             </div>
 
             {/* Charts */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 {/* Strategic Objectives — Horizontal Bar */}
-                <div className="bg-white p-6 rounded-2xl border border-slate-200/60 shadow-sm lg:col-span-2">
-                    <div className="h-[320px]">
-                        {soMatrix.length > 0 ? (
-                            <Bar options={{
-                                ...chartOpts(th ? "ความก้าวหน้าดำเนินงานตามแผนยุทธศาสตร์ (7.4.4)" : "Strategic Objectives Progress (7.4.4)"),
-                                indexAxis: "y" as const,
-                                scales: { x: { beginAtZero: true, max: 1, ticks: { format: { style: "percent" as const }, callback: (v: any) => `${Math.round(Number(v) * 100)}%` }, grid: { color: "rgba(0,0,0,0.04)" } }, y: { grid: { display: false } } },
-                            }} data={{
-                                labels: soMatrix.map(m => m.dimension_value.length > 40 ? m.dimension_value.slice(0, 40) + "…" : m.dimension_value),
-                                datasets: [{
-                                    label: th ? "ร้อยละสำเร็จ" : "% Complete",
-                                    data: soMatrix.map(m => m.value),
-                                    backgroundColor: soMatrix.map((_, i) => COLORS[i % COLORS.length].bg),
-                                    borderColor: soMatrix.map((_, i) => COLORS[i % COLORS.length].border),
-                                    borderWidth: 1,
-                                }],
-                            }} />
-                        ) : <div className="flex flex-col items-center justify-center h-full text-slate-400"><p className="font-bold text-sm mb-1">{th ? "ความก้าวหน้ายุทธศาสตร์ (7.4.4)" : "Strategic Objectives Progress (7.4.4)"}</p><p className="text-xs">{th ? "ยังไม่มีข้อมูล — กรุณากรอกข้อมูลในแบบฟอร์ม" : "No data — please submit via input form"}</p></div>}
-                    </div>
+                <div className="lg:col-span-2">
+                    <DashboardCard
+                        title={th ? "ความก้าวหน้าดำเนินงานตามแผนยุทธศาสตร์ (7.4.4)" : "Strategic Objectives Progress (7.4.4)"}
+                        logic={th ? "ร้อยละความสำเร็จของโครงการตามแผนยุทธศาสตร์" : "Percentage of completion for strategic projects"}
+                        source={th ? "งานนโยบายและแผน" : "Policy & Planning"}
+                    >
+                        <div className="h-[320px]">
+                            {soMatrix.length > 0 ? (
+                                <Bar options={{
+                                    ...chartOpts(th ? "ความก้าวหน้าดำเนินงานตามแผนยุทธศาสตร์ (7.4.4)" : "Strategic Objectives Progress (7.4.4)"),
+                                    indexAxis: "y" as const,
+                                    scales: { x: { beginAtZero: true, max: 1, ticks: { format: { style: "percent" as const }, callback: (v: any) => `${Math.round(Number(v) * 100)}%` }, grid: { color: "rgba(0,0,0,0.04)" } }, y: { grid: { display: false } } },
+                                }} data={{
+                                    labels: soMatrix.map(m => m.dimension_value.length > 40 ? m.dimension_value.slice(0, 40) + "…" : m.dimension_value),
+                                    datasets: [{
+                                        label: th ? "ร้อยละสำเร็จ" : "% Complete",
+                                        data: soMatrix.map(m => m.value),
+                                        backgroundColor: soMatrix.map((_, i) => COLORS[i % COLORS.length].bg),
+                                        borderColor: soMatrix.map((_, i) => COLORS[i % COLORS.length].border),
+                                        borderWidth: 1,
+                                    }],
+                                }} />
+                            ) : <div className="flex flex-col items-center justify-center h-full text-slate-400"><p className="font-bold text-sm mb-1">{th ? "ความก้าวหน้ายุทธศาสตร์ (7.4.4)" : "Strategic Objectives Progress (7.4.4)"}</p><p className="text-xs">{th ? "ยังไม่มีข้อมูล — กรุณากรอกข้อมูลในแบบฟอร์ม" : "No data — please submit via input form"}</p></div>}
+                        </div>
+                    </DashboardCard>
                 </div>
 
                 {/* Revenue Sources */}
-                <div className="bg-white p-6 rounded-2xl border border-slate-200/60 shadow-sm">
+                <DashboardCard
+                    title={th ? "แหล่งรายได้ใหม่ (7.4.7)" : "New Revenue Sources (7.4.7)"}
+                    logic={th ? "มูลค่ารายได้จากแหล่งทุนใหม่และบริการวิชาการ" : "Revenue value from new funding sources and academic services"}
+                    source={th ? "งานคลังและพัสดุ" : "Finance & Procurement"}
+                >
                     <div className="h-[320px]">
                         {revenueMatrix.length > 0 ? (
                             <Bar options={chartOpts(th ? "แหล่งรายได้ใหม่ (7.4.7)" : "New Revenue Sources (7.4.7)")} data={{
@@ -162,15 +186,19 @@ export default function StrategicDashboard({ lang }: StrategicDashboardProps) {
                             }} />
                         ) : <div className="flex flex-col items-center justify-center h-full text-slate-400"><p className="font-bold text-sm mb-1">{th ? "แหล่งรายได้ใหม่ (7.4.7)" : "New Revenue Sources (7.4.7)"}</p><p className="text-xs">{th ? "ยังไม่มีข้อมูล — กรุณากรอกข้อมูลในแบบฟอร์ม" : "No data — please submit via input form"}</p></div>}
                     </div>
-                </div>
+                </DashboardCard>
 
                 {/* Governance Radar */}
-                <div className="bg-white p-6 rounded-2xl border border-slate-200/60 shadow-sm">
+                <DashboardCard
+                    title={th ? "ธรรมาภิบาล จริยธรรม (7.4.11)" : "Governance & Ethics (7.4.11)"}
+                    logic={th ? "ผลการประเมินธรรมาภิบาลและความโปร่งใส (ITA)" : "Integrity and Transparency Assessment (ITA) results"}
+                    source={th ? "คณะกรรมการจริยธรรม" : "Ethics Committee"}
+                >
                     <div className="h-[320px]">
                         {governanceMatrix.length > 0 ? (
                             <Radar options={{
                                 responsive: true, maintainAspectRatio: false,
-                                plugins: { title: { display: true, text: th ? "ธรรมาภิบาล จริยธรรม (7.4.11)" : "Governance & Ethics (7.4.11)", font: { size: 14, weight: "bold" as const } } },
+                                plugins: { title: { display: false } },
                                 scales: { r: { beginAtZero: true, max: 5, ticks: { stepSize: 1 } } },
                             }} data={{
                                 labels: governanceMatrix.map(m => m.dimension_value.length > 18 ? m.dimension_value.slice(0, 18) + "…" : m.dimension_value),
@@ -178,23 +206,31 @@ export default function StrategicDashboard({ lang }: StrategicDashboardProps) {
                             }} />
                         ) : <div className="flex flex-col items-center justify-center h-full text-slate-400"><p className="font-bold text-sm mb-1">{th ? "ธรรมาภิบาล จริยธรรม (7.4.11)" : "Governance & Ethics (7.4.11)"}</p><p className="text-xs">{th ? "ยังไม่มีข้อมูล — กรุณากรอกข้อมูลในแบบฟอร์ม" : "No data — please submit via input form"}</p></div>}
                     </div>
-                </div>
+                </DashboardCard>
 
                 {/* Animal Welfare */}
-                <div className="bg-white p-6 rounded-2xl border border-slate-200/60 shadow-sm">
+                <DashboardCard
+                    title={th ? "สัตว์ปลอดโรค & ทำหมัน (7.4.14-15)" : "Animal Disease Control & Sterilization"}
+                    logic={th ? "จำนวนการให้บริการฉีดวัคซีนและทำหมันสัตว์จรจัด" : "Number of vaccinations and sterilizations for stray animals"}
+                    source={th ? "หน่วยสัตวแพทย์เคลื่อนที่" : "Mobile Vet Unit"}
+                >
                     <div className="h-[320px]">
                         <Bar options={chartOpts(th ? "สัตว์ปลอดโรค & ทำหมัน (7.4.14-15)" : "Animal Disease Control & Sterilization")} data={buildTrend(animalTrend, {
                             "7.4.14": th ? "จำนวนครั้ง" : "Events", "7.4.15": th ? "จำนวนสัตว์" : "Animals",
                         })} />
                     </div>
-                </div>
+                </DashboardCard>
 
                 {/* Lab Standards */}
-                <div className="bg-white p-6 rounded-2xl border border-slate-200/60 shadow-sm">
+                <DashboardCard
+                    title={th ? "สถานที่ได้รับรองมาตรฐานสัตว์ทดลอง (7.4.12)" : "Accredited Lab Facilities (7.4.12)"}
+                    logic={th ? "จำนวนห้องปฏิบัติการที่ได้รับการรับรองมาตรฐานสากล" : "Number of internationally accredited laboratories"}
+                    source={th ? "ศูนย์สัตว์ทดลอง" : "Lab Animal Center"}
+                >
                     <div className="h-[320px]">
                         <Bar options={chartOpts(th ? "สถานที่ได้รับรองมาตรฐานสัตว์ทดลอง (7.4.12)" : "Accredited Lab Facilities (7.4.12)")} data={buildTrend(labTrend, { "7.4.12": th ? "แห่ง" : "Sites" })} />
                     </div>
-                </div>
+                </DashboardCard>
             </div>
 
             {/* KPI Table */}

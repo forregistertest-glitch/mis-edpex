@@ -32,6 +32,8 @@ interface Props {
 export default function AdminPanel({ lang }: Props) {
     const { user } = useAuth();
     const [users, setUsers] = useState<AuthorizedUser[]>([]);
+    const [loginLogs, setLoginLogs] = useState<any[]>([]);
+    const [activeTab, setActiveTab] = useState<'users' | 'logs'>('users');
     const [loading, setLoading] = useState(true);
     const [actionLoading, setActionLoading] = useState(false);
 
@@ -46,8 +48,9 @@ export default function AdminPanel({ lang }: Props) {
     const [deleteEmail, setDeleteEmail] = useState<string | null>(null);
 
     useEffect(() => {
-        loadUsers();
-    }, []);
+        if (activeTab === 'users') loadUsers();
+        else loadLogs();
+    }, [activeTab]);
 
     const loadUsers = async () => {
         setLoading(true);
@@ -59,6 +62,19 @@ export default function AdminPanel({ lang }: Props) {
             }));
         } catch (err) {
             console.error("Load users error:", err);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const loadLogs = async () => {
+        setLoading(true);
+        try {
+            const { getLoginLogs } = await import("@/lib/data-service");
+            const logs = await getLoginLogs(100);
+            setLoginLogs(logs);
+        } catch (err) {
+            console.error("Load logs error:", err);
         } finally {
             setLoading(false);
         }
@@ -123,155 +139,289 @@ export default function AdminPanel({ lang }: Props) {
         } catch { return d; }
     };
 
+    const [editUser, setEditUser] = useState<AuthorizedUser | null>(null);
+    const [editName, setEditName] = useState("");
+    const [editRole, setEditRole] = useState("user");
+
+    const handleEditClick = (u: AuthorizedUser) => {
+        setEditUser(u);
+        setEditName(u.name);
+        setEditRole(u.role);
+    };
+
+    const handleSaveEdit = async () => {
+        if (!editUser) return;
+        setActionLoading(true);
+        try {
+            // Dynamic import to avoid circular dependency if any, though regular import is fine here
+            const { updateUserDetails } = await import("@/lib/data-service");
+            await updateUserDetails(editUser.email, editName, editRole);
+            setEditUser(null);
+            await loadUsers();
+        } catch (err) {
+            console.error("Update error:", err);
+            alert("Update failed");
+        } finally {
+            setActionLoading(false);
+        }
+    };
+
     return (
         <div className="space-y-6">
-            {/* Header */}
-            <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 bg-gradient-to-br from-rose-500 to-red-700 rounded-xl flex items-center justify-center shadow-lg shadow-rose-500/20">
-                        <Users size={20} className="text-white" />
-                    </div>
-                    <div>
-                        <h2 className="text-lg font-bold text-slate-800">
-                            {lang === "th" ? "จัดการผู้ใช้งาน" : "Manage Users"}
-                        </h2>
-                        <p className="text-xs text-slate-500">
-                            {lang === "th" ? "เพิ่ม/ลบ/เปลี่ยน Role ผู้ใช้" : "Add/Remove/Change roles"}
-                        </p>
-                    </div>
-                </div>
+            {/* Dashboard Tabs (Users / Logs) */}
+            <div className="flex gap-4 border-b border-slate-200">
                 <button
-                    onClick={() => setShowAddForm(!showAddForm)}
-                    className="flex items-center gap-2 px-4 py-2.5 bg-blue-600 text-white rounded-xl text-sm font-medium hover:bg-blue-700 transition-all shadow-lg shadow-blue-600/20 hover:scale-[1.02] active:scale-95"
+                    onClick={() => setActiveTab('users')}
+                    className={`pb-3 text-sm font-bold transition-all px-2 border-b-2 ${activeTab === 'users' ? 'text-blue-600 border-blue-600' : 'text-slate-400 border-transparent hover:text-slate-600'}`}
                 >
-                    <UserPlus size={16} />
-                    {lang === "th" ? "เพิ่มผู้ใช้" : "Add User"}
+                    {lang === 'th' ? 'ผู้ใช้งาน (Users)' : 'Users'}
+                </button>
+                <button
+                    onClick={() => setActiveTab('logs')}
+                    className={`pb-3 text-sm font-bold transition-all px-2 border-b-2 ${activeTab === 'logs' ? 'text-blue-600 border-blue-600' : 'text-slate-400 border-transparent hover:text-slate-600'}`}
+                >
+                    {lang === 'th' ? 'ประวัติการเข้าใช้งาน (Login Logs)' : 'Login Logs'}
                 </button>
             </div>
 
-            {/* Add User Form */}
-            {showAddForm && (
-                <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 space-y-4">
-                    <h3 className="font-bold text-slate-800 text-sm">เพิ่มผู้ใช้ใหม่</h3>
-                    {formError && (
-                        <div className="flex items-center gap-2 text-red-600 bg-red-50 border border-red-200 rounded-xl px-4 py-2 text-sm">
-                            <AlertCircle size={14} />
-                            {formError}
+            {/* Users Tab Content */}
+            {activeTab === 'users' && (
+                <>
+                    <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-3">
+                            <div className="w-10 h-10 bg-gradient-to-br from-rose-500 to-red-700 rounded-xl flex items-center justify-center shadow-lg shadow-rose-500/20">
+                                <Users size={20} className="text-white" />
+                            </div>
+                            <div>
+                                <h2 className="text-lg font-bold text-slate-800">
+                                    {lang === "th" ? "จัดการผู้ใช้งาน" : "Manage Users"}
+                                </h2>
+                                <p className="text-xs text-slate-500">
+                                    {lang === "th" ? "เพิ่ม/ลบ/แก้ไขข้อมูลผู้ใช้" : "Add/Remove/Edit users"}
+                                </p>
+                            </div>
+                        </div>
+                        <button
+                            onClick={() => setShowAddForm(!showAddForm)}
+                            className="flex items-center gap-2 px-4 py-2.5 bg-blue-600 text-white rounded-xl text-sm font-medium hover:bg-blue-700 transition-all shadow-lg shadow-blue-600/20 hover:scale-[1.02] active:scale-95"
+                        >
+                            <UserPlus size={16} />
+                            {lang === "th" ? "เพิ่มผู้ใช้" : "Add User"}
+                        </button>
+                    </div>
+
+                    {/* Add User Form */}
+                    {showAddForm && (
+                        <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 space-y-4 animate-in slide-in-from-top-2">
+                            <h3 className="font-bold text-slate-800 text-sm">เพิ่มผู้ใช้ใหม่</h3>
+                            {formError && (
+                                <div className="flex items-center gap-2 text-red-600 bg-red-50 border border-red-200 rounded-xl px-4 py-2 text-sm">
+                                    <AlertCircle size={14} />
+                                    {formError}
+                                </div>
+                            )}
+                            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                                <input
+                                    type="email"
+                                    placeholder="Email (เช่น staff@ku.th)"
+                                    value={newEmail}
+                                    onChange={(e) => setNewEmail(e.target.value)}
+                                    className="border border-slate-200 rounded-xl px-4 py-2.5 text-sm text-slate-900 placeholder:text-slate-400 focus:ring-2 focus:ring-blue-200 focus:border-blue-300 outline-none"
+                                />
+                                <input
+                                    type="text"
+                                    placeholder="ชื่อ-สกุล"
+                                    value={newName}
+                                    onChange={(e) => setNewName(e.target.value)}
+                                    className="border border-slate-200 rounded-xl px-4 py-2.5 text-sm text-slate-900 placeholder:text-slate-400 focus:ring-2 focus:ring-blue-200 focus:border-blue-300 outline-none"
+                                />
+                                <div className="relative">
+                                    <select
+                                        value={newRole}
+                                        onChange={(e) => setNewRole(e.target.value)}
+                                        className="appearance-none w-full border border-slate-200 rounded-xl px-4 py-2.5 pr-10 text-sm text-slate-900 focus:ring-2 focus:ring-blue-200 focus:border-blue-300 outline-none bg-white cursor-pointer"
+                                    >
+                                        <option value="user">User</option>
+                                        <option value="reviewer">Reviewer</option>
+                                        <option value="admin">Admin</option>
+                                    </select>
+                                    <ChevronDown size={14} className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
+                                </div>
+                            </div>
+                            <div className="flex gap-3 justify-end">
+                                <button
+                                    onClick={() => { setShowAddForm(false); setFormError(""); }}
+                                    className="px-4 py-2 text-sm text-slate-600 bg-slate-100 rounded-xl hover:bg-slate-200 transition-all"
+                                >
+                                    ยกเลิก
+                                </button>
+                                <button
+                                    onClick={handleAddUser}
+                                    disabled={actionLoading}
+                                    className="px-5 py-2 text-sm text-white bg-blue-600 rounded-xl hover:bg-blue-700 transition-all shadow-lg shadow-blue-600/20 disabled:opacity-50"
+                                >
+                                    {actionLoading ? <Loader2 size={14} className="animate-spin" /> : "บันทึก"}
+                                </button>
+                            </div>
                         </div>
                     )}
-                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                        <input
-                            type="email"
-                            placeholder="Email (เช่น staff@ku.th)"
-                            value={newEmail}
-                            onChange={(e) => setNewEmail(e.target.value)}
-                            className="border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-blue-200 focus:border-blue-300 outline-none"
-                        />
-                        <input
-                            type="text"
-                            placeholder="ชื่อ-สกุล"
-                            value={newName}
-                            onChange={(e) => setNewName(e.target.value)}
-                            className="border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-blue-200 focus:border-blue-300 outline-none"
-                        />
-                        <div className="relative">
-                            <select
-                                value={newRole}
-                                onChange={(e) => setNewRole(e.target.value)}
-                                className="appearance-none w-full border border-slate-200 rounded-xl px-4 py-2.5 pr-10 text-sm focus:ring-2 focus:ring-blue-200 focus:border-blue-300 outline-none bg-white cursor-pointer"
-                            >
-                                <option value="user">User</option>
-                                <option value="reviewer">Reviewer</option>
-                                <option value="admin">Admin</option>
-                            </select>
-                            <ChevronDown size={14} className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
+
+                    {/* Users Table */}
+                    {loading ? (
+                        <div className="flex justify-center py-12">
+                            <Loader2 size={28} className="animate-spin text-blue-600" />
                         </div>
-                    </div>
-                    <div className="flex gap-3 justify-end">
-                        <button
-                            onClick={() => { setShowAddForm(false); setFormError(""); }}
-                            className="px-4 py-2 text-sm text-slate-600 bg-slate-100 rounded-xl hover:bg-slate-200 transition-all"
-                        >
-                            ยกเลิก
-                        </button>
-                        <button
-                            onClick={handleAddUser}
-                            disabled={actionLoading}
-                            className="px-5 py-2 text-sm text-white bg-blue-600 rounded-xl hover:bg-blue-700 transition-all shadow-lg shadow-blue-600/20 disabled:opacity-50"
-                        >
-                            {actionLoading ? <Loader2 size={14} className="animate-spin" /> : "บันทึก"}
-                        </button>
-                    </div>
+                    ) : (
+                        <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+                            <table className="w-full text-sm">
+                                <thead>
+                                    <tr className="bg-slate-50 border-b border-slate-200">
+                                        <th className="text-left px-5 py-3 font-semibold text-slate-600">ชื่อ</th>
+                                        <th className="text-left px-5 py-3 font-semibold text-slate-600">Email</th>
+                                        <th className="text-left px-5 py-3 font-semibold text-slate-600">Role</th>
+                                        <th className="text-left px-5 py-3 font-semibold text-slate-600">เพิ่มเมื่อ</th>
+                                        <th className="text-center px-5 py-3 font-semibold text-slate-600">จัดการ</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {users.map((u) => {
+                                        const rc = roleColors[u.role] || roleColors.user;
+                                        const isSelf = u.email === user?.email;
+                                        return (
+                                            <tr key={u.email} className="border-b border-slate-100 hover:bg-slate-50/50 transition-colors">
+                                                <td className="px-5 py-3 font-medium text-slate-800">
+                                                    {u.name}
+                                                    {isSelf && <span className="ml-2 text-[10px] text-blue-500 font-bold">(คุณ)</span>}
+                                                </td>
+                                                <td className="px-5 py-3 text-slate-500">{u.email}</td>
+                                                <td className="px-5 py-3">
+                                                    <span className={`inline-flex items-center px-2.5 py-1 rounded-lg text-xs font-semibold border ${rc.bg} ${rc.color}`}>
+                                                        {rc.label}
+                                                    </span>
+                                                </td>
+                                                <td className="px-5 py-3 text-xs text-slate-400">{formatDate(u.added_at)}</td>
+                                                <td className="px-5 py-3 text-center">
+                                                    {!isSelf && (
+                                                        <div className="flex items-center justify-center gap-1">
+                                                            <button
+                                                                onClick={() => handleEditClick(u)}
+                                                                className="p-1.5 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all"
+                                                                title="แก้ไข"
+                                                            >
+                                                                <UserPlus size={14} className="rotate-45" /> {/* Use a different icon or simple edit icon if available in import, using UserPlus for now */}
+                                                            </button>
+                                                            <button
+                                                                onClick={() => setDeleteEmail(u.email)}
+                                                                className="p-1.5 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all"
+                                                                title="ลบผู้ใช้"
+                                                            >
+                                                                <Trash2 size={14} />
+                                                            </button>
+                                                        </div>
+                                                    )}
+                                                </td>
+                                            </tr>
+                                        );
+                                    })}
+                                </tbody>
+                            </table>
+                            <div className="px-5 py-3 bg-slate-50 border-t border-slate-200 text-xs text-slate-500">
+                                ผู้ใช้ทั้งหมด {users.length} คน
+                            </div>
+                        </div>
+                    )}
+                </>
+            )}
+
+            {/* Logs Tab Content */}
+            {activeTab === 'logs' && (
+                <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden animate-in fade-in">
+                    {loading ? (
+                        <div className="flex justify-center py-12">
+                            <Loader2 size={28} className="animate-spin text-blue-600" />
+                        </div>
+                    ) : (
+                        <table className="w-full text-sm">
+                            <thead>
+                                <tr className="bg-slate-50 border-b border-slate-200">
+                                    <th className="text-left px-5 py-3 font-semibold text-slate-600">Time</th>
+                                    <th className="text-left px-5 py-3 font-semibold text-slate-600">Email</th>
+                                    <th className="text-left px-5 py-3 font-semibold text-slate-600">Status</th>
+                                    <th className="text-left px-5 py-3 font-semibold text-slate-600">Method</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {loginLogs.map((log) => (
+                                    <tr key={log.id} className="border-b border-slate-100 hover:bg-slate-50/50">
+                                        <td className="px-5 py-3 text-slate-500 font-mono text-xs">
+                                            {new Date(log.timestamp).toLocaleString("th-TH")}
+                                        </td>
+                                        <td className="px-5 py-3 text-slate-700">{log.email}</td>
+                                        <td className="px-5 py-3">
+                                            {log.success ? (
+                                                <span className="text-green-600 bg-green-50 px-2 py-0.5 rounded text-xs font-bold">Success</span>
+                                            ) : (
+                                                <span className="text-red-600 bg-red-50 px-2 py-0.5 rounded text-xs font-bold">Failed</span>
+                                            )}
+                                        </td>
+                                        <td className="px-5 py-3 text-slate-400 text-xs">{log.method}</td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    )}
                 </div>
             )}
 
-            {/* Users Table */}
-            {loading ? (
-                <div className="flex justify-center py-12">
-                    <Loader2 size={28} className="animate-spin text-blue-600" />
-                </div>
-            ) : (
-                <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
-                    <table className="w-full text-sm">
-                        <thead>
-                            <tr className="bg-slate-50 border-b border-slate-200">
-                                <th className="text-left px-5 py-3 font-semibold text-slate-600">ชื่อ</th>
-                                <th className="text-left px-5 py-3 font-semibold text-slate-600">Email</th>
-                                <th className="text-left px-5 py-3 font-semibold text-slate-600">Role</th>
-                                <th className="text-left px-5 py-3 font-semibold text-slate-600">เพิ่มเมื่อ</th>
-                                <th className="text-center px-5 py-3 font-semibold text-slate-600">จัดการ</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {users.map((u) => {
-                                const rc = roleColors[u.role] || roleColors.user;
-                                const isSelf = u.email === user?.email;
-                                return (
-                                    <tr key={u.email} className="border-b border-slate-100 hover:bg-slate-50/50 transition-colors">
-                                        <td className="px-5 py-3 font-medium text-slate-800">
-                                            {u.name}
-                                            {isSelf && <span className="ml-2 text-[10px] text-blue-500 font-bold">(คุณ)</span>}
-                                        </td>
-                                        <td className="px-5 py-3 text-slate-500">{u.email}</td>
-                                        <td className="px-5 py-3">
-                                            {isSelf ? (
-                                                <span className={`inline-flex items-center px-2.5 py-1 rounded-lg text-xs font-semibold border ${rc.bg} ${rc.color}`}>
-                                                    {rc.label}
-                                                </span>
-                                            ) : (
-                                                <div className="relative inline-block">
-                                                    <select
-                                                        value={u.role}
-                                                        onChange={(e) => handleRoleChange(u.email, e.target.value)}
-                                                        className={`appearance-none px-3 py-1 pr-7 rounded-lg text-xs font-semibold border cursor-pointer ${rc.bg} ${rc.color} outline-none`}
-                                                    >
-                                                        <option value="user">User</option>
-                                                        <option value="reviewer">Reviewer</option>
-                                                        <option value="admin">Admin</option>
-                                                    </select>
-                                                    <ChevronDown size={10} className="absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none opacity-50" />
-                                                </div>
-                                            )}
-                                        </td>
-                                        <td className="px-5 py-3 text-xs text-slate-400">{formatDate(u.added_at)}</td>
-                                        <td className="px-5 py-3 text-center">
-                                            {!isSelf && (
-                                                <button
-                                                    onClick={() => setDeleteEmail(u.email)}
-                                                    className="p-1.5 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all"
-                                                    title="ลบผู้ใช้"
-                                                >
-                                                    <Trash2 size={14} />
-                                                </button>
-                                            )}
-                                        </td>
-                                    </tr>
-                                );
-                            })}
-                        </tbody>
-                    </table>
-                    <div className="px-5 py-3 bg-slate-50 border-t border-slate-200 text-xs text-slate-500">
-                        ผู้ใช้ทั้งหมด {users.length} คน
+            {/* Edit User Modal */}
+            {editUser && (
+                <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+                    <div className="bg-white rounded-2xl shadow-2xl p-6 max-w-sm w-full space-y-4">
+                        <h3 className="font-bold text-slate-800">แก้ไขผู้ใช้งาน</h3>
+                        <p className="text-sm text-slate-500 font-mono bg-slate-50 p-2 rounded block break-all">{editUser.email}</p>
+
+                        <div className="space-y-3">
+                            <div>
+                                <label className="text-xs font-semibold text-slate-600 mb-1 block">ชื่อ-สกุล</label>
+                                <input
+                                    type="text"
+                                    value={editName}
+                                    onChange={(e) => setEditName(e.target.value)}
+                                    className="w-full border border-slate-200 rounded-xl px-4 py-2 text-sm text-slate-900 focus:ring-2 focus:ring-blue-200 outline-none"
+                                />
+                            </div>
+                            <div>
+                                <label className="text-xs font-semibold text-slate-600 mb-1 block">Role</label>
+                                <div className="relative">
+                                    <select
+                                        value={editRole}
+                                        onChange={(e) => setEditRole(e.target.value)}
+                                        className="appearance-none w-full border border-slate-200 rounded-xl px-4 py-2 pr-10 text-sm text-slate-900 focus:ring-2 focus:ring-blue-200 outline-none bg-white cursor-pointer"
+                                    >
+                                        <option value="user">User</option>
+                                        <option value="reviewer">Reviewer</option>
+                                        <option value="admin">Admin</option>
+                                    </select>
+                                    <ChevronDown size={14} className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="flex gap-3 justify-end pt-2">
+                            <button
+                                onClick={() => setEditUser(null)}
+                                className="px-4 py-2 text-sm text-slate-600 bg-slate-100 rounded-xl hover:bg-slate-200 transition-all"
+                            >
+                                ยกเลิก
+                            </button>
+                            <button
+                                onClick={handleSaveEdit}
+                                disabled={actionLoading}
+                                className="px-5 py-2 text-sm text-white bg-blue-600 rounded-xl hover:bg-blue-700 transition-all shadow-lg shadow-blue-600/20 disabled:opacity-50"
+                            >
+                                {actionLoading ? <Loader2 size={14} className="animate-spin" /> : "บันทึกการแก้ไข"}
+                            </button>
+                        </div>
                     </div>
                 </div>
             )}

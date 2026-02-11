@@ -7,18 +7,126 @@
     "meaning_en": "This form tracks educational quality, professional exam pass rates, and high school outreach networks.",
     "department_id": "dept_academic",
     "frequency": "yearly",
-    "kpi_ids": ["7.1.1", "7.1.2", "7.1.3", "7.1.7", "7.1.13", "7.1.14"],
+    "kpi_ids": [
+      "7.1.1",
+      "7.1.2",
+      "7.1.3",
+      "7.1.7",
+      "7.1.13",
+      "7.1.14"
+    ],
     "fields": [
-      { "field_id": "fiscal_year", "label_th": "ปีการศึกษา", "label_en": "Fiscal Year", "type": "select", "required": true, "options": [2564, 2565, 2566, 2567, 2568] },
-      { "field_id": "kpi_711_pct", "label_th": "ร้อยละสอบผ่านวิชาชีพ (7.1.1)", "label_en": "Professional Exam Pass % (7.1.1)", "type": "number", "required": true, "min": 0, "max": 100, "unit": "%", "target_kpi": "7.1.1" },
-      { "field_id": "kpi_712_first", "label_th": "ร้อยละ OSCE ผ่านครั้งแรก (7.1.2)", "label_en": "OSCE First-Time Pass % (7.1.2)", "type": "number", "required": true, "min": 0, "max": 100, "unit": "%", "target_kpi": "7.1.2" },
-      { "field_id": "kpi_712_total", "label_th": "ร้อยละ OSCE ผ่านก่อนจบ (7.1.2)", "label_en": "OSCE Final Pass % (7.1.2)", "type": "number", "required": true, "min": 0, "max": 100, "unit": "%", "target_kpi": "7.1.2" },
-      { "field_id": "kpi_713_hours", "label_th": "ชั่วโมงฝึกปฏิบัติ (7.1.3)", "label_en": "Practical Hours (7.1.3)", "type": "number", "required": true, "min": 0, "unit": "ชั่วโมง", "target_kpi": "7.1.3" },
-      { "field_id": "kpi_717_participants", "label_th": "ผู้เข้าร่วม CE/Training (7.1.7)", "label_en": "CE/Training Participants (7.1.7)", "type": "number", "required": true, "min": 0, "unit": "คน", "target_kpi": "7.1.7" },
-      { "field_id": "kpi_7113_schools", "label_th": "จำนวนโรงเรียนมัธยมเครือข่าย (7.1.13)", "label_en": "Network Schools (7.1.13)", "type": "number", "required": true, "min": 0, "unit": "โรงเรียน", "target_kpi": "7.1.13" },
-      { "field_id": "kpi_7114_enrolled", "label_th": "จำนวนนิสิตรับเข้า (7.1.14)", "label_en": "Students Enrolled (7.1.14)", "type": "number", "required": true, "min": 0, "unit": "คน", "target_kpi": "7.1.14" },
-      { "field_id": "kpi_7114_retained", "label_th": "จำนวนนิสิตคงอยู่ (7.1.14)", "label_en": "Student Retention (7.1.14)", "type": "number", "required": true, "min": 0, "unit": "คน", "target_kpi": "7.1.14" },
-      { "field_id": "notes", "label_th": "หมายเหตุ", "label_en": "Notes", "type": "textarea", "required": false }
+      {
+        "field_id": "fiscal_year",
+        "label_th": "ปีการศึกษา",
+        "label_en": "Fiscal Year",
+        "type": "select",
+        "required": true,
+        "options": [
+          2564,
+          2565,
+          2566,
+          2567,
+          2568
+        ]
+      },
+      {
+        "field_id": "kpi_711_pct",
+        "label_th": "ร้อยละสอบผ่านวิชาชีพ (7.1.1)",
+        "label_en": "Professional Exam Pass % (7.1.1)",
+        "type": "number",
+        "required": true,
+        "min": 0,
+        "max": 100,
+        "unit": "%",
+        "target_kpi": "7.1.1"
+      },
+      {
+        "field_id": "kpi_712_first",
+        "label_th": "ร้อยละ OSCE ผ่านครั้งแรก (7.1.2)",
+        "label_en": "OSCE First-Time Pass % (7.1.2)",
+        "type": "number",
+        "required": true,
+        "min": 0,
+        "max": 100,
+        "unit": "%",
+        "target_kpi": "7.1.2"
+      },
+      {
+        "field_id": "kpi_712_total",
+        "label_th": "ร้อยละ OSCE ผ่านก่อนจบ (7.1.2)",
+        "label_en": "OSCE Final Pass % (7.1.2)",
+        "type": "number",
+        "required": true,
+        "min": 0,
+        "max": 100,
+        "unit": "%",
+        "target_kpi": "7.1.2"
+      },
+      {
+        "field_id": "kpi_713_hours",
+        "label_th": "ชั่วโมงฝึกปฏิบัติ (7.1.3)",
+        "label_en": "Practical Hours (7.1.3)",
+        "type": "number",
+        "required": true,
+        "min": 0,
+        "unit": "ชั่วโมง",
+        "target_kpi": "7.1.3"
+      },
+      {
+        "field_id": "kpi_717_participants",
+        "label_th": "ผู้เข้าร่วม CE/Training (7.1.7)",
+        "label_en": "CE/Training Participants (7.1.7)",
+        "type": "number",
+        "required": true,
+        "min": 0,
+        "unit": "คน",
+        "target_kpi": "7.1.7"
+      },
+      {
+        "field_id": "kpi_7113_schools",
+        "label_th": "จำนวนโรงเรียนมัธยมเครือข่าย (7.1.13)",
+        "label_en": "Network Schools (7.1.13)",
+        "type": "number",
+        "required": true,
+        "min": 0,
+        "unit": "โรงเรียน",
+        "target_kpi": "7.1.13"
+      },
+      {
+        "field_id": "kpi_7114_enrolled",
+        "label_th": "จำนวนนิสิตรับเข้า (7.1.14)",
+        "label_en": "Students Enrolled (7.1.14)",
+        "type": "number",
+        "required": true,
+        "min": 0,
+        "unit": "คน",
+        "target_kpi": "7.1.14"
+      },
+      {
+        "field_id": "kpi_7114_retained",
+        "label_th": "จำนวนนิสิตคงอยู่ (7.1.14)",
+        "label_en": "Student Retention (7.1.14)",
+        "type": "number",
+        "required": true,
+        "min": 0,
+        "unit": "คน",
+        "target_kpi": "7.1.14"
+      },
+      {
+        "field_id": "attachments",
+        "label_th": "ไฟล์แนบ (PDF)",
+        "label_en": "Attachment (PDF)",
+        "type": "file",
+        "required": false
+      },
+      {
+        "field_id": "notes",
+        "label_th": "หมายเหตุ",
+        "label_en": "Notes",
+        "type": "textarea",
+        "required": false
+      }
     ]
   },
   {
@@ -29,13 +137,79 @@
     "meaning_en": "This form records the number of graduates in postgraduate and residency programs, categorized by specialty.",
     "department_id": "dept_academic",
     "frequency": "yearly",
-    "kpi_ids": ["7.1.5", "7.1.6"],
+    "kpi_ids": [
+      "7.1.5",
+      "7.1.6"
+    ],
     "fields": [
-      { "field_id": "fiscal_year", "label_th": "ปีการศึกษา", "label_en": "Fiscal Year", "type": "select", "required": true, "options": [2564, 2565, 2566, 2567, 2568] },
-      { "field_id": "degree_level", "label_th": "ระดับปริญญา (7.1.5/7.1.6)", "label_en": "Degree Level (7.1.5/7.1.6)", "type": "select", "required": true, "options": ["ปริญญาโท", "ปริญญาเอก", "ประจำบ้าน (Resident)"] },
-      { "field_id": "field_name", "label_th": "สาขา/ความเชี่ยวชาญ (7.1.5/7.1.6)", "label_en": "Field/Specialty (7.1.5/7.1.6)", "type": "select", "required": true, "options": ["วิทยาศาสตร์สุขภาพสัตว์", "คลินิกศึกษา", "เภสัชวิทยา", "ระบาดวิทยา", "จุลชีววิทยา", "เวชศาสตร์ระบบสืบพันธุ์", "อายุรศาสตร์", "ศัลยศาสตร์", "พยาธิวิทยา"] },
-      { "field_id": "graduate_count", "label_th": "จำนวนผู้จบ (คน) (7.1.5/7.1.6)", "label_en": "Graduates (7.1.5/7.1.6)", "type": "number", "required": true, "min": 0, "unit": "คน", "target_kpi": "7.1.5" },
-      { "field_id": "notes", "label_th": "หมายเหตุ", "label_en": "Notes", "type": "textarea", "required": false }
+      {
+        "field_id": "fiscal_year",
+        "label_th": "ปีการศึกษา",
+        "label_en": "Fiscal Year",
+        "type": "select",
+        "required": true,
+        "options": [
+          2564,
+          2565,
+          2566,
+          2567,
+          2568
+        ]
+      },
+      {
+        "field_id": "degree_level",
+        "label_th": "ระดับปริญญา (7.1.5/7.1.6)",
+        "label_en": "Degree Level (7.1.5/7.1.6)",
+        "type": "select",
+        "required": true,
+        "options": [
+          "ปริญญาโท",
+          "ปริญญาเอก",
+          "ประจำบ้าน (Resident)"
+        ]
+      },
+      {
+        "field_id": "field_name",
+        "label_th": "สาขา/ความเชี่ยวชาญ (7.1.5/7.1.6)",
+        "label_en": "Field/Specialty (7.1.5/7.1.6)",
+        "type": "select",
+        "required": true,
+        "options": [
+          "วิทยาศาสตร์สุขภาพสัตว์",
+          "คลินิกศึกษา",
+          "เภสัชวิทยา",
+          "ระบาดวิทยา",
+          "จุลชีววิทยา",
+          "เวชศาสตร์ระบบสืบพันธุ์",
+          "อายุรศาสตร์",
+          "ศัลยศาสตร์",
+          "พยาธิวิทยา"
+        ]
+      },
+      {
+        "field_id": "graduate_count",
+        "label_th": "จำนวนผู้จบ (คน) (7.1.5/7.1.6)",
+        "label_en": "Graduates (7.1.5/7.1.6)",
+        "type": "number",
+        "required": true,
+        "min": 0,
+        "unit": "คน",
+        "target_kpi": "7.1.5"
+      },
+      {
+        "field_id": "attachments",
+        "label_th": "ไฟล์แนบ (PDF)",
+        "label_en": "Attachment (PDF)",
+        "type": "file",
+        "required": false
+      },
+      {
+        "field_id": "notes",
+        "label_th": "หมายเหตุ",
+        "label_en": "Notes",
+        "type": "textarea",
+        "required": false
+      }
     ]
   },
   {
@@ -46,15 +220,88 @@
     "meaning_en": "Used to record the number of grants and funding amounts from both internal and external research sources.",
     "department_id": "dept_research",
     "frequency": "yearly",
-    "kpi_ids": ["7.1.16", "7.1.17", "7.1.18", "7.1.19"],
+    "kpi_ids": [
+      "7.1.16",
+      "7.1.17",
+      "7.1.18",
+      "7.1.19"
+    ],
     "fields": [
-      { "field_id": "fiscal_year", "label_th": "ปีงบประมาณ", "label_en": "Fiscal Year", "type": "select", "required": true, "options": [2564, 2565, 2566, 2567, 2568] },
-      { "field_id": "internal_grants", "label_th": "จำนวนทุนวิจัยภายใน (7.1.16)", "label_en": "Internal Grants (7.1.16)", "type": "number", "required": true, "min": 0, "unit": "ทุน", "target_kpi": "7.1.16" },
-      { "field_id": "internal_amount", "label_th": "เงินทุนวิจัยภายใน (7.1.17)", "label_en": "Internal Funding Amount (7.1.17)", "type": "number", "required": true, "min": 0, "unit": "บาท", "target_kpi": "7.1.17" },
-      { "field_id": "external_grants", "label_th": "จำนวนทุนวิจัยภายนอก (7.1.18)", "label_en": "External Grants (7.1.18)", "type": "number", "required": true, "min": 0, "unit": "ทุน", "target_kpi": "7.1.18" },
-      { "field_id": "external_amount", "label_th": "เงินทุนวิจัยภายนอก (7.1.19)", "label_en": "External Funding Amount (7.1.19)", "type": "number", "required": true, "min": 0, "unit": "บาท", "target_kpi": "7.1.19" },
-      { "field_id": "funding_sources", "label_th": "รายชื่อแหล่งทุนหลัก", "label_en": "Main Funding Sources", "type": "textarea", "required": false },
-      { "field_id": "notes", "label_th": "หมายเหตุ", "label_en": "Notes", "type": "textarea", "required": false }
+      {
+        "field_id": "fiscal_year",
+        "label_th": "ปีงบประมาณ",
+        "label_en": "Fiscal Year",
+        "type": "select",
+        "required": true,
+        "options": [
+          2564,
+          2565,
+          2566,
+          2567,
+          2568
+        ]
+      },
+      {
+        "field_id": "internal_grants",
+        "label_th": "จำนวนทุนวิจัยภายใน (7.1.16)",
+        "label_en": "Internal Grants (7.1.16)",
+        "type": "number",
+        "required": true,
+        "min": 0,
+        "unit": "ทุน",
+        "target_kpi": "7.1.16"
+      },
+      {
+        "field_id": "internal_amount",
+        "label_th": "เงินทุนวิจัยภายใน (7.1.17)",
+        "label_en": "Internal Funding Amount (7.1.17)",
+        "type": "number",
+        "required": true,
+        "min": 0,
+        "unit": "บาท",
+        "target_kpi": "7.1.17"
+      },
+      {
+        "field_id": "external_grants",
+        "label_th": "จำนวนทุนวิจัยภายนอก (7.1.18)",
+        "label_en": "External Grants (7.1.18)",
+        "type": "number",
+        "required": true,
+        "min": 0,
+        "unit": "ทุน",
+        "target_kpi": "7.1.18"
+      },
+      {
+        "field_id": "external_amount",
+        "label_th": "เงินทุนวิจัยภายนอก (7.1.19)",
+        "label_en": "External Funding Amount (7.1.19)",
+        "type": "number",
+        "required": true,
+        "min": 0,
+        "unit": "บาท",
+        "target_kpi": "7.1.19"
+      },
+      {
+        "field_id": "funding_sources",
+        "label_th": "รายชื่อแหล่งทุนหลัก",
+        "label_en": "Main Funding Sources",
+        "type": "textarea",
+        "required": false
+      },
+      {
+        "field_id": "attachments",
+        "label_th": "ไฟล์แนบ (PDF)",
+        "label_en": "Attachment (PDF)",
+        "type": "file",
+        "required": false
+      },
+      {
+        "field_id": "notes",
+        "label_th": "หมายเหตุ",
+        "label_en": "Notes",
+        "type": "textarea",
+        "required": false
+      }
     ]
   },
   {
@@ -65,23 +312,176 @@
     "meaning_en": "Main form for the Hospital Department, tracking service statistics, satisfaction rates, and revenue categories (including vaccines).",
     "department_id": "dept_hospital",
     "frequency": "yearly",
-    "kpi_ids": ["7.1.20", "7.2.7", "7.2.8", "7.2.9", "7.2.10", "7.2.11", "7.2.14", "7.4.7"],
+    "kpi_ids": [
+      "7.1.20",
+      "7.2.7",
+      "7.2.8",
+      "7.2.9",
+      "7.2.10",
+      "7.2.11",
+      "7.2.14",
+      "7.4.7"
+    ],
     "fields": [
-      { "field_id": "fiscal_year", "label_th": "ปีงบประมาณ", "label_en": "Fiscal Year", "type": "select", "required": true, "options": [2564, 2565, 2566, 2567, 2568] },
-      { "field_id": "hospital_branch", "label_th": "สาขา รพ.สัตว์", "label_en": "Hospital Branch", "type": "select", "required": true, "options": ["รพส.มก.บางเขน", "รพส.มก.กำแพงแสน", "รพส.มก.หนองโพ", "รพส.มก.หัวหิน"] },
-      { "field_id": "patient_referrals", "label_th": "จำนวนสัตว์ป่วยส่งต่อ (7.1.20)", "label_en": "Patient Referrals (7.1.20)", "type": "number", "required": true, "min": 0, "unit": "ตัว", "target_kpi": "7.1.20" },
-      { "field_id": "pet_owner_visits", "label_th": "จำนวนเจ้าของสัตว์มารับบริการ (7.2.7)", "label_en": "Pet Owner Visits (7.2.7)", "type": "number", "required": true, "min": 0, "unit": "ราย", "target_kpi": "7.2.7" },
-      { "field_id": "donations", "label_th": "เงินบริจาคช่วยเหลือสัตว์ป่วยอนาถา (7.2.8)", "label_en": "Charity Donations (7.2.8)", "type": "number", "required": false, "min": 0, "unit": "บาท", "target_kpi": "7.2.8" },
-      { "field_id": "ce_satisfaction", "label_th": "คะแนนความพึงพอใจสัมมนาวิชาการ (7.2.9)", "label_en": "CE Satisfaction Score (7.2.9)", "type": "number", "required": false, "min": 0, "max": 5, "unit": "คะแนน", "target_kpi": "7.2.9" },
-      { "field_id": "service_satisfaction", "label_th": "คะแนนความพึงพอใจบริการ รพ. (7.2.10)", "label_en": "Service Satisfaction Score (7.2.10)", "type": "number", "required": true, "min": 0, "max": 5, "unit": "คะแนน", "target_kpi": "7.2.10" },
-      { "field_id": "diagnostic_samples", "label_th": "จำนวนตัวอย่างส่งตรวจวินิจฉัย (7.2.11)", "label_en": "Diagnostic Samples (7.2.11)", "type": "number", "required": false, "min": 0, "unit": "ตัวอย่าง", "target_kpi": "7.2.11" },
-      { "field_id": "network_clinic_users", "label_th": "จำนวนผู้ใช้บริการคลินิกเครือข่าย (7.2.14)", "label_en": "Network Clinic Users (7.2.14)", "type": "number", "required": false, "min": 0, "unit": "ราย", "target_kpi": "7.2.14" },
-      { "field_id": "vaccine_revenue", "label_th": "รายได้จากวัคซีน (7.4.7)", "label_en": "Vaccine Revenue (7.4.7)", "type": "number", "required": false, "min": 0, "unit": "บาท", "target_kpi": "7.4.7" },
-      { "field_id": "total_revenue", "label_th": "รายได้รวม (รพส.)", "label_en": "Total Revenue", "type": "number", "required": true, "min": 0, "unit": "บาท" },
-      { "field_id": "service_revenue", "label_th": "รายได้ค่าบริการ", "label_en": "Service Fees", "type": "number", "required": false, "min": 0, "unit": "บาท" },
-      { "field_id": "pharmacy_revenue", "label_th": "รายได้ค่ายา", "label_en": "Pharmacy Revenue", "type": "number", "required": false, "min": 0, "unit": "บาท" },
-      { "field_id": "lab_revenue", "label_th": "รายได้ค่าทางห้องปฏิบัติการ (Lab)", "label_en": "Lab Revenue", "type": "number", "required": false, "min": 0, "unit": "บาท" },
-      { "field_id": "notes", "label_th": "หมายเหตุ", "label_en": "Notes", "type": "textarea", "required": false }
+      {
+        "field_id": "fiscal_year",
+        "label_th": "ปีงบประมาณ",
+        "label_en": "Fiscal Year",
+        "type": "select",
+        "required": true,
+        "options": [
+          2564,
+          2565,
+          2566,
+          2567,
+          2568
+        ]
+      },
+      {
+        "field_id": "hospital_branch",
+        "label_th": "สาขา รพ.สัตว์",
+        "label_en": "Hospital Branch",
+        "type": "select",
+        "required": true,
+        "options": [
+          "รพส.มก.บางเขน",
+          "รพส.มก.กำแพงแสน",
+          "รพส.มก.หนองโพ",
+          "รพส.มก.หัวหิน"
+        ]
+      },
+      {
+        "field_id": "patient_referrals",
+        "label_th": "จำนวนสัตว์ป่วยส่งต่อ (7.1.20)",
+        "label_en": "Patient Referrals (7.1.20)",
+        "type": "number",
+        "required": true,
+        "min": 0,
+        "unit": "ตัว",
+        "target_kpi": "7.1.20"
+      },
+      {
+        "field_id": "pet_owner_visits",
+        "label_th": "จำนวนเจ้าของสัตว์มารับบริการ (7.2.7)",
+        "label_en": "Pet Owner Visits (7.2.7)",
+        "type": "number",
+        "required": true,
+        "min": 0,
+        "unit": "ราย",
+        "target_kpi": "7.2.7"
+      },
+      {
+        "field_id": "donations",
+        "label_th": "เงินบริจาคช่วยเหลือสัตว์ป่วยอนาถา (7.2.8)",
+        "label_en": "Charity Donations (7.2.8)",
+        "type": "number",
+        "required": false,
+        "min": 0,
+        "unit": "บาท",
+        "target_kpi": "7.2.8"
+      },
+      {
+        "field_id": "ce_satisfaction",
+        "label_th": "คะแนนความพึงพอใจสัมมนาวิชาการ (7.2.9)",
+        "label_en": "CE Satisfaction Score (7.2.9)",
+        "type": "number",
+        "required": false,
+        "min": 0,
+        "max": 5,
+        "unit": "คะแนน",
+        "target_kpi": "7.2.9"
+      },
+      {
+        "field_id": "service_satisfaction",
+        "label_th": "คะแนนความพึงพอใจบริการ รพ. (7.2.10)",
+        "label_en": "Service Satisfaction Score (7.2.10)",
+        "type": "number",
+        "required": true,
+        "min": 0,
+        "max": 5,
+        "unit": "คะแนน",
+        "target_kpi": "7.2.10"
+      },
+      {
+        "field_id": "diagnostic_samples",
+        "label_th": "จำนวนตัวอย่างส่งตรวจวินิจฉัย (7.2.11)",
+        "label_en": "Diagnostic Samples (7.2.11)",
+        "type": "number",
+        "required": false,
+        "min": 0,
+        "unit": "ตัวอย่าง",
+        "target_kpi": "7.2.11"
+      },
+      {
+        "field_id": "network_clinic_users",
+        "label_th": "จำนวนผู้ใช้บริการคลินิกเครือข่าย (7.2.14)",
+        "label_en": "Network Clinic Users (7.2.14)",
+        "type": "number",
+        "required": false,
+        "min": 0,
+        "unit": "ราย",
+        "target_kpi": "7.2.14"
+      },
+      {
+        "field_id": "vaccine_revenue",
+        "label_th": "รายได้จากวัคซีน (7.4.7)",
+        "label_en": "Vaccine Revenue (7.4.7)",
+        "type": "number",
+        "required": false,
+        "min": 0,
+        "unit": "บาท",
+        "target_kpi": "7.4.7"
+      },
+      {
+        "field_id": "total_revenue",
+        "label_th": "รายได้รวม (รพส.)",
+        "label_en": "Total Revenue",
+        "type": "number",
+        "required": true,
+        "min": 0,
+        "unit": "บาท"
+      },
+      {
+        "field_id": "service_revenue",
+        "label_th": "รายได้ค่าบริการ",
+        "label_en": "Service Fees",
+        "type": "number",
+        "required": false,
+        "min": 0,
+        "unit": "บาท"
+      },
+      {
+        "field_id": "pharmacy_revenue",
+        "label_th": "รายได้ค่ายา",
+        "label_en": "Pharmacy Revenue",
+        "type": "number",
+        "required": false,
+        "min": 0,
+        "unit": "บาท"
+      },
+      {
+        "field_id": "lab_revenue",
+        "label_th": "รายได้ค่าทางห้องปฏิบัติการ (Lab)",
+        "label_en": "Lab Revenue",
+        "type": "number",
+        "required": false,
+        "min": 0,
+        "unit": "บาท"
+      },
+      {
+        "field_id": "attachments",
+        "label_th": "ไฟล์แนบ (PDF)",
+        "label_en": "Attachment (PDF)",
+        "type": "file",
+        "required": false
+      },
+      {
+        "field_id": "notes",
+        "label_th": "หมายเหตุ",
+        "label_en": "Notes",
+        "type": "textarea",
+        "required": false
+      }
     ]
   },
   {
@@ -92,17 +492,109 @@
     "meaning_en": "Form for tracking strategic plan success, organizational transparency, and ability to generate non-core revenue streams.",
     "department_id": "dept_strategy",
     "frequency": "yearly",
-    "kpi_ids": ["7.4.5", "7.4.6", "7.4.7", "7.4.11"],
+    "kpi_ids": [
+      "7.4.5",
+      "7.4.6",
+      "7.4.7",
+      "7.4.11"
+    ],
     "fields": [
-      { "field_id": "fiscal_year", "label_th": "ปีงบประมาณ", "label_en": "Fiscal Year", "type": "select", "required": true, "options": [2564, 2565, 2566, 2567, 2568] },
-      { "field_id": "iso_nc_count", "label_th": "จำนวน NC ที่พบจากการตรวจ ISO (7.4.5)", "label_en": "ISO NC Count (7.4.5)", "type": "number", "required": true, "min": 0, "unit": "รายการ", "target_kpi": "7.4.5" },
-      { "field_id": "fraud_complaints", "label_th": "จำนวนข้อร้องเรียนด้านทุจริต (7.4.6)", "label_en": "Fraud Complaints (7.4.6)", "type": "number", "required": true, "min": 0, "unit": "เรื่อง", "target_kpi": "7.4.6" },
-      { "field_id": "ethics_score", "label_th": "คะแนนจริยธรรม / ธรรมาภิบาล (7.4.11)", "label_en": "Ethics & Governance Score (7.4.11)", "type": "number", "required": true, "min": 0, "max": 5, "unit": "คะแนน", "target_kpi": "7.4.11" },
-      { "field_id": "revenue_ce", "label_th": "รายได้ CE (7.4.7)", "label_en": "CE Revenue (7.4.7)", "type": "number", "required": false, "min": 0, "unit": "บาท", "target_kpi": "7.4.7" },
-      { "field_id": "revenue_conference", "label_th": "รายได้ศูนย์ประชุม (7.4.7)", "label_en": "Conference Revenue (7.4.7)", "type": "number", "required": false, "min": 0, "unit": "บาท", "target_kpi": "7.4.7" },
-      { "field_id": "other_revenue", "label_th": "รายได้อื่นๆ (6.x/7.x) (ระบุรายละเอียดในช่องด้านล่าง)", "label_en": "Other Strategic Revenue (7.4.7)", "type": "number", "required": false, "min": 0, "unit": "บาท", "target_kpi": "7.4.7" },
-      { "field_id": "other_revenue_desc", "label_th": "รายละเอียดรายได้อื่นๆ", "label_en": "Other Revenue Details", "type": "textarea", "required": false },
-      { "field_id": "notes", "label_th": "หมายเหตุ", "label_en": "Notes", "type": "textarea", "required": false }
+      {
+        "field_id": "fiscal_year",
+        "label_th": "ปีงบประมาณ",
+        "label_en": "Fiscal Year",
+        "type": "select",
+        "required": true,
+        "options": [
+          2564,
+          2565,
+          2566,
+          2567,
+          2568
+        ]
+      },
+      {
+        "field_id": "iso_nc_count",
+        "label_th": "จำนวน NC ที่พบจากการตรวจ ISO (7.4.5)",
+        "label_en": "ISO NC Count (7.4.5)",
+        "type": "number",
+        "required": true,
+        "min": 0,
+        "unit": "รายการ",
+        "target_kpi": "7.4.5"
+      },
+      {
+        "field_id": "fraud_complaints",
+        "label_th": "จำนวนข้อร้องเรียนด้านทุจริต (7.4.6)",
+        "label_en": "Fraud Complaints (7.4.6)",
+        "type": "number",
+        "required": true,
+        "min": 0,
+        "unit": "เรื่อง",
+        "target_kpi": "7.4.6"
+      },
+      {
+        "field_id": "ethics_score",
+        "label_th": "คะแนนจริยธรรม / ธรรมาภิบาล (7.4.11)",
+        "label_en": "Ethics & Governance Score (7.4.11)",
+        "type": "number",
+        "required": true,
+        "min": 0,
+        "max": 5,
+        "unit": "คะแนน",
+        "target_kpi": "7.4.11"
+      },
+      {
+        "field_id": "revenue_ce",
+        "label_th": "รายได้ CE (7.4.7)",
+        "label_en": "CE Revenue (7.4.7)",
+        "type": "number",
+        "required": false,
+        "min": 0,
+        "unit": "บาท",
+        "target_kpi": "7.4.7"
+      },
+      {
+        "field_id": "revenue_conference",
+        "label_th": "รายได้ศูนย์ประชุม (7.4.7)",
+        "label_en": "Conference Revenue (7.4.7)",
+        "type": "number",
+        "required": false,
+        "min": 0,
+        "unit": "บาท",
+        "target_kpi": "7.4.7"
+      },
+      {
+        "field_id": "other_revenue",
+        "label_th": "รายได้อื่นๆ (6.x/7.x) (ระบุรายละเอียดในช่องด้านล่าง)",
+        "label_en": "Other Strategic Revenue (7.4.7)",
+        "type": "number",
+        "required": false,
+        "min": 0,
+        "unit": "บาท",
+        "target_kpi": "7.4.7"
+      },
+      {
+        "field_id": "other_revenue_desc",
+        "label_th": "รายละเอียดรายได้อื่นๆ",
+        "label_en": "Other Revenue Details",
+        "type": "textarea",
+        "required": false
+      },
+      {
+        "field_id": "attachments",
+        "label_th": "ไฟล์แนบ (PDF)",
+        "label_en": "Attachment (PDF)",
+        "type": "file",
+        "required": false
+      },
+      {
+        "field_id": "notes",
+        "label_th": "หมายเหตุ",
+        "label_en": "Notes",
+        "type": "textarea",
+        "required": false
+      }
     ]
   },
   {
@@ -113,16 +605,106 @@
     "meaning_en": "Used for workforce management, tracking workplace accidents, and analyzing resignation rates of key personnel.",
     "department_id": "dept_hr",
     "frequency": "yearly",
-    "kpi_ids": ["7.3.3", "7.3.5", "7.3.11"],
+    "kpi_ids": [
+      "7.3.3",
+      "7.3.5",
+      "7.3.11"
+    ],
     "fields": [
-      { "field_id": "fiscal_year", "label_th": "ปีงบประมาณ", "label_en": "Fiscal Year", "type": "select", "required": true, "options": [2564, 2565, 2566, 2567, 2568] },
-      { "field_id": "total_staff", "label_th": "จำนวนบุคลากรรวม (7.3.3)", "label_en": "Total Staff (7.3.3)", "type": "number", "required": true, "min": 0, "unit": "คน", "target_kpi": "7.3.3" },
-      { "field_id": "staff_position", "label_th": "ประเภทตำแหน่ง (7.3.3)", "label_en": "Position Type (7.3.3)", "type": "select", "required": true, "options": ["ข้าราชการ", "พนักงาน มก.", "พนักงานเงินรายได้", "ลูกจ้างประจำเข็ญ", "อาจารย์", "สัตวแพทย์ รพ.", "สัตวแพทย์ วินิจฉัย"] },
-      { "field_id": "accidents_count", "label_th": "จำนวนอุบัติเหตุขณะปฏิบัติงาน (7.3.5)", "label_en": "Workplace Accidents (7.3.5)", "type": "number", "required": true, "min": 0, "unit": "ครั้ง", "target_kpi": "7.3.5" },
-      { "field_id": "resignations_0_3", "label_th": "จำนวนอาจารย์/สัตวแพทย์ลาออก 0-3 ปี (7.3.11)", "label_en": "Resignations 0-3yr (7.3.11)", "type": "number", "required": true, "min": 0, "unit": "คน", "target_kpi": "7.3.11" },
-      { "field_id": "resignations_3_7", "label_th": "จำนวนอาจารย์/สัตวแพทย์ลาออก 3-7 ปี (7.3.11)", "label_en": "Resignations 3-7yr (7.3.11)", "type": "number", "required": true, "min": 0, "unit": "คน", "target_kpi": "7.3.11" },
-      { "field_id": "resignations_7plus", "label_th": "จำนวนอาจารย์/สัตวแพทย์ลาออก 7 ปีขึ้นไป (7.3.11)", "label_en": "Resignations 7yr+ (7.3.11)", "type": "number", "required": true, "min": 0, "unit": "คน", "target_kpi": "7.3.11" },
-      { "field_id": "notes", "label_th": "หมายเหตุ", "label_en": "Notes", "type": "textarea", "required": false }
+      {
+        "field_id": "fiscal_year",
+        "label_th": "ปีงบประมาณ",
+        "label_en": "Fiscal Year",
+        "type": "select",
+        "required": true,
+        "options": [
+          2564,
+          2565,
+          2566,
+          2567,
+          2568
+        ]
+      },
+      {
+        "field_id": "total_staff",
+        "label_th": "จำนวนบุคลากรรวม (7.3.3)",
+        "label_en": "Total Staff (7.3.3)",
+        "type": "number",
+        "required": true,
+        "min": 0,
+        "unit": "คน",
+        "target_kpi": "7.3.3"
+      },
+      {
+        "field_id": "staff_position",
+        "label_th": "ประเภทตำแหน่ง (7.3.3)",
+        "label_en": "Position Type (7.3.3)",
+        "type": "select",
+        "required": true,
+        "options": [
+          "ข้าราชการ",
+          "พนักงาน มก.",
+          "พนักงานเงินรายได้",
+          "ลูกจ้างประจำเข็ญ",
+          "อาจารย์",
+          "สัตวแพทย์ รพ.",
+          "สัตวแพทย์ วินิจฉัย"
+        ]
+      },
+      {
+        "field_id": "accidents_count",
+        "label_th": "จำนวนอุบัติเหตุขณะปฏิบัติงาน (7.3.5)",
+        "label_en": "Workplace Accidents (7.3.5)",
+        "type": "number",
+        "required": true,
+        "min": 0,
+        "unit": "ครั้ง",
+        "target_kpi": "7.3.5"
+      },
+      {
+        "field_id": "resignations_0_3",
+        "label_th": "จำนวนอาจารย์/สัตวแพทย์ลาออก 0-3 ปี (7.3.11)",
+        "label_en": "Resignations 0-3yr (7.3.11)",
+        "type": "number",
+        "required": true,
+        "min": 0,
+        "unit": "คน",
+        "target_kpi": "7.3.11"
+      },
+      {
+        "field_id": "resignations_3_7",
+        "label_th": "จำนวนอาจารย์/สัตวแพทย์ลาออก 3-7 ปี (7.3.11)",
+        "label_en": "Resignations 3-7yr (7.3.11)",
+        "type": "number",
+        "required": true,
+        "min": 0,
+        "unit": "คน",
+        "target_kpi": "7.3.11"
+      },
+      {
+        "field_id": "resignations_7plus",
+        "label_th": "จำนวนอาจารย์/สัตวแพทย์ลาออก 7 ปีขึ้นไป (7.3.11)",
+        "label_en": "Resignations 7yr+ (7.3.11)",
+        "type": "number",
+        "required": true,
+        "min": 0,
+        "unit": "คน",
+        "target_kpi": "7.3.11"
+      },
+      {
+        "field_id": "attachments",
+        "label_th": "ไฟล์แนบ (PDF)",
+        "label_en": "Attachment (PDF)",
+        "type": "file",
+        "required": false
+      },
+      {
+        "field_id": "notes",
+        "label_th": "หมายเหตุ",
+        "label_en": "Notes",
+        "type": "textarea",
+        "required": false
+      }
     ]
   },
   {
@@ -133,16 +715,94 @@
     "meaning_en": "Form for reporting project successes or milestones that cannot be measured numerically, including evidence attachments.",
     "department_id": "dept_strategy",
     "frequency": "event",
-    "kpi_ids": ["7.1.4", "7.3.8", "7.4.1", "7.4.2", "7.4.8", "7.4.9", "7.4.13"],
+    "kpi_ids": [
+      "7.1.4",
+      "7.3.8",
+      "7.4.1",
+      "7.4.2",
+      "7.4.8",
+      "7.4.9",
+      "7.4.13"
+    ],
     "fields": [
-      { "field_id": "kpi_id", "label_th": "รหัส KPI ที่เกี่ยวข้อง (Multiple ID)", "label_en": "Related KPI ID", "type": "select", "required": true, "options": ["7.1.4", "7.3.8", "7.4.1", "7.4.2", "7.4.8", "7.4.9", "7.4.13"] },
-      { "field_id": "fiscal_year", "label_th": "ปีที่เกิดเหตุการณ์", "label_en": "Event Year", "type": "select", "required": true, "options": [2564, 2565, 2566, 2567, 2568] },
-      { "field_id": "title", "label_th": "ชื่อเรื่อง/ผลงาน (Narrative Title)", "label_en": "Title", "type": "text", "required": true },
-      { "field_id": "description", "label_th": "รายละเอียดผลงาน (Description)", "label_en": "Description", "type": "textarea", "required": true },
-      { "field_id": "old_value", "label_th": "ค่าเดิมก่อนดำเนินการ (ถ้ามี) (Baseline)", "label_en": "Previous Value", "type": "textarea", "required": false },
-      { "field_id": "new_value", "label_th": "ค่าใหม่หลังดำเนินการ (ถ้ามี) (Outcome)", "label_en": "New Value", "type": "textarea", "required": false },
-      { "field_id": "status", "label_th": "สถานะการดำเนินงาน (Status)", "label_en": "Operation Status", "type": "select", "required": true, "options": ["สำเร็จ (Completed)", "อยู่ระหว่างดำเนินการ (In Progress)", "รออนุมัติ (Pending)", "ยกเลิก (Cancelled)"] },
-      { "field_id": "attachments", "label_th": "เอกสารแนบ (Evidence PDF)", "label_en": "Attachments (PDF)", "type": "file", "required": false }
+      {
+        "field_id": "kpi_id",
+        "label_th": "รหัส KPI ที่เกี่ยวข้อง (Multiple ID)",
+        "label_en": "Related KPI ID",
+        "type": "select",
+        "required": true,
+        "options": [
+          "7.1.4",
+          "7.3.8",
+          "7.4.1",
+          "7.4.2",
+          "7.4.8",
+          "7.4.9",
+          "7.4.13"
+        ]
+      },
+      {
+        "field_id": "fiscal_year",
+        "label_th": "ปีที่เกิดเหตุการณ์",
+        "label_en": "Event Year",
+        "type": "select",
+        "required": true,
+        "options": [
+          2564,
+          2565,
+          2566,
+          2567,
+          2568
+        ]
+      },
+      {
+        "field_id": "title",
+        "label_th": "ชื่อเรื่อง/ผลงาน (Narrative Title)",
+        "label_en": "Title",
+        "type": "text",
+        "required": true
+      },
+      {
+        "field_id": "description",
+        "label_th": "รายละเอียดผลงาน (Description)",
+        "label_en": "Description",
+        "type": "textarea",
+        "required": true
+      },
+      {
+        "field_id": "old_value",
+        "label_th": "ค่าเดิมก่อนดำเนินการ (ถ้ามี) (Baseline)",
+        "label_en": "Previous Value",
+        "type": "textarea",
+        "required": false
+      },
+      {
+        "field_id": "new_value",
+        "label_th": "ค่าใหม่หลังดำเนินการ (ถ้ามี) (Outcome)",
+        "label_en": "New Value",
+        "type": "textarea",
+        "required": false
+      },
+      {
+        "field_id": "status",
+        "label_th": "สถานะการดำเนินงาน (Status)",
+        "label_en": "Operation Status",
+        "type": "select",
+        "required": true,
+        "options": [
+          "สำเร็จ (Completed)",
+          "อยู่ระหว่างดำเนินการ (In Progress)",
+          "รออนุมัติ (Pending)",
+          "ยกเลิก (Cancelled)"
+        ]
+      },
+      {
+        "field_id": "attachments",
+        "label_th": "เอกสารแนบ (Evidence PDF)",
+        "label_en": "Attachments (PDF)",
+        "type": "file",
+        "required": true
+      }
     ]
   }
 ]

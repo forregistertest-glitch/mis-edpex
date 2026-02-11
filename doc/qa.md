@@ -4,9 +4,15 @@
 |:------|:------|
 | **Doc ID** | KUVMIS-DOC-007 |
 | **Version** | 1.3.0 |
-| **Last Updated** | 2026-02-11T01:34:00+07:00 |
+| **Last Updated** | 2026-02-11T08:48:18+07:00 |
 | **Author** | KUVMIS Development Team |
 | **Status** | Released |
+
+| Test Case ID | Test Case Name | Steps | Expected Result | Status |
+|:-------------|:---------------|:------|:----------------|:-------|
+| TC-004 | **Dashboard Logic** | Hover/View Logic tooltip | Tooltip displays correct method | ✅ Pass |
+| TC-005 | **Entry History** | Submit form with extra fields | Table shows dynamic columns | ✅ Pass |
+| TC-006 | **Optional Fields** | Submit partially filled form | Success message appears | ✅ Pass |
 
 เอกสารฉบับนี้อธิบายถึงที่มาและความถูกต้องของข้อมูลภายในระบบ KUVMIS เพื่อใช้ประกอบการตัดสินใจในช่วงการทดสอบระบบ (Pilot Test)
 

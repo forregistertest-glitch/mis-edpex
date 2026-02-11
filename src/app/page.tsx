@@ -15,6 +15,8 @@ import AcademicDashboard from "@/components/dashboard/AcademicDashboard";
 import StaffDashboard from "@/components/dashboard/StaffDashboard";
 import HospitalDashboard from "@/components/dashboard/HospitalDashboard";
 import StrategicDashboard from "@/components/dashboard/StrategicDashboard";
+import ChartGallery from "@/components/dashboard/ChartGallery";
+import DashboardCard from "@/components/dashboard/DashboardCard";
 import { useAuth } from "@/contexts/AuthContext";
 import { translations, Language, TranslationKey } from "@/lib/translations";
 import {
@@ -25,6 +27,7 @@ import {
   ShieldAlert,
   TrendingUp,
   Loader2,
+  Database,
 } from "lucide-react";
 import * as XLSX from 'xlsx';
 import {
@@ -202,36 +205,48 @@ export default function Dashboard() {
       value: fmtVal(dashboardData?.academicPassRate ?? null, "%", "avg"),
       trend: dashboardData?.academicPassRate && dashboardData.academicPassRate > 80 ? "✓ On Target" : "→ Tracking",
       icon: GraduationCap, color: "text-blue-600", bg: "bg-blue-100",
+      logic: lang === 'th' ? "ร้อยละของผู้สำเร็จการศึกษาที่สอบผ่านใบประกอบวิชาชีพ" : "Percentage of graduates passing licensure exam",
+      source: "KPI-7.1.1"
     },
     {
       title: t('customerSatisfaction'),
       value: fmtVal(dashboardData?.customerSatisfaction ?? null, "คะแนน", "avg"),
       trend: dashboardData?.customerSatisfaction && dashboardData.customerSatisfaction >= 4.0 ? "✓ ≥ 4.0" : "→ Tracking",
       icon: Users, color: "text-green-600", bg: "bg-green-100",
+      logic: lang === 'th' ? "ค่าเฉลี่ยความพึงพอใจของผู้รับบริการ" : "Average customer satisfaction score",
+      source: "KPI-7.2.10"
     },
     {
       title: lang === 'th' ? 'ทุนวิจัยรวม' : 'Research Funding',
       value: fmtVal(dashboardData?.researchFunding ?? null, "บาท", "sum"),
       trend: dashboardData?.researchFunding ? '✓ Active' : '→ Tracking',
       icon: LineChart, color: "text-teal-600", bg: "bg-teal-100",
+      logic: lang === 'th' ? "จำนวนเงินทุนวิจัยภายนอกและภายในรวมกัน" : "Total external and internal research funding",
+      source: "KPI-7.1.17, 7.1.19"
     },
     {
       title: lang === 'th' ? 'ความผูกพันบุคลากร' : 'Staff Engagement',
       value: fmtVal(dashboardData?.workforceEngagement ?? null, "คะแนน", "avg"),
       trend: dashboardData?.workforceEngagement && dashboardData.workforceEngagement >= 4.0 ? '✓ ≥ 4.0' : '→ Tracking',
       icon: Users, color: "text-amber-600", bg: "bg-amber-100",
+      logic: lang === 'th' ? "ค่าเฉลี่ยความผูกพันของบุคลากร" : "Average workforce engagement score",
+      source: "KPI-7.3.10"
     },
     {
       title: t('successRateStrategic'),
       value: fmtVal(dashboardData?.strategicSuccess ?? null, "%", "avg"),
       trend: `${dashboardData?.kpisWithData || 0}/${dashboardData?.totalKpis || 0} KPIs`,
       icon: TrendingUp, color: "text-purple-600", bg: "bg-purple-100",
+      logic: lang === 'th' ? "ร้อยละความสำเร็จของแผนยุทธศาสตร์" : "Percentage of strategic plan achievement",
+      source: "KPI-7.4.x"
     },
     {
       title: t('safetyIncidents'),
       value: dashboardData?.safetyIncidents !== null && dashboardData?.safetyIncidents !== undefined ? String(dashboardData.safetyIncidents) : "—",
       trend: dashboardData?.safetyIncidents === 0 ? "✓ Zero" : "⚠ Alert",
       icon: ShieldAlert, color: "text-red-600", bg: "bg-red-100",
+      logic: lang === 'th' ? "จำนวนอุบัติการณ์ความปลอดภัย" : "Number of safety incidents",
+      source: "KPI-7.1.11"
     },
   ];
 
@@ -279,40 +294,55 @@ export default function Dashboard() {
               {/* KPI Cards Grid — 6 cards */}
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                 {kpis.map((kpi) => (
-                  <div key={kpi.title} className="bg-white p-6 rounded-2xl border border-slate-200/60 shadow-sm hover:shadow-lg transition-all transform hover:-translate-y-1 group">
-                    <div className="flex items-center justify-between mb-4">
-                      <div className={`${kpi.bg} ${kpi.color} p-3 rounded-2xl group-hover:scale-110 transition-transform`}>
-                        <kpi.icon size={22} />
-                      </div>
-                      <span className={`text-xs font-bold px-2.5 py-1 rounded-full ${kpi.trend.includes('✓') ? 'text-green-600 bg-green-50' : 'text-slate-600 bg-slate-50'}`}>
-                        {kpi.trend}
-                      </span>
-                    </div>
-                    <h3 className="text-slate-400 text-sm font-semibold uppercase tracking-wider">{kpi.title}</h3>
-                    <p className="text-3xl font-bold text-slate-800 mt-2">
-                      {dataLoading ? <Loader2 size={24} className="animate-spin text-blue-400" /> : kpi.value}
-                    </p>
-                  </div>
+                  <DashboardCard
+                    key={kpi.title}
+                    title={kpi.title}
+                    value={kpi.value}
+                    trend={kpi.trend}
+                    icon={kpi.icon}
+                    iconColor={kpi.color}
+                    iconBg={kpi.bg}
+                    logic={t(kpi.logicKey as TranslationKey) || kpi.logic}
+                    source={kpi.source}
+                    isLoading={dataLoading}
+                  />
                 ))}
               </div>
 
               {/* Quick-View Category Cards */}
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                 {[
-                  { tab: 'Academic', label: lang === 'th' ? '🎓 วิชาการ' : '🎓 Academic', sub: lang === 'th' ? 'สอบใบประกอบ, OSCE, ทุนวิจัย' : 'Licensure, OSCE, Research', color: 'from-blue-500 to-blue-600' },
-                  { tab: 'Hospital', label: lang === 'th' ? '🏥 โรงพยาบาล' : '🏥 Hospital', sub: lang === 'th' ? 'ความพึงพอใจ, บริจาค, ผู้สมัคร' : 'Satisfaction, Donations, Applicants', color: 'from-emerald-500 to-emerald-600' },
-                  { tab: 'Staff/HR', label: lang === 'th' ? '👥 บุคลากร' : '👥 Staff/HR', sub: lang === 'th' ? 'ความผูกพัน, ลาป่วย, Talent' : 'Engagement, Leave, Talent', color: 'from-amber-500 to-amber-600' },
-                  { tab: 'Strategic', label: lang === 'th' ? '📈 ยุทธศาสตร์' : '📈 Strategic', sub: lang === 'th' ? 'SO Progress, รายได้, ธรรมาภิบาล' : 'SO Progress, Revenue, Governance', color: 'from-purple-500 to-purple-600' },
+                  { tab: 'Academic', id: '7.1', label: lang === 'th' ? '🎓 วิชาการ' : '🎓 Academic', sub: lang === 'th' ? 'สอบใบประกอบ, OSCE, ทุนวิจัย' : 'Licensure, OSCE, Research', color: 'from-blue-500 to-blue-600' },
+                  { tab: 'Hospital', id: '7.2', label: lang === 'th' ? '🏥 โรงพยาบาล' : '🏥 Hospital', sub: lang === 'th' ? 'ความพึงพอใจ, บริจาค, ผู้สมัคร' : 'Satisfaction, Donations, Applicants', color: 'from-emerald-500 to-emerald-600' },
+                  { tab: 'Staff/HR', id: '7.3', label: lang === 'th' ? '👥 บุคลากร' : '👥 Staff/HR', sub: lang === 'th' ? 'ความผูกพัน, ลาป่วย, Talent' : 'Engagement, Leave, Talent', color: 'from-amber-500 to-amber-600' },
+                  { tab: 'Strategic', id: '7.4', label: lang === 'th' ? '📈 ยุทธศาสตร์' : '📈 Strategic', sub: lang === 'th' ? 'SO Progress, รายได้, ธรรมาภิบาล' : 'SO Progress, Revenue, Governance', color: 'from-purple-500 to-purple-600' },
                 ].map(c => (
-                  <button key={c.tab} onClick={() => setActiveTab(c.tab)}
-                    className="bg-white p-6 rounded-2xl border border-slate-200/60 shadow-sm hover:shadow-lg transition-all text-left group hover:-translate-y-1 transform"
-                  >
-                    <div className={`text-lg font-bold text-transparent bg-clip-text bg-gradient-to-r ${c.color} mb-1`}>{c.label}</div>
-                    <p className="text-xs text-slate-400 mb-3">{c.sub}</p>
-                    <span className="text-xs font-semibold text-blue-600 group-hover:underline">{lang === 'th' ? 'ดู Dashboard →' : 'View Dashboard →'}</span>
-                  </button>
+                  <div key={c.tab} className="bg-white p-6 rounded-2xl border border-slate-200/60 shadow-sm hover:shadow-lg transition-all group hover:-translate-y-1 transform flex flex-col justify-between">
+                    <button onClick={() => setActiveTab(c.tab)} className="text-left w-full">
+                      <div className={`text-lg font-bold text-transparent bg-clip-text bg-gradient-to-r ${c.color} mb-1`}>{c.label}</div>
+                      <p className="text-xs text-slate-400 mb-3">{c.sub}</p>
+                      <span className="text-xs font-semibold text-blue-600 group-hover:underline mb-4 inline-block">{lang === 'th' ? 'ดู Dashboard →' : 'View Dashboard →'}</span>
+                    </button>
+
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleViewDetails(c.id, c.label);
+                      }}
+                      className="mt-2 w-full flex items-center justify-center gap-2 py-2 px-3 bg-slate-50 hover:bg-slate-100 text-slate-600 text-xs font-semibold rounded-lg border border-slate-200 transition-colors"
+                    >
+                      <Database size={14} />
+                      {lang === 'th' ? 'ดูข้อมูล / Export' : 'Data & Export'}
+                    </button>
+                  </div>
                 ))}
               </div>
+
+              {/* Chart Gallery Section */}
+              <div className="mt-8">
+                <ChartGallery lang={lang} />
+              </div>
+
             </>
           ) : activeTab === 'Academic' ? (
             <AcademicDashboard lang={lang} />

@@ -8,6 +8,7 @@ import {
 import { Line, Bar, Radar } from "react-chartjs-2";
 import { Stethoscope, Loader2, RefreshCw, Heart, Users, Gift, GraduationCap } from "lucide-react";
 import ChartFilterBar, { ChartViewMode } from "./ChartFilterBar";
+import DashboardCard from "./DashboardCard";
 import type { Language } from "@/lib/translations";
 import {
     getKpiTrendData, getKpiMatrixData, getAvailableFilters, getCategoryOverview,
@@ -121,21 +122,38 @@ export default function HospitalDashboard({ lang }: HospitalDashboardProps) {
 
             {/* Summary Cards */}
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-                {cards.map(card => (
-                    <div key={card.label} className="bg-white p-5 rounded-2xl border border-slate-200/60 shadow-sm hover:shadow-md transition-all">
-                        <div className="flex items-center gap-2 mb-3">
-                            <div className={`p-2 rounded-xl bg-gradient-to-br ${card.color} text-white`}><card.icon size={16} /></div>
-                            <span className="text-xs font-bold text-slate-400 uppercase">{card.label}</span>
-                        </div>
-                        <p className="text-2xl font-black text-slate-800">{card.value ? `${card.value} ${card.unit}` : "—"}</p>
-                    </div>
-                ))}
+                {cards.map(card => {
+                    // Logic & Source Mapping
+                    let logic = "", source = "";
+                    if (card.icon === Heart) { logic = th ? "คะแนนความพึงพอใจเฉลี่ย" : "Avg Satisfaction Score"; source = "KPI-7.2.10"; }
+                    else if (card.icon === Gift) { logic = th ? "ยอดเงินบริจาค" : "Total Donations"; source = "KPI-7.2.8"; }
+                    else if (card.icon === GraduationCap) { logic = th ? "จำนวนผู้สมัครเรียน" : "Total Applicants"; source = "KPI-7.2.5"; }
+                    else if (card.icon === Users) { logic = th ? "จำนวนบัณฑิตที่จบ" : "Total Graduates"; source = "KPI-7.2.4"; }
+
+                    return (
+                        <DashboardCard
+                            key={card.label}
+                            title={card.label}
+                            value={card.value || "—"}
+                            trend="→ Tracking"
+                            icon={card.icon}
+                            iconColor="text-white"
+                            iconBg={`bg-gradient-to-br ${card.color}`}
+                            logic={logic}
+                            source={source}
+                        />
+                    );
+                })}
             </div>
 
             {/* Charts */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 {/* Satisfaction Trend (Radar) */}
-                <div className="bg-white p-6 rounded-2xl border border-slate-200/60 shadow-sm">
+                <DashboardCard
+                    title={th ? "ความพึงพอใจ 3 ด้าน (7.2.6/7.2.9/7.2.10)" : "3-Area Satisfaction"}
+                    logic={th ? "คะแนนความพึงพอใจ: ผู้เรียนสัมมนาและผู้รับบริการ รพ." : "Satisfaction scores: Students, Seminar attendees, and Hospital clients"}
+                    source={th ? "แบบประเมินความพึงพอใจออนไลน์" : "Online Satisfaction Survey"}
+                >
                     <div className="h-[320px]">
                         {Object.keys(satisfactionTrend).length > 0 ? (
                             viewMode === "line" ? (
@@ -149,19 +167,27 @@ export default function HospitalDashboard({ lang }: HospitalDashboardProps) {
                             )
                         ) : <div className="flex flex-col items-center justify-center h-full text-slate-400"><p className="font-bold text-sm mb-1">{th ? "ความพึงพอใจ 3 ด้าน (7.2.6/7.2.9/7.2.10)" : "3-Area Satisfaction"}</p><p className="text-xs">{th ? "ยังไม่มีข้อมูล — กรุณากรอกข้อมูลในแบบฟอร์ม" : "No data — please submit via input form"}</p></div>}
                     </div>
-                </div>
+                </DashboardCard>
 
                 {/* Projects */}
-                <div className="bg-white p-6 rounded-2xl border border-slate-200/60 shadow-sm">
+                <DashboardCard
+                    title={th ? "โครงการสำคัญ & ทุนอุดหนุน" : "Major Projects & Grants"}
+                    logic={th ? "จำนวนโครงการที่ดำเนินการและได้รับทุนสนับสนุน" : "Number of implemented projects and funded grants"}
+                    source={th ? "ฝ่ายยุทธศาสตร์ รพ." : "Hospital Strategy Dept"}
+                >
                     <div className="h-[320px]">
                         <Bar options={chartOpts(th ? "โครงการสำคัญ & ทุนอุดหนุน" : "Major Projects & Grants")} data={buildTrend(projectTrend, {
                             "7.2.1": th ? "โครงการสำคัญ" : "Projects", "7.2.2": th ? "ทุนอุดหนุนระดับประเทศ" : "National Grants",
                         })} />
                     </div>
-                </div>
+                </DashboardCard>
 
                 {/* Applicants */}
-                <div className="bg-white p-6 rounded-2xl border border-slate-200/60 shadow-sm">
+                <DashboardCard
+                    title={th ? "ผู้สมัครเรียน แยกหลักสูตร (7.2.5)" : "Applicants by Program (7.2.5)"}
+                    logic={th ? "จำนวนผู้สมัครเข้าฝึกงาน/เรียนต่อในแต่ละหลักสูตร" : "Number of applicants for internships/residency programs"}
+                    source={th ? "งานการศึกษาหลังปริญญา" : "Postgraduate Education"}
+                >
                     <div className="h-[320px]">
                         {applicantMatrix.length > 0 ? (
                             <Bar options={{ ...chartOpts(th ? "ผู้สมัครเรียน แยกหลักสูตร (7.2.5)" : "Applicants by Program (7.2.5)"), indexAxis: "y" as const }} data={{
@@ -170,25 +196,35 @@ export default function HospitalDashboard({ lang }: HospitalDashboardProps) {
                             }} />
                         ) : <div className="flex flex-col items-center justify-center h-full text-slate-400"><p className="font-bold text-sm mb-1">{th ? "ผู้สมัครเรียน แยกหลักสูตร (7.2.5)" : "Applicants by Program (7.2.5)"}</p><p className="text-xs">{th ? "ยังไม่มีข้อมูล — กรุณากรอกข้อมูลในแบบฟอร์ม" : "No data — please submit via input form"}</p></div>}
                     </div>
-                </div>
+                </DashboardCard>
 
                 {/* Donations */}
-                <div className="bg-white p-6 rounded-2xl border border-slate-200/60 shadow-sm">
+                <DashboardCard
+                    title={th ? "เงินบริจาคช่วยเหลือสัตว์ป่วยอนาถา (7.2.8)" : "Animal Charity Donations (7.2.8)"}
+                    logic={th ? "ยอดเงินบริจาคสะสมรายเดือน" : "Cumulative monthly donation amount"}
+                    source={th ? "กองทุนรักษาพยาบาลสัตว์ป่วยอนาถา" : "Animal Charity Fund"}
+                >
                     <div className="h-[320px]">
                         <Line options={chartOpts(th ? "เงินบริจาคช่วยเหลือสัตว์ป่วยอนาถา (7.2.8)" : "Animal Charity Donations (7.2.8)")} data={buildTrend(donationTrend, { "7.2.8": th ? "บาท" : "THB" })} />
                     </div>
-                </div>
+                </DashboardCard>
 
                 {/* Graduates */}
-                <div className="bg-white p-6 rounded-2xl border border-slate-200/60 shadow-sm lg:col-span-2">
-                    <div className="h-[280px]">
-                        {graduateMatrix.length > 0 ? (
-                            <Bar options={chartOpts(th ? "นิสิตสำเร็จ แยกระดับ (7.2.4)" : "Graduates by Level (7.2.4)")} data={{
-                                labels: graduateMatrix.map(m => m.dimension_value),
-                                datasets: [{ label: th ? "จำนวน" : "Count", data: graduateMatrix.map(m => m.value), backgroundColor: COLORS.map(c => c.bg), borderColor: COLORS.map(c => c.border), borderWidth: 1 }],
-                            }} />
-                        ) : <div className="flex flex-col items-center justify-center h-full text-slate-400"><p className="font-bold text-sm mb-1">{th ? "นิสิตสำเร็จ แยกระดับ (7.2.4)" : "Graduates by Level (7.2.4)"}</p><p className="text-xs">{th ? "ยังไม่มีข้อมูล — กรุณากรอกข้อมูลในแบบฟอร์ม" : "No data — please submit via input form"}</p></div>}
-                    </div>
+                <div className="lg:col-span-2">
+                    <DashboardCard
+                        title={th ? "นิสิตสำเร็จ แยกระดับ (7.2.4)" : "Graduates by Level (7.2.4)"}
+                        logic={th ? "จำนวนผู้สำเร็จการศึกษาแยกตามระดับชั้น (โท/เอก/Diplomate)" : "Graduates count by level (Master/PhD/Diplomate)"}
+                        source={th ? "งานทะเบียน" : "Registrar"}
+                    >
+                        <div className="h-[280px]">
+                            {graduateMatrix.length > 0 ? (
+                                <Bar options={chartOpts(th ? "นิสิตสำเร็จ แยกระดับ (7.2.4)" : "Graduates by Level (7.2.4)")} data={{
+                                    labels: graduateMatrix.map(m => m.dimension_value),
+                                    datasets: [{ label: th ? "จำนวน" : "Count", data: graduateMatrix.map(m => m.value), backgroundColor: COLORS.map(c => c.bg), borderColor: COLORS.map(c => c.border), borderWidth: 1 }],
+                                }} />
+                            ) : <div className="flex flex-col items-center justify-center h-full text-slate-400"><p className="font-bold text-sm mb-1">{th ? "นิสิตสำเร็จ แยกระดับ (7.2.4)" : "Graduates by Level (7.2.4)"}</p><p className="text-xs">{th ? "ยังไม่มีข้อมูล — กรุณากรอกข้อมูลในแบบฟอร์ม" : "No data — please submit via input form"}</p></div>}
+                        </div>
+                    </DashboardCard>
                 </div>
             </div>
 

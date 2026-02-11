@@ -41,7 +41,7 @@ export default function Header({ activeTab, lang, setLang, dashboardData, t, use
     }, [settingsOpen]);
 
     return (
-        <header className="h-16 bg-white/80 backdrop-blur-md border-b border-slate-200 flex items-center justify-between px-8 sticky top-0 z-10">
+        <header className="h-16 bg-white/80 backdrop-blur-md border-b border-slate-200 flex items-center justify-between px-8 sticky top-0 z-50">
             <h2 className="text-lg font-semibold text-slate-800">
                 {activeTab === 'Dashboard' ? t('executiveOverview') : activeTab}
             </h2>
@@ -78,27 +78,42 @@ export default function Header({ activeTab, lang, setLang, dashboardData, t, use
                     {settingsOpen && (
                         <div className="absolute right-0 top-12 w-52 bg-white border border-slate-200 rounded-xl shadow-xl py-1.5 z-50 animate-in fade-in slide-in-from-top-2">
                             {isAdmin && setActiveTab && (
-                                <>
-                                    <button
-                                        onClick={() => { setActiveTab('Admin'); setSettingsOpen(false); }}
-                                        className={`flex items-center gap-3 w-full px-4 py-2.5 text-sm font-medium transition-all ${activeTab === 'Admin' ? 'text-blue-600 bg-blue-50' : 'text-slate-600 hover:bg-slate-50'}`}
-                                    >
-                                        <Shield size={16} />
-                                        {lang === 'th' ? 'จัดการผู้ใช้' : 'Manage Users'}
-                                    </button>
-                                    <a
-                                        href="/api/docs?file=project_analysis.html"
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        onClick={() => setSettingsOpen(false)}
-                                        className="flex items-center gap-3 w-full px-4 py-2.5 text-sm font-medium text-slate-600 hover:bg-slate-50 transition-all"
-                                    >
-                                        <FileText size={16} />
-                                        Project Analysis
-                                    </a>
-                                </>
+                                <button
+                                    onClick={() => { setActiveTab('Admin'); setSettingsOpen(false); }}
+                                    className="flex items-center gap-3 w-full px-4 py-2.5 text-sm font-medium text-slate-600 hover:bg-slate-50 transition-all text-left"
+                                >
+                                    <Shield size={16} />
+                                    {lang === 'th' ? 'จัดการผู้ใช้' : 'Manage Users'}
+                                </button>
                             )}
-                            {!isAdmin && (
+
+                            {isAdmin && (
+                                <button
+                                    onClick={() => {
+                                        window.open("/api/docs?file=project_analysis.html", "_blank");
+                                        setSettingsOpen(false);
+                                    }}
+                                    className="flex items-center gap-3 w-full px-4 py-2.5 text-sm font-medium text-slate-600 hover:bg-slate-50 transition-all text-left"
+                                >
+                                    <FileText size={16} />
+                                    Project Analysis
+                                </button>
+                            )}
+
+                            {(isAdmin || userRole === 'reviewer') && (
+                                <button
+                                    onClick={() => {
+                                        window.open("/api/docs?file=edpex_input_forms.html", "_blank");
+                                        setSettingsOpen(false);
+                                    }}
+                                    className="flex items-center gap-3 w-full px-4 py-2.5 text-sm font-medium text-slate-600 hover:bg-slate-50 transition-all text-left"
+                                >
+                                    <FileText size={16} />
+                                    Type Edpex Input Forms
+                                </button>
+                            )}
+
+                            {!isAdmin && userRole !== 'reviewer' && (
                                 <div className="px-4 py-3 text-sm text-slate-400">
                                     {lang === 'th' ? 'ไม่มีการตั้งค่าเพิ่มเติม' : 'No settings available'}
                                 </div>
