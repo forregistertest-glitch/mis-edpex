@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import {
     UserPlus,
     Trash2,
@@ -12,12 +12,18 @@ import {
     ChevronRight,
     AlertCircle,
     Calendar,
+    Download,
 } from "lucide-react";
 import {
     getAuthorizedUsers,
     addAuthorizedUser,
     removeAuthorizedUser,
     updateUserRole,
+    subscribeToLoginLogs,
+    seedLoginLogs,
+    clearMockLoginLogs,
+    getLoginLogsCount,
+    getLoginLogsByMonth,
 } from "@/lib/data-service";
 import type { AuthorizedUser } from "@/lib/data-service";
 import { useAuth } from "@/contexts/AuthContext";
@@ -36,6 +42,7 @@ export default function AdminPanel({ lang }: Props) {
     const { user } = useAuth();
     const [users, setUsers] = useState<AuthorizedUser[]>([]);
     const [loginLogs, setLoginLogs] = useState<any[]>([]);
+    const [totalLogsCount, setTotalLogsCount] = useState(0);
     const [activeTab, setActiveTab] = useState<'users' | 'logs'>('users');
     const [loading, setLoading] = useState(true);
     const [actionLoading, setActionLoading] = useState(false);
@@ -51,9 +58,16 @@ export default function AdminPanel({ lang }: Props) {
     const [deleteEmail, setDeleteEmail] = useState<string | null>(null);
 
     useEffect(() => {
-        if (activeTab === 'users') loadUsers();
-        else loadLogs();
-    }, [activeTab]);
+        loadUsers();
+        // Get total log count
+        getLoginLogsCount().then(setTotalLogsCount);
+
+        // Real-time subscription for login logs (Limit 1000)
+        const unsubscribe = subscribeToLoginLogs((logs) => {
+            setLoginLogs(logs);
+        }, 1000);
+        return () => unsubscribe();
+    }, []);
 
     const loadUsers = async () => {
         setLoading(true);
@@ -344,7 +358,7 @@ export default function AdminPanel({ lang }: Props) {
                             <Loader2 size={28} className="animate-spin text-blue-600" />
                         </div>
                     ) : (
-                        <LogsTable logs={loginLogs} lang={lang} />
+                        <LogsTable logs={loginLogs} lang={lang} totalLogsCount={totalLogsCount} />
                     )}
                 </div>
             )}
@@ -386,7 +400,7 @@ export default function AdminPanel({ lang }: Props) {
                         <div className="flex gap-3 justify-end pt-2">
                             <button
                                 onClick={() => setEditUser(null)}
-                                className="px-4 py-2 text-sm text-slate-600 bg-slate-100 rounded-xl hover:bg-slate-200 transition-all"
+                                className="px-5 py-2 text-sm text-slate-600 bg-slate-100 rounded-xl hover:bg-slate-200 transition-all"
                             >
                                 ยกเลิก
                             </button>
@@ -439,10 +453,11 @@ export default function AdminPanel({ lang }: Props) {
 /* ─── LogsTable Sub-Component ──────────────────────────────── */
 const PAGE_SIZE = 100;
 
-function LogsTable({ logs, lang }: { logs: any[]; lang: "th" | "en" }) {
+function LogsTable({ logs, lang, totalLogsCount }: { logs: any[]; lang: "th" | "en"; totalLogsCount: number }) {
     const th = lang === "th";
     const [page, setPage] = useState(1);
     const [selectedMonth, setSelectedMonth] = useState<string>("latest");
+    const [exportLoading, setExportLoading] = useState(false);
 
     // Extract unique months from logs (format: YYYY-MM)
     const months = Array.from(
@@ -456,17 +471,59 @@ function LogsTable({ logs, lang }: { logs: any[]; lang: "th" | "en" }) {
 
     // Resolve "latest" to actual latest month
     const activeMonth = selectedMonth === "latest" ? (months[0] || "") : selectedMonth;
+    // Filter logs by month locally (for quick view)
+    const filtered = useMemo(() => {
+        // Always sort first
+        const sortedLogs = [...logs].sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
+        if (selectedMonth === "latest") return sortedLogs;
+        return sortedLogs.filter(l => l.timestamp.startsWith(selectedMonth));
+    }, [logs, selectedMonth]);
 
-    // Filter logs by selected month
-    const filtered = activeMonth
-        ? logs.filter(log => {
-            const d = new Date(log.timestamp);
-            const m = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
-            return m === activeMonth;
-        })
-        : logs;
+    const handleExport = async () => {
+        if (selectedMonth === "latest") return;
+        setExportLoading(true);
+        try {
+            // Dynamic import not needed since we imported at top level
+            const data = await getLoginLogsByMonth(selectedMonth);
+            if (!data || data.length === 0) {
+                alert(th ? "ไม่พบข้อมูล" : "No data found");
+                return;
+            }
 
-    const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
+            // Generate CSV
+            const header = ["Timestamp", "Email", "Status", "IP", "Location", "User Agent", "Reason"];
+            const rows = data.map(d => [
+                d.timestamp,
+                d.email,
+                d.success ? "Success" : "Failed",
+                d.ip_address || "",
+                d.geo_location || "",
+                d.user_agent || "",
+                d.reason || ""
+            ]);
+
+            const csvContent = [
+                header.join(","),
+                ...rows.map(row => row.map(cell => `"${String(cell).replace(/"/g, '""')}"`).join(","))
+            ].join("\n");
+
+            const blob = new Blob(["\uFEFF" + csvContent], { type: "text/csv;charset=utf-8;" }); // Add BOM for Excel
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement("a");
+            link.href = url;
+            link.setAttribute("download", `login_logs_${selectedMonth}.csv`);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        } catch (err) {
+            console.error("Export error:", err);
+            alert("Export failed");
+        } finally {
+            setExportLoading(false);
+        }
+    };
+
+    const totalPages = Math.ceil(filtered.length / PAGE_SIZE);
     const currentPage = Math.min(page, totalPages);
     const start = (currentPage - 1) * PAGE_SIZE;
     const pageData = filtered.slice(start, start + PAGE_SIZE);
@@ -482,6 +539,9 @@ function LogsTable({ logs, lang }: { logs: any[]; lang: "th" | "en" }) {
             : ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
         return `${monthNames[parseInt(m) - 1]} ${th ? parseInt(y) + 543 : y}`;
     };
+
+    const { user } = useAuth();
+    const isSuperAdmin = user?.email === "nipon.w@ku.th";
 
     return (
         <div>
@@ -499,16 +559,56 @@ function LogsTable({ logs, lang }: { logs: any[]; lang: "th" | "en" }) {
                             <option key={m} value={m}>{monthLabel(m)}</option>
                         ))}
                     </select>
-                </div>
-                <span className="text-xs text-slate-500">
-                    {th ? `ทั้งหมด ${filtered.length.toLocaleString()} รายการ` : `Total: ${filtered.length.toLocaleString()} records`}
-                    {filtered.length > PAGE_SIZE && (
-                        <> · {th ? `หน้า ${currentPage}/${totalPages}` : `Page ${currentPage}/${totalPages}`}</>
+
+                    {isSuperAdmin && (
+                        <>
+                            <button
+                                onClick={handleExport}
+                                disabled={selectedMonth === "latest" || exportLoading}
+                                className="flex items-center gap-1 text-xs bg-white border border-slate-200 hover:bg-slate-50 text-slate-600 px-3 py-1.5 rounded-lg transition-colors disabled:opacity-50 ml-2"
+                                title={th ? "ดาวน์โหลด CSV (เฉพาะเดือนที่เลือก)" : "Download CSV (Selected Month Only)"}
+                            >
+                                {exportLoading ? <Loader2 size={14} className="animate-spin" /> : <Download size={14} />}
+                                CSV
+                            </button>
+
+                            <button
+                                onClick={() => {
+                                    if (confirm(th ? "ต้องการสร้างข้อมูลจำลองเดือน ม.ค. 2569?" : "Generate mock data for Jan 2026?")) {
+                                        seedLoginLogs();
+                                        alert(th ? "สร้างข้อมูลจำลองเรียบร้อย" : "Mock data generated");
+                                    }
+                                }}
+                                className="flex items-center gap-1 text-xs bg-green-50 border border-green-200 text-green-700 px-3 py-1.5 rounded-lg hover:bg-green-100 transition-colors ml-auto"
+                            >
+                                +Mock
+                            </button>
+                            <button
+                                onClick={async () => {
+                                    if (confirm(th ? "ลบข้อมูล Mock ทั้งหมด?" : "Delete all mock logs?")) {
+                                        await clearMockLoginLogs();
+                                        alert(th ? "ลบเรียบร้อย" : "Cleared");
+                                    }
+                                }}
+                                className="flex items-center gap-1 text-xs bg-red-50 border border-red-200 text-red-700 px-3 py-1.5 rounded-lg hover:bg-red-100 transition-colors"
+                            >
+                                -Clear
+                            </button>
+                        </>
                     )}
-                </span>
-                <span className="text-xs text-slate-400 ml-auto">
-                    {th ? `(ข้อมูลทั้งระบบ ${logs.length.toLocaleString()} รายการ)` : `(${logs.length.toLocaleString()} total in system)`}
-                </span>
+                </div>
+
+                {/* Right side stats */}
+                <div className="ml-auto flex items-center gap-4 text-xs text-slate-500">
+                    <span>
+                        {th ? `ข้อมูลทั้งระบบ ${totalLogsCount.toLocaleString()} รายการ` : `Total ${totalLogsCount.toLocaleString()} logs`}
+                        {logs.length < totalLogsCount && (
+                            <span className="text-slate-400 ml-1">
+                                {th ? `(แสดงล่าสุด ${logs.length})` : `(Showing latest ${logs.length})`}
+                            </span>
+                        )}
+                    </span>
+                </div>
             </div>
 
             {/* Scrollable Table */}

@@ -4,8 +4,8 @@
 | Field | Value |
 |:------|:------|
 | **Doc ID** | KUVMIS-DOC-001 |
-| **Version** | 1.4.0 |
-| **Last Updated** | 2026-02-12T00:30:00+07:00 |
+| **Version** | 1.5.0 |
+| **Last Updated** | 2026-02-12T09:25:00+07:00 |
 | **Author** | KUVMIS Development Team |
 | **Status** | Released |
 
@@ -269,4 +269,10 @@ Config File:       src/lib/firebase.ts
 
 ---
 
-*เอกสารนี้ปรับปรุงล่าสุดเมื่อ 12 ก.พ. 2569 — KUVMIS v1.4*
+### 11.2 Security & Compliance
+- **Authentication:** Firebase Auth + 2FA
+- **Authorization:** Role-based Access Control (RBAC) via `authorized_users`
+- **Audit Trails:** Login Logs + Sensitive Action Logs (Mock/Clear)
+- **Data Integrity:** See `data_integrity_plan.md` for full ISO/EdPEx compliance details.
+
+*เอกสารนี้ปรับปรุงล่าสุดเมื่อ 12 ก.พ. 2569 — KUVMIS v1.5*

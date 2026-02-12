@@ -79,11 +79,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                         setUser(firebaseUser);
                         setError(null);
                         // Log Success
-                        import("@/lib/data-service").then(m => m.addLoginLog(firebaseUser.email!, true));
+                        import("@/lib/data-service").then(m => m.addLoginLog(firebaseUser.email!, true)).catch(console.error);
                     } else {
                         // Not in whitelist — sign out immediately
                         // Log Failure
-                        import("@/lib/data-service").then(m => m.addLoginLog(firebaseUser.email!, false));
+                        import("@/lib/data-service").then(m => m.addLoginLog(firebaseUser.email!, false)).catch(console.error);
                         await firebaseSignOut(auth);
                         setUser(null);
                         setUserRole(null);

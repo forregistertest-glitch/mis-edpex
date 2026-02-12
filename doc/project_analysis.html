@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>KUVMIS — Project Analysis v1.4</title>
+  <title>KUVMIS — Project Analysis v1.5</title>
   <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
   <style>
     :root {
@@ -324,11 +324,11 @@
     <strong>ระบบ:</strong> KUVMIS — ระบบสารสนเทศเพื่อการจัดการ (MIS) และการวิเคราะห์ KPI (EdPEx)<br>
     <strong>หน่วยงาน:</strong> คณะสัตวแพทยศาสตร์ มหาวิทยาลัยเกษตรศาสตร์<br>
     <strong>URL:</strong> <a href="https://mis-edpex.vercel.app" target="_blank">https://mis-edpex.vercel.app</a><br>
-    <strong>วันที่วิเคราะห์:</strong> 11 กุมภาพันธ์ 2569 (ปรับปรุงจาก 10 ก.พ. 2569)
+    <strong>วันที่วิเคราะห์:</strong> 12 กุมภาพันธ์ 2569 (ปรับปรุงจาก 11 ก.พ. 2569)
   </div>
 
-  <div class="subtitle">Last Updated: 2026-02-12T00:30:00+07:00</div>
-  <div class="subtitle">Version 1.4.0</div>
+  <div class="subtitle">Last Updated: 2026-02-12T09:10:00+07:00</div>
+  <div class="subtitle">Version 1.5.0</div>
 
   <div class="grid">
     <!-- Status Card -->
@@ -336,16 +336,15 @@
       <h2>🚀 Project Status</h2>
       <div class="status-indicator">
         <span class="status-dot"></span>
-        <strong>Phase B Completed (Dashboard & Forms)</strong>
+        <strong>Phase F Completed (Monitoring & Audit)</strong>
       </div>
       <p>
-        Successfully implemented standard Dashboard Cards across all views and enhanced Input Forms with dynamic history
-        and optional fields.
+        Successfully implemented Annual Report Dashboard, Data Integrity Plan, and Security Enhancements.
       </p>
       <div class="progress-bar">
-        <div class="progress-fill" style="width: 85%;"></div>
+        <div class="progress-fill" style="width: 95%;"></div>
       </div>
-      <p style="text-align: right; font-size: 0.9rem; margin-top: 0.5rem;">Overall Progress: 85%</p>
+      <p style="text-align: right; font-size: 0.9rem; margin-top: 0.5rem;">Overall Progress: 95%</p>
     </div>
 
     <!-- Accomplishments -->
@@ -355,9 +354,11 @@
         <li><strong>Dashboard Cards & Entry History:</strong> Implemented standard Dashboard Cards and dynamic history
           for entries.</li>
         <li><strong>Dashboard UI:</strong> Wrapped charts in `DashboardCard` with Logic/Source.</li>
+        <li><strong>Annual Report:</strong> Bulk fetching & Year Selector for high performance.</li>
+        <li><strong>Security:</strong> Restricted Mock/Clear/Export to Super Admin only.</li>
+        <li><strong>Data Integrity:</strong> Created comprehensive ISO compliance plan.</li>
         <li><strong>Dynamic Forms:</strong> Implemented `extra_data` storage and dynamic history columns.</li>
         <li><strong>UX Refinement:</strong> Removed required validation and improved file upload placement.</li>
-        <li><strong>Security:</strong> Enforced `inMemoryPersistence` for authentication.</li>
       </ul>
     </div>
   </div>
@@ -508,7 +509,7 @@ graph TD
       บรรทัด)</span><br>
     │ └── <span class="file">translations.ts</span> <span class="comment">← ภาษา TH/EN (60 บรรทัด)</span><br>
     ├── <span class="dir">db_design/</span> <span class="comment">← ข้อมูล Seed (JSON) 11 ไฟล์</span><br>
-    ├── <span class="dir">doc/</span> <span class="comment">← เอกสารประกอบ (MD + HTML) 12 ไฟล์</span><br>
+    ├── <span class="dir">doc/</span> <span class="comment">← เอกสารประกอบ (MD + HTML) 13 ไฟล์</span><br>
     ├── <span class="dir">source/</span> <span class="comment">← ไฟล์ต้นฉบับอ้างอิง (Excel/Word)</span><br>
     └── <span class="dir">public/</span> <span class="comment">← Static assets (SVG icons)</span>
   </div>
@@ -567,6 +568,16 @@ graph TD
       <h4>🌐 Bilingual (TH/EN)</h4>
       <p>รองรับ 2 ภาษา ไทย/อังกฤษ สลับได้ผ่านปุ่มบนหน้า Dashboard ใช้ translations.ts เป็นตัวกลาง</p>
       <span class="lines">translations.ts — 60 lines</span>
+    </div>
+    <div class="feature-card">
+      <h4>📈 Annual Report<span class="new-badge">NEW v1.5</span></h4>
+      <p>Dashboard สรุปภาพรวมรายปี เปรียบเทียบเป้าหมายอัตโนมัติ พร้อม Year Selector และ Bulk Fetch Optimization</p>
+      <span class="lines">AnnualReportDashboard.tsx</span>
+    </div>
+    <div class="feature-card">
+      <h4>🛡️ Data Integrity<span class="new-badge">NEW v1.5</span></h4>
+      <p>แผนการรักษาความถูกต้องของข้อมูลตามมาตรฐาน ISO/EdPEx พร้อมระบบ Audit Trail และ Mock Data Restriction</p>
+      <span class="lines">doc/data_integrity_plan.md</span>
     </div>
   </div>
 

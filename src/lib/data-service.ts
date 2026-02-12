@@ -74,11 +74,23 @@ export async function getKpiEntries(
   year?: number,
   period?: string
 ): Promise<KpiEntry[]> {
-  let q = query(collection(db, "kpi_entries"));
-  // Client-side filtering since compound queries need indexes
+  let constraints: any[] = [];
+
+  // Optimize: Use server-side filtering where possible without needing composite indexes
+  // If kpiId is provided, filter by it (Single field index)
+  if (kpiId) {
+    constraints.push(where("kpi_id", "==", kpiId));
+  }
+  // Else if year is provided, filter by it (Single field index)
+  else if (year) {
+    constraints.push(where("fiscal_year", "==", year));
+  }
+
+  let q = query(collection(db, "kpi_entries"), ...constraints);
   const snap = await getDocs(q);
   let results = snap.docs.map((d) => ({ id: d.id, ...d.data() } as KpiEntry));
 
+  // Client-side filtering ensures correctness even if mixed params were passed
   if (kpiId) results = results.filter((e) => e.kpi_id === kpiId);
   if (year) results = results.filter((e) => e.fiscal_year === year);
   if (period) results = results.filter((e) => e.period === period);
@@ -339,6 +351,113 @@ export async function getLoginLogs(limitCount?: number): Promise<LoginLog[]> {
     }
     return { id: d.id, ...data } as LoginLog;
   });
+}
+
+// Subscribe to real-time updates
+import { onSnapshot, getCountFromServer } from "firebase/firestore";
+
+export async function getLoginLogsCount(): Promise<number> {
+  try {
+    const coll = collection(db, "login_logs");
+    const snapshot = await getCountFromServer(coll);
+    return snapshot.data().count;
+  } catch (error) {
+    console.error("Error getting log count:", error);
+    return 0;
+  }
+}
+
+
+export async function getLoginLogsByMonth(yearMonth: string): Promise<LoginLog[]> {
+  // yearMonth format: "YYYY-MM" e.g. "2026-01"
+  const start = new Date(`${yearMonth}-01T00:00:00`);
+  // End date is start of next month
+  const [y, m] = yearMonth.split('-').map(Number);
+  const end = new Date(y, m, 1); // Month is 0-indexed in Date constructor, so 'm' (1-12) is actually next month index if we use 0-11 logic. Wait.
+  // new Date(2026, 1, 1) -> Feb 1st 2026. Correct.
+
+  const q = query(
+    collection(db, "login_logs"),
+    where("timestamp", ">=", Timestamp.fromDate(start)),
+    where("timestamp", "<", Timestamp.fromDate(end)),
+    orderBy("timestamp", "desc")
+  );
+
+  const snap = await getDocs(q);
+  return snap.docs.map(d => {
+    const data = d.data();
+    if (data.timestamp && typeof data.timestamp.toDate === "function") {
+      data.timestamp = data.timestamp.toDate().toISOString();
+    }
+    return { id: d.id, ...data } as LoginLog;
+  });
+}
+
+export function subscribeToLoginLogs(callback: (logs: LoginLog[]) => void, limitCount: number = 100) {
+  const q = query(collection(db, "login_logs"), orderBy("timestamp", "desc"), firestoreLimit(limitCount));
+  return onSnapshot(q, (snap) => {
+    const logs = snap.docs.map(d => {
+      const data = d.data();
+      if (data.timestamp && typeof data.timestamp.toDate === "function") {
+        data.timestamp = data.timestamp.toDate().toISOString();
+      }
+      return { id: d.id, ...data } as LoginLog;
+    });
+    callback(logs);
+  });
+}
+
+// Helper to seed data for testing
+export async function seedLoginLogs() {
+  const logs = [
+    {
+      email: "mock.demo1@ku.th",
+      timestamp: Timestamp.fromDate(new Date("2026-01-15T09:30:00")),
+      success: true,
+      method: "google",
+      ip_address: "158.108.1.1",
+      user_agent: "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+      geo_location: "Bangkok, Thailand (KU Network)",
+      reason: "Login Successful"
+    },
+    {
+      email: "mock.demo2@ku.th",
+      timestamp: Timestamp.fromDate(new Date("2026-01-20T14:15:00")),
+      success: false,
+      method: "google",
+      ip_address: "49.228.1.1",
+      user_agent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+      geo_location: "Chiang Mai, Thailand (AIS Fibre)",
+      reason: "Unauthorized Email"
+    },
+    {
+      email: "mock.demo3@ku.th",
+      timestamp: Timestamp.fromDate(new Date("2026-01-25T18:45:00")),
+      success: true,
+      method: "google",
+      ip_address: "171.7.1.1",
+      user_agent: "Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Mobile/15E148 Safari/604.1",
+      geo_location: "Phuket, Thailand (True Online)",
+      reason: "Login Successful"
+    }
+  ];
+  for (const log of logs) {
+    await addDoc(collection(db, "login_logs"), log);
+  }
+  console.log("Seeded January logs");
+}
+
+export async function clearMockLoginLogs() {
+  const q = query(
+    collection(db, "login_logs"),
+    where("email", ">=", "mock.demo"),
+    where("email", "<=", "mock.demo\uf8ff")
+  );
+  const snap = await getDocs(q);
+  const promises = snap.docs.map(d => deleteDoc(d.ref));
+  await Promise.all(promises);
+  console.log(`Cleared ${promises.length} mock logs.`);
+  return promises.length;
 }
 
 // ─── Dashboard Summary ────────────────────────────────────────

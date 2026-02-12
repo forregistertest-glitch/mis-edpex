@@ -39,6 +39,7 @@ export async function GET(request: Request) {
       "qa": { th: "QA: ความถูกต้องของข้อมูล", en: "Data Authenticity QA" },
       "kpi_master_data": { th: "KPI Master Data", en: "61 KPIs Definition" },
       "performance_seed_data": { th: "ข้อมูลจำลองผลการดำเนินงาน", en: "Performance Seed Data" },
+      "data_integrity_plan": { th: "แผนการรักษาความถูกต้องของข้อมูล", en: "Data Integrity Plan" },
     };
 
     const files = fs.readdirSync(DOC_DIR).filter((f) => f.endsWith(".md"));

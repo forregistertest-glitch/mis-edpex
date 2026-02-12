@@ -5,7 +5,7 @@
 |:------|:------|
 | **Doc ID** | KUVMIS-DOC-003 |
 | **Version** | 1.4.0 |
-| **Last Updated** | 2026-02-12T00:30:00+07:00 |
+| **Last Updated** | 2026-02-12T09:00:00+07:00 |
 | **Author** | KUVMIS Development Team |
 | **Status** | Released |
 
@@ -99,6 +99,18 @@
 5.  **Accredited Lab Facilities**
     *   **KPIs:** 7.4.12
     *   **Logic:** Trend chart showing the number of laboratories achieving standard accreditation.
+
+### 1.6 Annual Report Dashboard
+- **Performance Optimized:** Bulk data fetching strategy for high-speed loading.
+- **Year Selector:** View data from previous years (default: Current Year).
+- **Consolidated View:** Summary table of all 61 KPIs with status and trends.
+
+### 1.7 Admin Panel (Enhanced)
+- **User Management:** Edit role/delete users.
+- **Login Logs:**
+    - Real-time monitoring.
+    - **CSV Export:** Download full logs for specific months [Super Admin Only].
+    - **Mock Data Tools:** Generate/Clear test data [Super Admin Only].
 
 ## 2. Shared Components
 - **ChartFilterBar:** Unified control for Year, Quarter (Period), Dimension, and View Mode (Chart/Table).
