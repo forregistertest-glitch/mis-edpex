@@ -105,7 +105,7 @@ export default function LoginPage({ onSignIn, loading, error }: LoginPageProps) 
 
                 {/* Footer */}
                 <p className="text-center text-[11px] mt-6" style={{ color: '#133045', opacity: 0.6 }}>
-                    KUVMIS v1.0 · Last update: 16 Feb 2026 12:11 TH
+                    KUVMIS v1.5.1 · Last update: 16 Feb 2569 17:05 TH
                 </p>
             </div>
         </div>

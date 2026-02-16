@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { Personnel } from "@/types/personnel";
 import { PersonnelService } from "@/services/personnelService";
-import { Plus, Search, Edit, Trash2, Download, Upload, BarChart3, ArrowLeft } from "lucide-react";
+import { Plus, Search, Edit, Trash2, Download, Upload, BarChart3, ArrowLeft, ArrowUpAZ, ArrowDownAZ, Calendar, Hash } from "lucide-react";
 import { exportPersonnelToExcel } from "@/utils/personnelExport";
 import { parsePersonnelExcel } from "@/utils/personnelImport";
 import { useAuth } from "@/contexts/AuthContext"; // Import useAuth
@@ -54,19 +54,34 @@ export default function PersonnelPage() {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editForm, setEditForm] = useState<Partial<Personnel>>({});
 
+  // Sorting State
+  const [sortBy, setSortBy] = useState<'personnel_id' | 'updated_at'>('updated_at');
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
+
   useEffect(() => {
     setCurrentPage(1); // Reset to page 1 on search
   }, [searchTerm]);
 
   const filteredPersonnel = personnel.filter((p) => {
     const searchLower = searchTerm.toLowerCase();
-    const fullName = `${p.title_th}${p.first_name_th} ${p.last_name_th}`.toLowerCase();
+    const fullName = `${p.title_th || ''}${p.first_name_th || ''} ${p.last_name_th || ''}`.toLowerCase();
     return (
       fullName.includes(searchLower) ||
-      p.personnel_id.toLowerCase().includes(searchLower) ||
-      p.department?.toLowerCase().includes(searchLower) ||
-      p.affiliation?.toLowerCase().includes(searchLower)
+      (p.personnel_id || '').toLowerCase().includes(searchLower) ||
+      (p.department || '').toLowerCase().includes(searchLower) ||
+      (p.affiliation || '').toLowerCase().includes(searchLower)
     );
+  }).sort((a, b) => {
+    if (sortBy === 'personnel_id') {
+       return sortOrder === 'asc' 
+         ? a.personnel_id.localeCompare(b.personnel_id)
+         : b.personnel_id.localeCompare(a.personnel_id);
+    } else {
+       // Sort by Updated At (Handling Firestore Timestamp or Date string)
+       const timeA = a.updated_at ? new Date(a.updated_at.toDate ? a.updated_at.toDate() : a.updated_at).getTime() : 0;
+       const timeB = b.updated_at ? new Date(b.updated_at.toDate ? b.updated_at.toDate() : b.updated_at).getTime() : 0;
+       return sortOrder === 'asc' ? timeA - timeB : timeB - timeA;
+    }
   });
 
   // Pagination Logic
@@ -291,6 +306,31 @@ export default function PersonnelPage() {
               className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
             />
           </div>
+          
+          {/* Sorting Controls */}
+          <div className="flex items-center gap-2">
+            <button 
+              onClick={() => {
+                if (sortBy === 'personnel_id') setSortOrder(prev => prev === 'asc' ? 'desc' : 'asc');
+                else { setSortBy('personnel_id'); setSortOrder('asc'); }
+              }}
+              className={`flex items-center gap-1 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${sortBy === 'personnel_id' ? 'bg-blue-50 text-blue-600 border border-blue-200' : 'bg-white text-gray-600 border border-gray-200 hover:bg-gray-50'}`}
+            >
+              <Hash size={16} /> ID
+              {sortBy === 'personnel_id' && (sortOrder === 'asc' ? <ArrowUpAZ size={14} /> : <ArrowDownAZ size={14} />)}
+            </button>
+            <button 
+              onClick={() => {
+                if (sortBy === 'updated_at') setSortOrder(prev => prev === 'asc' ? 'desc' : 'asc');
+                else { setSortBy('updated_at'); setSortOrder('desc'); }
+              }}
+              className={`flex items-center gap-1 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${sortBy === 'updated_at' ? 'bg-blue-50 text-blue-600 border border-blue-200' : 'bg-white text-gray-600 border border-gray-200 hover:bg-gray-50'}`}
+            >
+              <Calendar size={16} /> Latest
+              {sortBy === 'updated_at' && (sortOrder === 'asc' ? <ArrowUpAZ size={14} /> : <ArrowDownAZ size={14} />)}
+            </button>
+          </div>
+
           <div className="text-sm text-gray-500">
             Total: {filteredPersonnel.length} records
           </div>
