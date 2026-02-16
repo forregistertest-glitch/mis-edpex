@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, Suspense } from "react";
 import Link from "next/link";
 import { Personnel } from "@/types/personnel";
 import { PersonnelService } from "@/services/personnelService";
@@ -10,7 +10,7 @@ import { parsePersonnelExcel } from "@/utils/personnelImport";
 import { useAuth } from "@/contexts/AuthContext"; // Import useAuth
 import { useSearchParams } from "next/navigation"; // Import useSearchParams
 
-export default function PersonnelPage() {
+function PersonnelContent() {
   const { user } = useAuth(); // Get user
   const [personnel, setPersonnel] = useState<Personnel[]>([]);
   const [loading, setLoading] = useState(true);
@@ -508,5 +508,17 @@ export default function PersonnelPage() {
       )}
 
     </div>
+  );
+}
+
+export default function PersonnelPage() {
+  return (
+    <Suspense fallback={
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-600"></div>
+      </div>
+    }>
+      <PersonnelContent />
+    </Suspense>
   );
 }

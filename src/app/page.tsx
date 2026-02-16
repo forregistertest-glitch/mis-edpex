@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, Suspense } from "react";
 import DataExplorer from "@/components/DataExplorer";
 import InputHub from "@/components/InputHub";
 import DocViewer from "@/components/DocViewer";
@@ -38,7 +38,7 @@ import {
 } from "@/lib/data-service";
 import { formatNumber } from "@/lib/utils";
 
-export default function Dashboard() {
+function DashboardContent() {
   const { user, userRole, loading: authLoading, error: authError, signInWithGoogle, signOut } = useAuth();
   const searchParams = useSearchParams();
   const [loading, setLoading] = useState(true);
@@ -422,5 +422,17 @@ export default function Dashboard() {
         </div>
       )}
     </div>
+  );
+}
+
+export default function Dashboard() {
+  return (
+    <Suspense fallback={
+      <div className="flex items-center justify-center min-h-screen bg-slate-50">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-600"></div>
+      </div>
+    }>
+      <DashboardContent />
+    </Suspense>
   );
 }
