@@ -13,7 +13,9 @@ import {
     AlertCircle,
     Calendar,
     Download,
+    FileText,
 } from "lucide-react";
+import SystemDocs from "./SystemDocs";
 import {
     getAuthorizedUsers,
     addAuthorizedUser,
@@ -40,10 +42,11 @@ interface Props {
 
 export default function AdminPanel({ lang }: Props) {
     const { user } = useAuth();
+    const isSuperAdmin = user?.email === "nipon.w@ku.th";
     const [users, setUsers] = useState<AuthorizedUser[]>([]);
     const [loginLogs, setLoginLogs] = useState<any[]>([]);
     const [totalLogsCount, setTotalLogsCount] = useState(0);
-    const [activeTab, setActiveTab] = useState<'users' | 'logs'>('users');
+    const [activeTab, setActiveTab] = useState<'users' | 'logs' | 'docs'>('users');
     const [loading, setLoading] = useState(true);
     const [actionLoading, setActionLoading] = useState(false);
 
@@ -199,6 +202,15 @@ export default function AdminPanel({ lang }: Props) {
                 >
                     {lang === 'th' ? 'ประวัติการเข้าใช้งาน (Login Logs)' : 'Login Logs'}
                 </button>
+                {isSuperAdmin && (
+                    <button
+                        onClick={() => setActiveTab('docs')}
+                        className={`pb-3 text-sm font-bold transition-all px-2 border-b-2 flex items-center gap-2 ${activeTab === 'docs' ? 'text-[#133045] border-[#71C5E8]' : 'text-slate-400 border-transparent hover:text-slate-600'}`}
+                    >
+                        <FileText size={16} />
+                        {lang === 'th' ? 'เอกสารระบบ (Superadmin)' : 'System Docs'}
+                    </button>
+                )}
             </div>
 
             {/* Users Tab Content */}
@@ -360,6 +372,13 @@ export default function AdminPanel({ lang }: Props) {
                     ) : (
                         <LogsTable logs={loginLogs} lang={lang} totalLogsCount={totalLogsCount} />
                     )}
+                </div>
+            )}
+
+            {/* Docs Tab Content */}
+            {activeTab === 'docs' && isSuperAdmin && (
+                <div className="animate-in fade-in">
+                    <SystemDocs lang={lang} />
                 </div>
             )}
 
