@@ -218,7 +218,7 @@ export default function ReviewerDashboard({ lang }: Props) {
                                                     {sc.label}
                                                 </span>
                                                 {entry.rejection_reason && (
-                                                    <div className="text-[10px] text-red-500 mt-1 italic">"{entry.rejection_reason}"</div>
+                                                    <div className="text-[10px] text-red-500 mt-1 italic">&ldquo;{entry.rejection_reason}&rdquo;</div>
                                                 )}
                                             </td>
                                             <td className="px-4 py-3">

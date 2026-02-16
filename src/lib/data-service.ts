@@ -74,7 +74,7 @@ export async function getKpiEntries(
   year?: number,
   period?: string
 ): Promise<KpiEntry[]> {
-  let constraints: any[] = [];
+  const constraints: any[] = [];
 
   // Optimize: Use server-side filtering where possible without needing composite indexes
   // If kpiId is provided, filter by it (Single field index)
@@ -86,7 +86,7 @@ export async function getKpiEntries(
     constraints.push(where("fiscal_year", "==", year));
   }
 
-  let q = query(collection(db, "kpi_entries"), ...constraints);
+  const q = query(collection(db, "kpi_entries"), ...constraints);
   const snap = await getDocs(q);
   let results = snap.docs.map((d) => ({ id: d.id, ...d.data() } as KpiEntry));
 
@@ -187,7 +187,7 @@ export async function getRecentEntriesFiltered(
   page: number = 1,
   pageSize: number = 20
 ): Promise<{ entries: KpiEntry[]; total: number }> {
-  let allEntries = await getKpiEntries();
+  const allEntries = await getKpiEntries();
 
   // Sort by submitted_at DESC
   allEntries.sort((a, b) => (b.submitted_at || "").localeCompare(a.submitted_at || ""));

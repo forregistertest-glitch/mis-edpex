@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
+import Link from "next/link";
 import { AlertTriangle, RotateCcw, Home } from "lucide-react";
 
 export default function Error({
@@ -37,13 +38,13 @@ export default function Error({
                         <RotateCcw size={16} />
                         ลองใหม่
                     </button>
-                    <a
+                    <Link
                         href="/"
                         className="flex items-center gap-2 px-5 py-2.5 bg-slate-100 text-slate-700 rounded-xl text-sm font-medium hover:bg-slate-200 transition-all"
                     >
                         <Home size={16} />
                         หน้าแรก
-                    </a>
+                    </Link>
                 </div>
             </div>
         </div>

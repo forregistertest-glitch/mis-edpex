@@ -3,7 +3,6 @@
 import { useState, useEffect, useCallback } from "react";
 import DataExplorer from "@/components/DataExplorer";
 import InputHub from "@/components/InputHub";
-import KpiInputForm from "@/components/KpiInputForm";
 import DocViewer from "@/components/DocViewer";
 import LoginPage from "@/components/LoginPage";
 import Sidebar from "@/components/dashboard/Sidebar";
@@ -24,24 +23,19 @@ import { translations, Language, TranslationKey } from "@/lib/translations";
 import {
   Users,
   GraduationCap,
-  Stethoscope,
   LineChart,
   ShieldAlert,
   TrendingUp,
-  Loader2,
   Database,
 } from "lucide-react";
 import * as XLSX from 'xlsx';
 import {
   getDashboardSummary,
-  getKpiEntries,
-  getAllKpiMaster,
   getExportData,
   getCategoryOverview,
   getEntriesByCategory,
 } from "@/lib/data-service";
 import { formatNumber } from "@/lib/utils";
-import type { KpiEntry, KpiMaster } from "@/lib/data-service";
 
 export default function Dashboard() {
   const { user, userRole, loading: authLoading, error: authError, signInWithGoogle, signOut } = useAuth();
@@ -51,6 +45,7 @@ export default function Dashboard() {
 
   // Data Explorer State
   const [showExplorer, setShowExplorer] = useState(false);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [explorerData, setExplorerData] = useState<any[]>([]);
   const [explorerTitle, setExplorerTitle] = useState('');
   const [explorerLoading, setExplorerLoading] = useState(false);
@@ -67,6 +62,7 @@ export default function Dashboard() {
     totalKpis: number;
     kpisWithData: number;
   } | null>(null);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [categoryData, setCategoryData] = useState<any[]>([]);
   const [dataLoading, setDataLoading] = useState(false);
   const [showDocs, setShowDocs] = useState(false);

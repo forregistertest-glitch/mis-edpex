@@ -36,11 +36,12 @@ export const parsePersonnelExcel = async (
         const workbook = XLSX.read(data, { type: 'array' });
         
         // 1. Collect ALL valid data from ALL sheets first
-        let allPersonnel: Personnel[] = [];
+        const allPersonnel: Personnel[] = [];
         const errors: string[] = [];
 
         for (const name of workbook.SheetNames) {
           const sheet = workbook.Sheets[name];
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           const json = XLSX.utils.sheet_to_json<any[]>(sheet, { header: 1 });
           
           if (json.length === 0) continue;
@@ -82,6 +83,7 @@ export const parsePersonnelExcel = async (
                      }
                   } else {
                       if (typeof value === 'string') value = value.trim();
+                      // eslint-disable-next-line @typescript-eslint/no-explicit-any
                       (personnelData as any)[field] = value;
                   }
                 }
@@ -108,8 +110,11 @@ export const parsePersonnelExcel = async (
            try {
               await PersonnelService.addPersonnelBatch(batch, userEmail);
               successCount += batch.length;
-           } catch (err: any) {
-              errors.push(`Batch ${i/BATCH_SIZE + 1} error: ${err.message}`);
+              await PersonnelService.addPersonnelBatch(batch, userEmail);
+              successCount += batch.length;
+           } catch (err: unknown) {
+              const msg = err instanceof Error ? err.message : String(err);
+              errors.push(`Batch ${i/BATCH_SIZE + 1} error: ${msg}`);
            }
 
            if (onProgress) {

@@ -1,6 +1,7 @@
 "use client";
 
 import { Loader2, AlertCircle, ShieldCheck } from "lucide-react";
+import Image from "next/image";
 
 interface LoginPageProps {
     onSignIn: () => Promise<void>;
@@ -24,10 +25,13 @@ export default function LoginPage({ onSignIn, loading, error }: LoginPageProps) 
                 <div className="bg-white/90 backdrop-blur-xl rounded-3xl p-8 border border-white/50 shadow-2xl">
                     <div className="text-center mb-6">
                         <div className="w-20 h-20 rounded-2xl flex items-center justify-center mx-auto mb-4 p-2 bg-white/80 shadow-sm border border-slate-100">
-                             <img
+                             <Image
                                 src="https://vet.ku.ac.th/vv2018/download/KU/KU_logo.png"
                                 alt="KU Logo"
-                                className="w-full h-full object-contain"
+                                width={96}
+                                height={96}
+                                className="object-contain"
+                                unoptimized
                             />
                         </div>
                         <h2 className="text-xl font-bold mb-1 text-slate-800">
@@ -94,7 +98,7 @@ export default function LoginPage({ onSignIn, loading, error }: LoginPageProps) 
                     {/* Quote */}
                     <div className="mt-6 pt-4 border-t border-slate-100 text-center">
                         <p className="text-xl font-serif italic text-slate-300 leading-relaxed">
-                            "ไม่ต้องรู้ทุกเรื่อง แต่รู้ให้จริงในสิ่งที่ควรรู้"
+                            &ldquo;ไม่ต้องรู้ทุกเรื่อง แต่รู้ให้จริงในสิ่งที่ควรรู้&rdquo;
                         </p>
                     </div>
                 </div>

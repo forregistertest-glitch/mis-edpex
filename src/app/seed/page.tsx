@@ -4,6 +4,7 @@ import { useState } from "react";
 import { seedKpiMaster, seedKpiEntries, clearCollection } from "@/lib/data-service";
 import type { KpiMaster } from "@/lib/data-service";
 import { useAuth } from "@/contexts/AuthContext";
+import Link from "next/link";
 import { ShieldX, Loader2 } from "lucide-react";
 import kpiMasterRaw from "../../../db_design/kpi_master.json";
 
@@ -21,6 +22,7 @@ function getAggregation(pattern: string): "sum" | "avg" | "latest" | "count" | "
 
 // ─── Generate sample entries ───────────────────────────────────
 function generateSampleEntries() {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const entries: any[] = [];
   const years = [2564, 2565, 2566, 2567, 2568];
   const periodsQ = ["Q1", "Q2", "Q3", "Q4"];
@@ -61,6 +63,7 @@ function generateSampleEntries() {
   };
 
   for (const [kpiId, values] of Object.entries(yearData)) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const master = (kpiMasterRaw as any[]).find((k: any) => k.kpi_id === kpiId);
     const target = master?.target_value || null;
     for (let i = 0; i < years.length; i++) {
@@ -80,6 +83,7 @@ function generateSampleEntries() {
     "7.2.7": [3800, 4100, 3900, 4000],
   };
   for (const [kpiId, values] of Object.entries(quarterlyKpis)) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const master = (kpiMasterRaw as any[]).find((k: any) => k.kpi_id === kpiId);
     for (let q = 0; q < 4; q++) {
       entries.push({
@@ -203,9 +207,9 @@ export default function SeedPage() {
           <p className="text-sm text-slate-500">
             หน้านี้สำหรับ Admin เท่านั้น
           </p>
-          <a href="/" className="inline-block mt-4 text-sm text-blue-600 hover:underline">
+          <Link href="/" className="inline-block mt-4 text-sm text-blue-600 hover:underline">
             ← กลับไปหน้า Dashboard
-          </a>
+          </Link>
         </div>
       </div>
     );
@@ -214,6 +218,7 @@ export default function SeedPage() {
   const log = (msg: string) => setLogs((prev) => [...prev, `[${new Date().toLocaleTimeString("th-TH")}] ${msg}`]);
 
   const buildKpiList = (): KpiMaster[] =>
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (kpiMasterRaw as any[]).map((k: any) => ({
       kpi_id: k.kpi_id, category_id: k.category_id, name_th: k.name_th,
       name_en: k.name_en, unit: k.unit, data_pattern: k.data_pattern,
@@ -238,8 +243,8 @@ export default function SeedPage() {
       setEntryCount(ec);
       log(`✅ kpi_entries: ${ec} records`);
       log(`🎉 Seed เสร็จสิ้น! รวม ${mc + ec} documents`);
-    } catch (error: any) {
-      log(`❌ Error: ${error.message}`);
+    } catch (error: unknown) {
+      log(`❌ Error: ${error instanceof Error ? error.message : String(error)}`);
     } finally {
       setIsRunning(false);
     }
@@ -262,8 +267,8 @@ export default function SeedPage() {
       setMasterCount(0);
       setEntryCount(0);
       log(`🧹 ล้างข้อมูลเสร็จสิ้น! ลบทั้งหมด ${mc + ec} documents`);
-    } catch (error: any) {
-      log(`❌ Error: ${error.message}`);
+    } catch (error: unknown) {
+      log(`❌ Error: ${error instanceof Error ? error.message : String(error)}`);
     } finally {
       setIsRunning(false);
     }
@@ -297,8 +302,8 @@ export default function SeedPage() {
       log(`   kpi_entries: ${ec} records`);
 
       log(`🎉 Re-seed เสร็จสิ้น! ข้อมูลใหม่ทั้งหมด ${mc + ec} documents`);
-    } catch (error: any) {
-      log(`❌ Error: ${error.message}`);
+    } catch (error: unknown) {
+      log(`❌ Error: ${error instanceof Error ? error.message : String(error)}`);
     } finally {
       setIsRunning(false);
     }
@@ -348,7 +353,7 @@ export default function SeedPage() {
         </div>
 
         <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 text-xs text-amber-800">
-          <strong>💡 สำหรับการพรีเซ็นต์:</strong> กด <strong>"ล้าง + Seed ใหม่"</strong> เพื่อรีเซ็ตข้อมูลกลับสู่สถานะเริ่มต้น
+          <strong>💡 สำหรับการพรีเซ็นต์:</strong> กด <strong>&quot;ล้าง + Seed ใหม่&quot;</strong> เพื่อรีเซ็ตข้อมูลกลับสู่สถานะเริ่มต้น
           → จากนั้นกลับไปหน้า Dashboard เพื่อดูข้อมูลใหม่
         </div>
 
@@ -381,9 +386,9 @@ export default function SeedPage() {
         )}
 
         <div className="text-center">
-          <a href="/" className="text-sm text-blue-600 hover:underline">
+          <Link href="/" className="text-sm text-blue-600 hover:underline">
             ← กลับไปหน้า Dashboard
-          </a>
+          </Link>
         </div>
       </div>
     </div>

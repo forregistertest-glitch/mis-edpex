@@ -14,13 +14,12 @@ import {
     Filler,
 } from "chart.js";
 import { Line, Bar } from "react-chartjs-2";
-import { GraduationCap, Loader2, RefreshCw, TrendingUp, BookOpen, FlaskConical, Users, Shield } from "lucide-react";
+import { GraduationCap, Loader2, RefreshCw, BookOpen, Users, Shield } from "lucide-react";
 import ChartFilterBar, { ChartViewMode } from "./ChartFilterBar";
 import DashboardCard from "./DashboardCard";
 import type { Language } from "@/lib/translations";
 import {
     getKpiTrendData,
-    getKpiMatrixData,
     getAvailableFilters,
     getCategoryOverview,
     type TrendPoint,
@@ -165,7 +164,7 @@ export default function AcademicDashboard({ lang }: AcademicDashboardProps) {
                 tension: 0,
                 pointRadius: 0,
                 pointHoverRadius: 0,
-                // @ts-ignore
+                // @ts-expect-error borderDash is a valid Chart.js dataset property
                 borderDash: [6, 4],
                 borderWidth: 2,
             });
@@ -377,6 +376,7 @@ export default function AcademicDashboard({ lang }: AcademicDashboardProps) {
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-slate-100">
+                            {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
                             {categoryData.map((kpi: any) => {
                                 const hasTarget = kpi.target_value !== null && kpi.target_value !== undefined;
                                 const met = hasTarget && kpi.latestValue !== null && kpi.latestValue >= kpi.target_value;

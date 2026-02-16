@@ -27,12 +27,12 @@ export default function InputHub({ lang }: InputHubProps) {
     {
       id: "student",
       title: lang === "th" ? "ข้อมูลนิสิต (Student)" : "Student Data",
-      description: lang === "th" ? "จัดการข้อมูลนิสิตระดับบัณฑิตศึกษา (กำลังพัฒนา)" : "Manage graduate student records (Coming Soon).",
+      description: lang === "th" ? "จัดการข้อมูลนิสิตระดับบัณฑิตศึกษา, นำเข้า Excel, และส่งออกข้อมูล" : "Manage graduate student records, Import/Export Excel.",
       icon: GraduationCap,
       color: "text-blue-600",
       bg: "bg-blue-50",
-      href: "#",
-      disabled: true
+      href: "/student",
+      isExternal: true
     },
     {
       id: "research",

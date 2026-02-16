@@ -1,0 +1,154 @@
+[0m[0m
+[0m[4mD:\GitHub\MIS\mis-edpex\src\app\global-error.tsx[24m[0m
+[0m  [2m4:5[22m  [33mwarning[39m  'error' is defined but never used  [2m@typescript-eslint/no-unused-vars[22m[0m
+[0m[0m
+[0m[4mD:\GitHub\MIS\mis-edpex\src\app\page.tsx[24m[0m
+[0m   [2m66:52[22m  [31merror[39m  Unexpected any. Specify a different type  [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m  [2m150:26[22m  [31merror[39m  Unexpected any. Specify a different type  [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m[0m
+[0m[4mD:\GitHub\MIS\mis-edpex\src\app\personnel\new\page.tsx[24m[0m
+[0m  [2m34:13[22m  [33mwarning[39m  'currentYear' is assigned a value but never used  [2m@typescript-eslint/no-unused-vars[22m[0m
+[0m[0m
+[0m[4mD:\GitHub\MIS\mis-edpex\src\components\DataExplorer.tsx[24m[0m
+[0m  [2m15:9[22m  [31merror[39m  Unexpected any. Specify a different type  [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m[0m
+[0m[4mD:\GitHub\MIS\mis-edpex\src\components\DocViewer.tsx[24m[0m
+[0m  [2m104:78[22m  [31merror[39m    Unexpected any. Specify a different type                                                                      [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m  [2m114:6[22m   [33mwarning[39m  React Hook useEffect has a missing dependency: 'fetchDocs'. Either include it or remove the dependency array  [2mreact-hooks/exhaustive-deps[22m[0m
+[0m  [2m145:9[22m   [33mwarning[39m  'downloadDoc' is assigned a value but never used                                                              [2m@typescript-eslint/no-unused-vars[22m[0m
+[0m  [2m155:9[22m   [33mwarning[39m  'handlePrint' is assigned a value but never used                                                              [2m@typescript-eslint/no-unused-vars[22m[0m
+[0m[0m
+[0m[4mD:\GitHub\MIS\mis-edpex\src\components\KpiInputForm.tsx[24m[0m
+[0m  [2m115:6[22m   [33mwarning[39m  React Hook useEffect has a missing dependency: 'loadData'. Either include it or remove the dependency array  [2mreact-hooks/exhaustive-deps[22m[0m
+[0m  [2m176:39[22m  [31merror[39m    Unexpected any. Specify a different type                                                                     [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m  [2m207:21[22m  [31merror[39m    Unexpected any. Specify a different type                                                                     [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m  [2m222:14[22m  [33mwarning[39m  'err' is defined but never used                                                                              [2m@typescript-eslint/no-unused-vars[22m[0m
+[0m  [2m227:23[22m  [33mwarning[39m  'entry' is defined but never used                                                                            [2m@typescript-eslint/no-unused-vars[22m[0m
+[0m[0m
+[0m[4mD:\GitHub\MIS\mis-edpex\src\components\LoginPage.tsx[24m[0m
+[0m  [2m100:29[22m  [31merror[39m  `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  [2mreact/no-unescaped-entities[22m[0m
+[0m  [2m100:78[22m  [31merror[39m  `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  [2mreact/no-unescaped-entities[22m[0m
+[0m[0m
+[0m[4mD:\GitHub\MIS\mis-edpex\src\components\dashboard\AcademicDashboard.tsx[24m[0m
+[0m   [2m65:54[22m  [31merror[39m  Unexpected any. Specify a different type                                                                             [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m  [2m167:17[22m  [31merror[39m  Use "@ts-expect-error" instead of "@ts-ignore", as "@ts-ignore" will do nothing if the following line is error-free  [2m@typescript-eslint/ban-ts-comment[22m[0m
+[0m[0m
+[0m[4mD:\GitHub\MIS\mis-edpex\src\components\dashboard\AdminPanel.tsx[24m[0m
+[0m    [2m7:5[22m   [33mwarning[39m  'Shield' is defined but never used                     [2m@typescript-eslint/no-unused-vars[22m[0m
+[0m   [2m44:48[22m  [31merror[39m    Unexpected any. Specify a different type               [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m   [2m87:11[22m  [33mwarning[39m  'loadLogs' is assigned a value but never used          [2m@typescript-eslint/no-unused-vars[22m[0m
+[0m  [2m115:23[22m  [31merror[39m    Unexpected any. Specify a different type               [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m  [2m140:11[22m  [33mwarning[39m  'handleRoleChange' is assigned a value but never used  [2m@typescript-eslint/no-unused-vars[22m[0m
+[0m  [2m456:60[22m  [31merror[39m    Unexpected any. Specify a different type               [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m  [2m473:11[22m  [33mwarning[39m  'activeMonth' is assigned a value but never used       [2m@typescript-eslint/no-unused-vars[22m[0m
+[0m[0m
+[0m[4mD:\GitHub\MIS\mis-edpex\src\components\dashboard\AnnualReportDashboard.tsx[24m[0m
+[0m   [2m5:16[22m  [33mwarning[39m  'TrendingUp' is defined but never used          [2m@typescript-eslint/no-unused-vars[22m[0m
+[0m   [2m5:28[22m  [33mwarning[39m  'Target' is defined but never used              [2m@typescript-eslint/no-unused-vars[22m[0m
+[0m  [2m10:42[22m  [33mwarning[39m  'getAggregatedValue' is defined but never used  [2m@typescript-eslint/no-unused-vars[22m[0m
+[0m[0m
+[0m[4mD:\GitHub\MIS\mis-edpex\src\components\dashboard\CategorySection.tsx[24m[0m
+[0m  [2m16:19[22m   [31merror[39m  Unexpected any. Specify a different type  [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m  [2m50:100[22m  [31merror[39m  Unexpected any. Specify a different type  [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m  [2m54:100[22m  [31merror[39m  Unexpected any. Specify a different type  [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m  [2m93:57[22m   [31merror[39m  Unexpected any. Specify a different type  [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m[0m
+[0m[4mD:\GitHub\MIS\mis-edpex\src\components\dashboard\DashboardCard.tsx[24m[0m
+[0m  [2m9:12[22m  [31merror[39m  Unexpected any. Specify a different type  [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m[0m
+[0m[4mD:\GitHub\MIS\mis-edpex\src\components\dashboard\Header.tsx[24m[0m
+[0m  [2m134:25[22m  [33mwarning[39m  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  [2m@next/next/no-img-element[22m[0m
+[0m[0m
+[0m[4mD:\GitHub\MIS\mis-edpex\src\components\dashboard\HospitalDashboard.tsx[24m[0m
+[0m    [2m8:21[22m  [33mwarning[39m  'Radar' is defined but never used                  [2m@typescript-eslint/no-unused-vars[22m[0m
+[0m   [2m42:12[22m  [33mwarning[39m  'patientTrend' is assigned a value but never used  [2m@typescript-eslint/no-unused-vars[22m[0m
+[0m   [2m46:54[22m  [31merror[39m    Unexpected any. Specify a different type           [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m  [2m252:53[22m  [31merror[39m    Unexpected any. Specify a different type           [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m[0m
+[0m[4mD:\GitHub\MIS\mis-edpex\src\components\dashboard\ReviewerDashboard.tsx[24m[0m
+[0m   [2m13:5[22m    [33mwarning[39m  'AlertCircle' is defined but never used                                                                      [2m@typescript-eslint/no-unused-vars[22m[0m
+[0m   [2m16:5[22m    [33mwarning[39m  'getPendingEntries' is defined but never used                                                                [2m@typescript-eslint/no-unused-vars[22m[0m
+[0m   [2m55:8[22m    [33mwarning[39m  React Hook useEffect has a missing dependency: 'loadData'. Either include it or remove the dependency array  [2mreact-hooks/exhaustive-deps[22m[0m
+[0m  [2m127:11[22m   [33mwarning[39m  'pendingCount' is assigned a value but never used                                                            [2m@typescript-eslint/no-unused-vars[22m[0m
+[0m  [2m221:107[22m  [31merror[39m    `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`                                              [2mreact/no-unescaped-entities[22m[0m
+[0m  [2m221:132[22m  [31merror[39m    `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`                                              [2mreact/no-unescaped-entities[22m[0m
+[0m[0m
+[0m[4mD:\GitHub\MIS\mis-edpex\src\components\dashboard\Sidebar.tsx[24m[0m
+[0m  [2m60:21[22m  [33mwarning[39m  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  [2m@next/next/no-img-element[22m[0m
+[0m[0m
+[0m[4mD:\GitHub\MIS\mis-edpex\src\components\dashboard\StaffDashboard.tsx[24m[0m
+[0m    [2m4:8[22m   [33mwarning[39m  'Link' is defined but never used          [2m@typescript-eslint/no-unused-vars[22m[0m
+[0m    [2m9:10[22m  [33mwarning[39m  'Line' is defined but never used          [2m@typescript-eslint/no-unused-vars[22m[0m
+[0m   [2m10:64[22m  [33mwarning[39m  'UserCheck' is defined but never used     [2m@typescript-eslint/no-unused-vars[22m[0m
+[0m   [2m10:75[22m  [33mwarning[39m  'Database' is defined but never used      [2m@typescript-eslint/no-unused-vars[22m[0m
+[0m   [2m49:54[22m  [31merror[39m    Unexpected any. Specify a different type  [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m  [2m273:53[22m  [31merror[39m    Unexpected any. Specify a different type  [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m[0m
+[0m[4mD:\GitHub\MIS\mis-edpex\src\components\dashboard\StrategicDashboard.tsx[24m[0m
+[0m    [2m8:10[22m   [33mwarning[39m  'Line' is defined but never used                                                                                             [2m@typescript-eslint/no-unused-vars[22m[0m
+[0m    [2m9:42[22m   [33mwarning[39m  'Award' is defined but never used                                                                                            [2m@typescript-eslint/no-unused-vars[22m[0m
+[0m    [2m9:49[22m   [33mwarning[39m  'Globe' is defined but never used                                                                                            [2m@typescript-eslint/no-unused-vars[22m[0m
+[0m   [2m45:12[22m   [33mwarning[39m  'isoTrend' is assigned a value but never used                                                                                [2m@typescript-eslint/no-unused-vars[22m[0m
+[0m   [2m47:54[22m   [31merror[39m    Unexpected any. Specify a different type                                                                                     [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m   [2m75:8[22m    [33mwarning[39m  React Hook useCallback has an unnecessary dependency: 'selectedDimension'. Either exclude it or remove the dependency array  [2mreact-hooks/exhaustive-deps[22m[0m
+[0m  [2m161:141[22m  [31merror[39m    Unexpected any. Specify a different type                                                                                     [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m  [2m258:53[22m   [31merror[39m    Unexpected any. Specify a different type                                                                                     [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m[0m
+[0m[4mD:\GitHub\MIS\mis-edpex\src\components\kpi-input\EntryHistory.tsx[24m[0m
+[0m  [2m51:11[22m  [33mwarning[39m  'getDisplayValue' is assigned a value but never used  [2m@typescript-eslint/no-unused-vars[22m[0m
+[0m[0m
+[0m[4mD:\GitHub\MIS\mis-edpex\src\components\kpi-input\FormSelector.tsx[24m[0m
+[0m  [2m62:14[22m  [31merror[39m    Unexpected any. Specify a different type  [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m  [2m63:18[22m  [31merror[39m    Unexpected any. Specify a different type  [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m  [2m64:31[22m  [31merror[39m    Unexpected any. Specify a different type  [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m  [2m65:27[22m  [31merror[39m    Unexpected any. Specify a different type  [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m  [2m71:32[22m  [33mwarning[39m  'filters' is defined but never used       [2m@typescript-eslint/no-unused-vars[22m[0m
+[0m[0m
+[0m[4mD:\GitHub\MIS\mis-edpex\src\contexts\AuthContext.tsx[24m[0m
+[0m  [2m121:23[22m  [31merror[39m  Unexpected any. Specify a different type  [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m[0m
+[0m[4mD:\GitHub\MIS\mis-edpex\src\lib\data-service.ts[24m[0m
+[0m   [2m56:31[22m  [31merror[39m  Unexpected any. Specify a different type                [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m   [2m77:7[22m   [31merror[39m  'constraints' is never reassigned. Use 'const' instead  [2mprefer-const[22m[0m
+[0m   [2m77:20[22m  [31merror[39m  Unexpected any. Specify a different type                [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m   [2m89:7[22m   [31merror[39m  'q' is never reassigned. Use 'const' instead            [2mprefer-const[22m[0m
+[0m  [2m190:7[22m   [31merror[39m  'allEntries' is never reassigned. Use 'const' instead   [2mprefer-const[22m[0m
+[0m  [2m218:36[22m  [31merror[39m  Unexpected any. Specify a different type                [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m  [2m342:22[22m  [31merror[39m  Unexpected any. Specify a different type                [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m  [2m596:26[22m  [31merror[39m  Unexpected any. Specify a different type                [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m[0m
+[0m[4mD:\GitHub\MIS\mis-edpex\src\lib\ingestion\ingest_data.js[24m[0m
+[0m  [2m1:27[22m  [31merror[39m    A `require()` style import is forbidden      [2m@typescript-eslint/no-require-imports[22m[0m
+[0m  [2m2:43[22m  [33mwarning[39m  'setDoc' is assigned a value but never used  [2m@typescript-eslint/no-unused-vars[22m[0m
+[0m  [2m2:51[22m  [33mwarning[39m  'doc' is assigned a value but never used     [2m@typescript-eslint/no-unused-vars[22m[0m
+[0m  [2m2:59[22m  [31merror[39m    A `require()` style import is forbidden      [2m@typescript-eslint/no-require-imports[22m[0m
+[0m  [2m3:14[22m  [31merror[39m    A `require()` style import is forbidden      [2m@typescript-eslint/no-require-imports[22m[0m
+[0m  [2m4:7[22m   [33mwarning[39m  'fs' is assigned a value but never used      [2m@typescript-eslint/no-unused-vars[22m[0m
+[0m  [2m4:12[22m  [31merror[39m    A `require()` style import is forbidden      [2m@typescript-eslint/no-require-imports[22m[0m
+[0m  [2m5:7[22m   [33mwarning[39m  'path' is assigned a value but never used    [2m@typescript-eslint/no-unused-vars[22m[0m
+[0m  [2m5:14[22m  [31merror[39m    A `require()` style import is forbidden      [2m@typescript-eslint/no-require-imports[22m[0m
+[0m[0m
+[0m[4mD:\GitHub\MIS\mis-edpex\src\lib\ingestion\inspect_v4.js[24m[0m
+[0m  [2m1:14[22m  [31merror[39m  A `require()` style import is forbidden  [2m@typescript-eslint/no-require-imports[22m[0m
+[0m  [2m2:12[22m  [31merror[39m  A `require()` style import is forbidden  [2m@typescript-eslint/no-require-imports[22m[0m
+[0m  [2m3:14[22m  [31merror[39m  A `require()` style import is forbidden  [2m@typescript-eslint/no-require-imports[22m[0m
+[0m[0m
+[0m[4mD:\GitHub\MIS\mis-edpex\src\services\auditLogService.ts[24m[0m
+[0m  [2m9:13[22m  [31merror[39m  Unexpected any. Specify a different type  [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m[0m
+[0m[4mD:\GitHub\MIS\mis-edpex\src\services\personnelService.ts[24m[0m
+[0m   [2m48:21[22m  [31merror[39m  Unexpected any. Specify a different type  [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m   [2m86:21[22m  [31merror[39m  Unexpected any. Specify a different type  [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m  [2m170:21[22m  [31merror[39m  Unexpected any. Specify a different type  [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m  [2m205:21[22m  [31merror[39m  Unexpected any. Specify a different type  [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m  [2m240:21[22m  [31merror[39m  Unexpected any. Specify a different type  [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m[0m
+[0m[4mD:\GitHub\MIS\mis-edpex\src\types\personnel.ts[24m[0m
+[0m  [2m19:16[22m  [31merror[39m  Unexpected any. Specify a different type  [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m[0m
+[0m[4mD:\GitHub\MIS\mis-edpex\src\utils\personnelImport.ts[24m[0m
+[0m  [2m64:36[22m  [33mwarning[39m  'rowIndex' is defined but never used  [2m@typescript-eslint/no-unused-vars[22m[0m
+[0m[0m
+[0m[31m[1m✖ 94 problems (55 errors, 39 warnings)[22m[39m[0m
+[0m[31m[1m[22m[39m[31m[1m  3 errors and 0 warnings potentially fixable with the `--fix` option.[22m[39m[0m
+[0m[31m[1m[22m[39m[0m

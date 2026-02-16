@@ -1,7 +1,8 @@
 const XLSX = require('xlsx');
 const path = require('path');
 
-const filePath = path.join(__dirname, 'source/academic/master_template/master_template_kuvet_res_pub.xlsx');
+const filePathArg = process.argv[2];
+const filePath = filePathArg ? path.resolve(filePathArg) : path.join(__dirname, 'source/academic/master_template/master_template_kuvet_res_pub.xlsx');
 
 try {
     console.log(`Reading file: ${filePath}`);
