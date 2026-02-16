@@ -101,7 +101,7 @@ function mdToHtml(md: string): string {
 }
 
 // ─── DocViewer Component ───────────────────────────────────────
-export default function DocViewer({ onClose, t }: { onClose: () => void; t?: any }) {
+export default function DocViewer({ onClose, t, userEmail }: { onClose: () => void; t?: any; userEmail?: string | null }) {
   const [docs, setDocs] = useState<DocFile[]>([]);
   const [selectedDoc, setSelectedDoc] = useState<string | null>(null);
   const [docContent, setDocContent] = useState<string>("");
@@ -117,9 +117,24 @@ export default function DocViewer({ onClose, t }: { onClose: () => void; t?: any
     try {
       const res = await fetch("/api/docs");
       const data = await res.json();
-      setDocs(data.docs || []);
-      if (data.docs?.length > 0) {
-        openDoc(data.docs[0].name);
+      
+      // Filter out system docs for non-superadmin
+      const restrictedDocs = [
+        "database_design.md",
+        "app_architecture.md", 
+        "data_dictionary.md",
+        "firebase_capacity.md",
+        "data_integrity_plan.md"
+      ];
+
+      const isSuperAdmin = userEmail === "nipon.w@ku.th";
+      const filteredDocs = isSuperAdmin 
+        ? data.docs 
+        : data.docs?.filter((d: { name: string }) => !restrictedDocs.includes(d.name));
+
+      setDocs(filteredDocs || []);
+      if (filteredDocs?.length > 0) {
+        openDoc(filteredDocs[0].name);
       }
     } catch (error) {
       console.error("Failed to fetch docs", error);

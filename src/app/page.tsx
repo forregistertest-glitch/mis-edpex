@@ -401,7 +401,7 @@ export default function Dashboard() {
 
       {/* Documentation Viewer Overlay */}
       {showDocs && (
-        <DocViewer t={lang === 'th'} onClose={() => setShowDocs(false)} />
+        <DocViewer t={lang === 'th'} onClose={() => setShowDocs(false)} userEmail={user?.email} />
       )}
 
       {/* Global Fetching Loader */}
