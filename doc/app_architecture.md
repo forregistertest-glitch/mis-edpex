@@ -4,8 +4,8 @@
 | Field | Value |
 |:------|:------|
 | **Doc ID** | KUVMIS-DOC-001 |
-| **Version** | 1.5.0 |
-| **Last Updated** | 2026-02-12T09:25:00+07:00 |
+| **Version** | 1.5.1 |
+| **Last Updated** | 2026-02-16T16:40:00+07:00 |
 | **Author** | KUVMIS Development Team |
 | **Status** | Released |
 
@@ -56,6 +56,7 @@ mis-edpex/
 │   │   ├── LoginPage.tsx        ← Google Sign-In + KU Branding
 │   │   ├── KpiInputForm.tsx     ← ฟอร์มกรอกข้อมูล (ใช้ email จริง)
 │   │   ├── DocViewer.tsx        ← ดูเอกสาร Markdown
+│   │   ├── SystemDocs.tsx       ← เอกสารระบบ (Superadmin Only)
 │   │   ├── DataExplorer.tsx     ← ตารางข้อมูล + Export
 │   │   ├── AcademicTrendChart.tsx ← กราฟแนวโน้ม
 │   │   ├── dashboard/
@@ -154,7 +155,8 @@ Dynamic form component ที่อ่าน spec จาก `input_forms.json`:
 | Component | คำอธิบาย |
 |-----------|----------|
 | **DataExplorer** | Full-screen overlay + search + pagination + export (Excel/JSON/CSV) |
-| **DocViewer** | Markdown viewer สำหรับเอกสารในโฟลเดอร์ `/doc` |
+| **DocViewer** | Markdown viewer สำหรับเอกสารในโฟลเดอร์ `/doc` (Filter System Docs for non-superadmin) |
+| **SystemDocs** | Component แสดงเอกสารระบบ (Architecture, DB, Data Dictionary) สำหรับ Superadmin |
 | **AcademicTrendChart** | Chart.js line chart แสดง trend KPI วิชาการ 5 ปี |
 
 ---
@@ -214,6 +216,8 @@ Dynamic form component ที่อ่าน spec จาก `input_forms.json`:
 | 20 | **Annual Report Dashboard** | `AnnualReportDashboard.tsx` | ✅ |
 | 21 | **IP Geolocation** (จังหวัด + ISP) | `whoami/route.ts` | ✅ |
 | 22 | **Firestore Composite Indexes** | `firestore.indexes.json` | ✅ |
+| 23 | **System Documentation** (Superadmin Only) | `SystemDocs.tsx` | ✅ |
+| 24 | **Personnel & Student Data** | Firestore Collections | ✅ |
 
 ---
 
@@ -275,4 +279,4 @@ Config File:       src/lib/firebase.ts
 - **Audit Trails:** Login Logs + Sensitive Action Logs (Mock/Clear)
 - **Data Integrity:** See `data_integrity_plan.md` for full ISO/EdPEx compliance details.
 
-*เอกสารนี้ปรับปรุงล่าสุดเมื่อ 12 ก.พ. 2569 — KUVMIS v1.5*
+*เอกสารนี้ปรับปรุงล่าสุดเมื่อ 16 ก.พ. 2569 — KUVMIS v1.5.1*

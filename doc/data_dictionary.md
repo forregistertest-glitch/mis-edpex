@@ -3,8 +3,8 @@
 | Field | Value |
 |:------|:------|
 | **Doc ID** | KUVMIS-DOC-004 |
-| **Version** | 1.4.0 |
-| **Last Updated** | 2026-02-12T00:30:00+07:00 |
+| **Version** | 1.5.1 |
+| **Last Updated** | 2026-02-16T16:55:00+07:00 |
 | **Author** | KUVMIS Development Team |
 | **Status** | Released |
 
@@ -14,6 +14,8 @@
 - **performance_data**: Stores the actual performance values, linked by `kpi_id`, `year`, `period`, and `dimension`.
 - **authorized_users**: รายชื่อ Email ที่อนุญาตเข้าระบบ พร้อม role (user/reviewer/admin).
 - **login_logs**: บันทึกการเข้าใช้งาน (email, timestamp, IP, user agent, geo location, success, reason).
+- **personnel**: ข้อมูลบุคลากร (HR)
+- **students**: ข้อมูลนิสิต (Reg)
 
 ## 2. KPI JSON Blueprint
 ```json
@@ -82,3 +84,13 @@
 | **Strategic** | Governance | 7.4.11 | `getKpiMatrixData` | dimension_snapshot |
 | **Strategic** | Animal Welfare | 7.4.14, 7.4.15 | `getKpiTrendData` | year_series |
 | **Strategic** | Lab Standards | 7.4.12 | `getKpiTrendData` | year_series |
+
+## 7. Enums & Value Lists (New)
+### 7.1 Personnel
+- **Type**: ข้าราชการ, พนักงานมหาวิทยาลัย, พนักงานเงินรายได้, ลูกจ้างประจำ, ลูกจ้างชั่วคราว
+- **Position**: อาจารย์, ผู้ช่วยศาสตราจารย์, รองศาสตราจารย์, ศาสตราจารย์, เจ้าหน้าที่บริหารงานทั่วไป, นักวิชาการศึกษา, ฯลฯ
+- **DegreeLevel**: ปริญญาตรี, ปริญญาโท, ปริญญาเอก
+
+### 7.2 Student
+- **Status**: กำลังศึกษา, สำเร็จการศึกษา, พ้นสภาพ, ลาพักการศึกษา
+- **DegreeLevel**: ปริญญาตรี, ปริญญาโท, ปริญญาเอก, ประกาศนียบัตรบัณฑิต

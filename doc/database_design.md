@@ -40,6 +40,8 @@ Region: Default
 | `kpi_entries` | ค่า KPI ที่กรอก (ผูกกับ kpi_id, ปี, งวด + review & soft delete fields) | ✅ |
 | `authorized_users` | รายชื่อ email ที่มีสิทธิ์เข้าระบบ + role (user/reviewer/admin) | ✅ |
 | `login_logs` | บันทึกการเข้าใช้งาน (email, IP, user agent, geo location, timestamp) | ✅ |
+| `personnel` | ข้อมูลบุคลากรรายบุคคล (ประวัติการทำงาน, การลา, ผลงาน) | ✅ |
+| `students` | ข้อมูลนิสิตรายบุคคล (สถานะการศึกษา, คะแนน, ทุน) | ✅ |
 
 ### 2.2 Document Schema — kpi_entries
 
@@ -117,7 +119,42 @@ Region: Default
 }
 ```
 
-### 2.4 Firebase Config
+### 2.4 Document Schema — personnel
+```json
+{
+  "email": "staff@ku.th",
+  "data": {
+    "PreName": "นาย",
+    "FirstName": "สมชาย",
+    "LastName": "ใจดี",
+    "Type": "ข้าราชการ",
+    "Position": "อาจารย์",
+    "DegreeLevel": "ปริญญาเอก",
+    "Faculty": "สัตวแพทยศาสตร์",
+    "Department": "เวชศาสตร์คลินิกสัตว์เลี้ยง"
+  },
+  "updatedAt": "2026-02-15T10:00:00Z"
+}
+```
+
+### 2.5 Document Schema — students
+```json
+{
+  "studentId": "64xxxxxxxxx",
+  "data": {
+    "Title": "นาย",
+    "FirstName": "นิสิต",
+    "LastName": "เรียนดี",
+    "Major": "สัตวแพทยศาสตรบัณฑิต",
+    "DegreeLevel": "ปริญญาตรี",
+    "Status": "กำลังศึกษา",
+    "Advisor": "ดร.สมชาย"
+  },
+  "updatedAt": "2026-02-15T10:00:00Z"
+}
+```
+
+### 2.6 Firebase Config
 
 | Key | Value |
 |-----|-------|

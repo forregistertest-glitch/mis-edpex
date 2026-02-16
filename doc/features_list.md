@@ -4,8 +4,8 @@
 | Field | Value |
 |:------|:------|
 | **Doc ID** | KUVMIS-DOC-003 |
-| **Version** | 1.4.0 |
-| **Last Updated** | 2026-02-12T09:00:00+07:00 |
+| **Version** | 1.5.1 |
+| **Last Updated** | 2026-02-16T16:50:00+07:00 |
 | **Author** | KUVMIS Development Team |
 | **Status** | Released |
 
@@ -111,6 +111,13 @@
     - Real-time monitoring.
     - **CSV Export:** Download full logs for specific months [Super Admin Only].
     - **Mock Data Tools:** Generate/Clear test data [Super Admin Only].
+- **System Documentation:**
+    - **Restricted Access:** Visible only to Superadmin (`nipon.w@ku.th`).
+    - **Localized Content:** Full Thai translation for Architecture, DB Design, and Data Dictionary.
+
+### 1.8 Personnel & Student Data (New)
+- **Personnel Module:** Import/View staff data (HR).
+- **Student Module:** Import/View student data (Reg).
 
 ## 2. Shared Components
 - **ChartFilterBar:** Unified control for Year, Quarter (Period), Dimension, and View Mode (Chart/Table).
