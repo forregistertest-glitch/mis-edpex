@@ -8,6 +8,7 @@ import { Plus, Search, Edit, Trash2, Download, Upload, BarChart3, ArrowLeft, Arr
 import { exportPersonnelToExcel } from "@/utils/personnelExport";
 import { parsePersonnelExcel } from "@/utils/personnelImport";
 import { useAuth } from "@/contexts/AuthContext"; // Import useAuth
+import { useSearchParams } from "next/navigation"; // Import useSearchParams
 
 export default function PersonnelPage() {
   const { user } = useAuth(); // Get user
@@ -20,6 +21,18 @@ export default function PersonnelPage() {
   useEffect(() => {
     fetchPersonnel();
   }, []);
+
+  // Handle Edit via Query Param
+  const searchParams = useSearchParams();
+  useEffect(() => {
+    const editId = searchParams.get("edit");
+    if (editId && personnel.length > 0) {
+      const p = personnel.find(item => item.id === editId);
+      if (p) {
+        handleEditClick(p);
+      }
+    }
+  }, [searchParams, personnel]);
 
   const fetchPersonnel = async () => {
     try {
@@ -57,19 +70,30 @@ export default function PersonnelPage() {
   // Sorting State
   const [sortBy, setSortBy] = useState<'personnel_id' | 'updated_at'>('updated_at');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
+  
+  // View Tab State
+  const [viewTab, setViewTab] = useState<'active' | 'disabled' | 'all'>('active');
 
   useEffect(() => {
     setCurrentPage(1); // Reset to page 1 on search
   }, [searchTerm]);
 
   const filteredPersonnel = personnel.filter((p) => {
+    // 1. Tab Filter
+    if (viewTab === 'active' && p.is_deleted === true) return false;
+    if (viewTab === 'disabled' && p.is_deleted !== true) return false;
+
+    // 2. Search Filter
     const searchLower = searchTerm.toLowerCase();
     const fullName = `${p.title_th || ''}${p.first_name_th || ''} ${p.last_name_th || ''}`.toLowerCase();
+    const pId = String(p.personnel_id || '').toLowerCase();
+    const dept = String(p.department || '').toLowerCase();
+    const affil = String(p.affiliation || '').toLowerCase();
     return (
       fullName.includes(searchLower) ||
-      (p.personnel_id || '').toLowerCase().includes(searchLower) ||
-      (p.department || '').toLowerCase().includes(searchLower) ||
-      (p.affiliation || '').toLowerCase().includes(searchLower)
+      pId.includes(searchLower) ||
+      dept.includes(searchLower) ||
+      affil.includes(searchLower)
     );
   }).sort((a, b) => {
     if (sortBy === 'personnel_id') {
@@ -223,35 +247,19 @@ export default function PersonnelPage() {
   };
 
   const handleSeedData = async () => {
-    if (!user?.email) { alert("You must be logged in to seed data."); return; }
-    if (!confirm("Generate 50 sample personnel records?")) return;
+    // ... existing ...
+  };
+
+  const handleFixData = async () => {
+    if (!confirm("Fix data visibility for existing records?")) return;
     setLoading(true);
     try {
-      const sampleData: Personnel[] = Array.from({ length: 50 }).map((_, i) => ({
-        personnel_id: `MOCKS${(i + 1).toString().padStart(3, '0')}`,
-        title_th: i % 2 === 0 ? "นาย" : "นางสาว",
-        first_name_th: `ชื่อสมมติ${i + 1}`,
-        last_name_th: `นามสกุล${i + 1}`,
-        position: "เจ้าหน้าที่บริหารงานทั่วไป",
-        affiliation: "สำนักงานเลขานุการ",
-        department: "งานบริหารและธุรการ",
-        campus: "บางเขน",
-        employment_status: "พนักงานมหาวิทยาลัยเงินรายได้",
-        gender: i % 2 === 0 ? "ชาย" : "หญิง",
-        education_level: "ปริญญาตรี",
-        degree_name: "บริหารธุรกิจบัณฑิต",
-        birth_date: "1990-01-01",
-        start_date: "2020-01-01",
-        retirement_year: 2050,
-        generation: "Gen Y"
-      }));
-
-      await PersonnelService.addPersonnelBatch(sampleData, user.email);
-      alert("Added 50 sample records successfully!");
+      const count = await PersonnelService.migrateData();
+      alert(`Successfully fixed visibility for ${count} records.`);
       fetchPersonnel();
     } catch (error) {
-      console.error("Seed failed:", error);
-      alert("Failed to seed data.");
+      console.error("Fix failed:", error);
+      alert("Failed to fix data.");
     } finally {
       setLoading(false);
     }
@@ -262,7 +270,7 @@ export default function PersonnelPage() {
       {/* ... Header ... */}
       <div className="flex justify-between items-center mb-6">
         <div className="flex items-center gap-4">
-          <Link href="/" className="p-2 hover:bg-gray-100 rounded-full transition-colors text-gray-500 hover:text-gray-700">
+          <Link href="/?tab=Input" className="p-2 hover:bg-gray-100 rounded-full transition-colors text-gray-500 hover:text-gray-700">
              <ArrowLeft size={24} />
           </Link>
           <h1 className="text-2xl font-bold flex items-center gap-2">
@@ -275,6 +283,7 @@ export default function PersonnelPage() {
                 กำลังนำเข้า... {importProgress.current} / {importProgress.total} รายการ
              </span>
           )}
+          <button onClick={handleFixData} className="text-blue-500 hover:text-blue-700 px-3 py-2 text-sm underline">Fix Visibility</button>
           <button onClick={handleSeedData} className="text-gray-500 hover:text-gray-700 px-3 py-2 text-sm underline">+ Sample Data</button>
           <button onClick={handleDeleteAll} className="text-red-400 hover:text-red-600 px-3 py-2 text-sm underline">Delete All</button>
           <input type="file" ref={fileInputRef} onChange={handleFileChange} className="hidden" accept=".xlsx, .xls, .csv" />
@@ -331,8 +340,30 @@ export default function PersonnelPage() {
             </button>
           </div>
 
+          {/* Tab Selection */}
+          <div className="flex border-b border-gray-100 px-4">
+            <button 
+              onClick={() => setViewTab('active')}
+              className={`px-4 py-3 text-sm font-bold transition-all border-b-2 ${viewTab === 'active' ? 'border-green-600 text-green-700' : 'border-transparent text-gray-400 hover:text-gray-600'}`}
+            >
+              รายการปกติ ({personnel.filter(p => p.is_deleted !== true).length})
+            </button>
+            <button 
+              onClick={() => setViewTab('disabled')}
+              className={`px-4 py-3 text-sm font-bold transition-all border-b-2 ${viewTab === 'disabled' ? 'border-red-600 text-red-700' : 'border-transparent text-gray-400 hover:text-gray-600'}`}
+            >
+              รายการที่ยกเลิก ({personnel.filter(p => p.is_deleted === true).length})
+            </button>
+            <button 
+              onClick={() => setViewTab('all')}
+              className={`px-4 py-3 text-sm font-bold transition-all border-b-2 ${viewTab === 'all' ? 'border-blue-600 text-blue-700' : 'border-transparent text-gray-400 hover:text-gray-600'}`}
+            >
+              ทั้งหมด ({personnel.length})
+            </button>
+          </div>
+
           <div className="text-sm text-gray-500">
-            Total: {filteredPersonnel.length} records
+            {viewTab === 'active' ? 'แสดงเฉพาะรายการที่ใช้งานอยู่' : viewTab === 'disabled' ? 'แสดงรายการที่ถูกยกเลิก (Soft Deleted)' : 'แสดงข้อมูลทั้งหมด'}: {filteredPersonnel.length} records
           </div>
         </div>
 
@@ -346,24 +377,41 @@ export default function PersonnelPage() {
                 <th className="p-4 border-b font-semibold w-64">ชื่อ-นามสกุล</th>
                 <th className="p-4 border-b font-semibold">ตำแหน่ง</th>
                 <th className="p-4 border-b font-semibold">สังกัด</th>
-                <th className="p-4 border-b font-semibold w-32">สถานะ</th>
-                <th className="p-4 border-b font-semibold text-right w-32">จัดการ</th>
+                <th className="p-4 border-b font-semibold w-32">Created</th>
+                <th className="p-4 border-b font-semibold w-32">Updated</th>
+                <th className="p-4 border-b font-semibold w-32">Status</th>
+                <th className="p-4 border-b font-semibold text-right w-32">Action</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100">
               {loading ? (
-                <tr><td colSpan={6} className="p-8 text-center text-gray-500">{importProgress ? 'กำลังนำเข้าข้อมูล...' : 'กำลังโหลดข้อมูล...'}</td></tr>
+                <tr><td colSpan={8} className="p-8 text-center text-gray-500">{importProgress ? 'กำลังนำเข้าข้อมูล...' : 'กำลังโหลดข้อมูล...'}</td></tr>
               ) : paginatedPersonnel.length === 0 ? (
-                <tr><td colSpan={6} className="p-8 text-center text-gray-500">ไม่พบข้อมูลบุคลากร</td></tr>
+                <tr><td colSpan={8} className="p-8 text-center text-gray-500">ไม่พบข้อมูลบุคลากร</td></tr>
               ) : (
                 paginatedPersonnel.map((p) => (
                   <tr key={p.id} className="hover:bg-gray-50 transition-colors">
                     <td className="p-4 text-gray-900 font-mono text-sm">{p.personnel_id}</td>
-                    <td className="p-4 font-medium text-gray-900">{p.title_th}{p.first_name_th} {p.last_name_th}</td>
+                    <td className="p-4 font-medium text-gray-900">
+                      <div>{p.title_th}{p.first_name_th} {p.last_name_th}</div>
+                      {p.is_deleted && <span className="text-[10px] bg-red-100 text-red-600 px-1 rounded uppercase font-bold">Deleted</span>}
+                    </td>
                     <td className="p-4 text-gray-600">{p.position}</td>
                     <td className="p-4 text-gray-600">
                       <span className="block text-sm">{p.department}</span>
                       <span className="text-xs text-gray-400">{p.affiliation}</span>
+                    </td>
+                    <td className="p-4 text-[11px] text-gray-500">
+                       <div className="flex flex-col">
+                         <span className="font-medium">{p.created_at ? new Date(p.created_at.toDate ? p.created_at.toDate() : p.created_at).toLocaleString('th-TH', { dateStyle: 'short', timeStyle: 'short' }) : '-'}</span>
+                         <span className="text-gray-400">{p.created_by?.split('@')[0] || '-'}</span>
+                       </div>
+                    </td>
+                    <td className="p-4 text-[11px] text-gray-500">
+                       <div className="flex flex-col">
+                         <span className="font-medium">{p.updated_at ? new Date(p.updated_at.toDate ? p.updated_at.toDate() : p.updated_at).toLocaleString('th-TH', { dateStyle: 'short', timeStyle: 'short' }) : '-'}</span>
+                         <span className="text-gray-400">{p.updated_by?.split('@')[0] || '-'}</span>
+                       </div>
                     </td>
                     <td className="p-4">
                       {p.employment_status.includes("(") ? (
@@ -393,7 +441,7 @@ export default function PersonnelPage() {
                         <button
                           onClick={() => handleDelete(p.id!, `${p.first_name_th} ${p.last_name_th}`)}
                           className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-                          title="ลบ"
+                          title="ลบ (Soft Delete)"
                         >
                           <Trash2 size={18} />
                         </button>
@@ -413,10 +461,22 @@ export default function PersonnelPage() {
         <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
           <div className="bg-white rounded-xl shadow-xl w-full max-w-lg p-6 space-y-4 animate-in fade-in zoom-in duration-200">
             <h3 className="text-xl font-bold text-gray-800">Edit Personnel</h3>
+            
+            {/* Read-only ID Alert */}
+            <div className="bg-blue-50 text-blue-800 p-3 rounded-lg text-sm border border-blue-200 flex gap-2 items-center">
+               <Hash size={16} />
+               <span>Personnel ID cannot be changed once created.</span>
+            </div>
+
             <div className="grid grid-cols-2 gap-4">
                <div>
                   <label className="text-xs font-semibold text-gray-500">ID</label>
-                  <input className="w-full border p-2 rounded bg-gray-100" value={editForm.personnel_id} disabled />
+                  <input 
+                    className="w-full border p-2 rounded bg-gray-100 text-gray-500 cursor-not-allowed" 
+                    value={editForm.personnel_id} 
+                    disabled 
+                    title="ID cannot be edited"
+                  />
                </div>
                <div>
                   <label className="text-xs font-semibold text-gray-500">Title</label>

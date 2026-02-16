@@ -110,8 +110,6 @@ export const parsePersonnelExcel = async (
            try {
               await PersonnelService.addPersonnelBatch(batch, userEmail);
               successCount += batch.length;
-              await PersonnelService.addPersonnelBatch(batch, userEmail);
-              successCount += batch.length;
            } catch (err: unknown) {
               const msg = err instanceof Error ? err.message : String(err);
               errors.push(`Batch ${i/BATCH_SIZE + 1} error: ${msg}`);
@@ -122,8 +120,6 @@ export const parsePersonnelExcel = async (
               await new Promise(r => setTimeout(r, 0));
            }
         }
-        
-        resolve({ success: successCount, errors });
         
         resolve({ success: successCount, errors });
 

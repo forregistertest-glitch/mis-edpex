@@ -17,4 +17,8 @@ export interface Personnel {
   retirement_year?: number;
   generation: string;
   updated_at?: any; // Firestore Timestamp
+  updated_by?: string;
+  created_at?: any; // Firestore Timestamp
+  created_by?: string;
+  is_deleted?: boolean;
 }

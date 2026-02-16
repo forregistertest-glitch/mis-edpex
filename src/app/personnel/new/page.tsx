@@ -75,9 +75,16 @@ export default function NewPersonnelPage() {
     try {
       await PersonnelService.addPersonnel(formData as Personnel, user.email);
       router.push("/personnel");
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error saving personnel:", error);
-      alert("Error saving data. ID might already exist.");
+      if (error.message?.startsWith("DuplicateID:")) {
+        const existingId = error.message.split(":")[1];
+        if (confirm(`พบรหัสบุคลากร ${formData.personnel_id} ในระบบแล้ว คุณต้องการไปที่หน้าแก้ไขข้อมูลของรหัสดังกล่าวหรือไม่?`)) {
+          router.push(`/personnel?edit=${existingId}`);
+          return;
+        }
+      }
+      alert("Error saving data. " + (error.message || ""));
     } finally {
       setLoading(false);
     }

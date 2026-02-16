@@ -4,8 +4,8 @@
 | Field | Value |
 |:------|:------|
 | **Doc ID** | KUVMIS-DOC-005 |
-| **Version** | 1.4.0 |
-| **Last Updated** | 2026-02-12T00:30:00+07:00 |
+| **Version** | 1.02c |
+| **Last Updated** | 2026-02-16T18:05:00+07:00 |
 | **Author** | KUVMIS Development Team |
 | **Status** | Released |
 
@@ -119,21 +119,22 @@ Region: Default
 }
 ```
 
-### 2.4 Document Schema — personnel
+### 2.4 Document Schema — personnel (v.1.02)
 ```json
 {
-  "email": "staff@ku.th",
-  "data": {
-    "PreName": "นาย",
-    "FirstName": "สมชาย",
-    "LastName": "ใจดี",
-    "Type": "ข้าราชการ",
-    "Position": "อาจารย์",
-    "DegreeLevel": "ปริญญาเอก",
-    "Faculty": "สัตวแพทยศาสตร์",
-    "Department": "เวชศาสตร์คลินิกสัตว์เลี้ยง"
-  },
-  "updatedAt": "2026-02-15T10:00:00Z"
+  "personnel_id": "393",
+  "title_th": "นาย",
+  "first_name_th": "สมชาย",
+  "last_name_th": "ใจดี",
+  "position": "อาจารย์",
+  "department": "เวชศาสตร์คลินิกสัตว์เลี้ยง",
+  "affiliation": "รพ.สท.ม.เกษตรศาสตร์ (KUVTH BK)",
+  "employment_status": "พนักงานมหาวิทยาลัย",
+  "is_deleted": false,
+  "created_at": "2026-02-16T17:00:00Z",
+  "created_by": "admin@ku.th",
+  "updated_at": "2026-02-16T18:05:00Z",
+  "updated_by": "admin@ku.th"
 }
 ```
 
@@ -253,4 +254,4 @@ input_forms (7 ฟอร์ม)
 | 6 | Real-time data sync | ⬜ |
 
 ---
-*เอกสารนี้ปรับปรุงล่าสุดเมื่อ 12 ก.พ. 2569 — KUVMIS v1.4*
+*เอกสารนี้ปรับปรุงล่าสุดเมื่อ 16 ก.พ. 2569 — KUVMIS v.1.02c*

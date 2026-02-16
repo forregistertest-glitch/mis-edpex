@@ -11,6 +11,9 @@ import {
   limit as firestoreLimit,
   Timestamp,
   deleteDoc,
+  type QueryDocumentSnapshot,
+  type DocumentData,
+  type QuerySnapshot,
 } from "firebase/firestore";
 
 // ─── Types ─────────────────────────────────────────────────────
@@ -59,13 +62,13 @@ export interface KpiEntry {
 // ─── KPI Master ────────────────────────────────────────────────
 export async function getAllKpiMaster(): Promise<KpiMaster[]> {
   const snap = await getDocs(collection(db, "kpi_master"));
-  return snap.docs.map((d) => ({ ...d.data(), kpi_id: d.id } as KpiMaster));
+  return snap.docs.map((d: QueryDocumentSnapshot<DocumentData>) => ({ ...d.data(), kpi_id: d.id } as KpiMaster));
 }
 
 export async function getKpiMasterByCategory(categoryId: string): Promise<KpiMaster[]> {
   const q = query(collection(db, "kpi_master"), where("category_id", "==", categoryId));
   const snap = await getDocs(q);
-  return snap.docs.map((d) => ({ ...d.data(), kpi_id: d.id } as KpiMaster));
+  return snap.docs.map((d: QueryDocumentSnapshot<DocumentData>) => ({ ...d.data(), kpi_id: d.id } as KpiMaster));
 }
 
 // ─── KPI Entries ───────────────────────────────────────────────
@@ -88,14 +91,14 @@ export async function getKpiEntries(
 
   const q = query(collection(db, "kpi_entries"), ...constraints);
   const snap = await getDocs(q);
-  let results = snap.docs.map((d) => ({ id: d.id, ...d.data() } as KpiEntry));
+  let results = snap.docs.map((d: QueryDocumentSnapshot<DocumentData>) => ({ id: d.id, ...d.data() } as KpiEntry));
 
   // Client-side filtering ensures correctness even if mixed params were passed
   if (kpiId) results = results.filter((e) => e.kpi_id === kpiId);
   if (year) results = results.filter((e) => e.fiscal_year === year);
   if (period) results = results.filter((e) => e.period === period);
 
-  return results.sort((a, b) => {
+  return results.sort((a: KpiEntry, b: KpiEntry) => {
     if (a.fiscal_year !== b.fiscal_year) return b.fiscal_year - a.fiscal_year;
     return (a.period || "").localeCompare(b.period || "");
   });
@@ -260,7 +263,7 @@ export interface AuthorizedUser {
 
 export async function getAuthorizedUsers(): Promise<AuthorizedUser[]> {
   const snap = await getDocs(collection(db, "authorized_users"));
-  return snap.docs.map((d) => ({ email: d.id, ...d.data() } as AuthorizedUser));
+  return snap.docs.map((d: QueryDocumentSnapshot<DocumentData>) => ({ email: d.id, ...d.data() } as AuthorizedUser));
 }
 
 export async function addAuthorizedUser(email: string, role: string, name: string): Promise<void> {
@@ -343,7 +346,7 @@ export async function getLoginLogs(limitCount?: number): Promise<LoginLog[]> {
   if (limitCount) constraints.push(firestoreLimit(limitCount));
   const q = query(collection(db, "login_logs"), ...constraints);
   const snap = await getDocs(q);
-  return snap.docs.map(d => {
+  return snap.docs.map((d: QueryDocumentSnapshot<DocumentData>) => {
     const data = d.data();
     // Convert Firestore Timestamp to ISO string for safe Date parsing in UI
     if (data.timestamp && typeof data.timestamp.toDate === "function") {
@@ -384,7 +387,7 @@ export async function getLoginLogsByMonth(yearMonth: string): Promise<LoginLog[]
   );
 
   const snap = await getDocs(q);
-  return snap.docs.map(d => {
+  return snap.docs.map((d: QueryDocumentSnapshot<DocumentData>) => {
     const data = d.data();
     if (data.timestamp && typeof data.timestamp.toDate === "function") {
       data.timestamp = data.timestamp.toDate().toISOString();
@@ -395,8 +398,8 @@ export async function getLoginLogsByMonth(yearMonth: string): Promise<LoginLog[]
 
 export function subscribeToLoginLogs(callback: (logs: LoginLog[]) => void, limitCount: number = 100) {
   const q = query(collection(db, "login_logs"), orderBy("timestamp", "desc"), firestoreLimit(limitCount));
-  return onSnapshot(q, (snap) => {
-    const logs = snap.docs.map(d => {
+  return onSnapshot(q, (snap: QuerySnapshot<DocumentData>) => {
+    const logs = snap.docs.map((d: QueryDocumentSnapshot<DocumentData>) => {
       const data = d.data();
       if (data.timestamp && typeof data.timestamp.toDate === "function") {
         data.timestamp = data.timestamp.toDate().toISOString();
@@ -454,7 +457,7 @@ export async function clearMockLoginLogs() {
     where("email", "<=", "mock.demo\uf8ff")
   );
   const snap = await getDocs(q);
-  const promises = snap.docs.map(d => deleteDoc(d.ref));
+  const promises = snap.docs.map((d: QueryDocumentSnapshot<DocumentData>) => deleteDoc(d.ref));
   await Promise.all(promises);
   console.log(`Cleared ${promises.length} mock logs.`);
   return promises.length;
@@ -710,4 +713,101 @@ export async function clearCollection(collectionName: string): Promise<number> {
     count++;
   }
   return count;
+}
+
+// ─── Personnel Management ──────────────────────────────────────
+import { Personnel } from "@/types/personnel";
+
+// Get all personnel
+export async function getPersonnel(): Promise<Personnel[]> {
+  const q = collection(db, "personnel");
+  const snap = await getDocs(q);
+  
+  // Map all records and sort by latest updated
+  return snap.docs
+    .map((d: QueryDocumentSnapshot<DocumentData>) => ({ id: d.id, ...d.data() } as Personnel))
+    .sort((a: Personnel, b: Personnel) => {
+      const timeA = a.updated_at ? new Date(a.updated_at).getTime() : 0;
+      const timeB = b.updated_at ? new Date(b.updated_at).getTime() : 0;
+      return timeB - timeA;
+    });
+}
+
+// Check if personnel_id exists
+export async function checkPersonnelIdExists(personnelId: string): Promise<string | null> {
+  // 1. Try string query
+  let q = query(
+    collection(db, "personnel"),
+    where("personnel_id", "==", String(personnelId))
+  );
+  let snap = await getDocs(q);
+  
+  // 2. If not found and is numeric, try number query (to handle legacy data)
+  if (snap.empty && /^\d+$/.test(personnelId)) {
+    const numericId = parseInt(personnelId, 10);
+    q = query(
+      collection(db, "personnel"),
+      where("personnel_id", "==", numericId)
+    );
+    snap = await getDocs(q);
+  }
+  
+  // Filter client-side for non-deleted records
+  const activeDoc = snap.docs.find((d: QueryDocumentSnapshot<DocumentData>) => {
+    const data = d.data();
+    return data.is_deleted !== true;
+  });
+  
+  if (activeDoc) {
+    return activeDoc.id; // Return Firestore Doc ID
+  }
+  return null;
+}
+
+// Create new personnel
+export async function createPersonnel(data: Partial<Personnel>, userEmail: string): Promise<string> {
+  // Check duplicate ID
+  if (data.personnel_id) {
+    const existingId = await checkPersonnelIdExists(data.personnel_id);
+    if (existingId) {
+      throw new Error(`DuplicateID:${existingId}`);
+    }
+  }
+
+  const { id, ...rest } = data;
+  const now = new Date().toISOString();
+  
+  const docRef = await addDoc(collection(db, "personnel"), {
+    ...rest,
+    created_at: now,
+    created_by: userEmail,
+    updated_at: now,
+    updated_by: userEmail,
+    is_deleted: false
+  });
+  return docRef.id;
+}
+
+// Update personnel
+export async function updatePersonnel(docId: string, data: Partial<Personnel>, userEmail: string): Promise<void> {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const { id, created_at, created_by, ...rest } = data; 
+  const docRef = doc(db, "personnel", docId);
+  await setDoc(docRef, {
+    ...rest,
+    updated_at: new Date().toISOString(),
+    updated_by: userEmail
+  }, { merge: true });
+}
+
+// Soft delete personnel
+export async function softDeletePersonnel(docId: string, userEmail: string): Promise<void> {
+  const docRef = doc(db, "personnel", docId);
+  await setDoc(docRef, {
+    is_deleted: true,
+    updated_at: new Date().toISOString(),
+    updated_by: userEmail,
+    deleted_at: new Date().toISOString(),
+    deleted_by: userEmail
+  }, { merge: true });
 }

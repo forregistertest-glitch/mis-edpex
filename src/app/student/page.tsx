@@ -177,7 +177,7 @@ export default function StudentPage() {
     <div className="container mx-auto p-6 font-sarabun bg-[#F8FAFC] min-h-screen">
       <div className="flex justify-between items-center mb-8">
         <div className="flex items-center gap-4">
-          <Link href="/" className="p-2 hover:bg-white rounded-xl shadow-sm transition-all text-[#236c96]">
+          <Link href="/?tab=Input" className="p-2 hover:bg-white rounded-xl shadow-sm transition-all text-[#236c96]">
              <ArrowLeft size={24} />
           </Link>
           <div className="flex items-center gap-3">

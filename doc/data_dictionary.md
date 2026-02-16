@@ -3,8 +3,8 @@
 | Field | Value |
 |:------|:------|
 | **Doc ID** | KUVMIS-DOC-004 |
-| **Version** | 1.5.1 |
-| **Last Updated** | 2026-02-16T16:55:00+07:00 |
+| **Version** | 1.02c |
+| **Last Updated** | 2026-02-16T18:05:00+07:00 |
 | **Author** | KUVMIS Development Team |
 | **Status** | Released |
 
@@ -14,7 +14,7 @@
 - **performance_data**: Stores the actual performance values, linked by `kpi_id`, `year`, `period`, and `dimension`.
 - **authorized_users**: รายชื่อ Email ที่อนุญาตเข้าระบบ พร้อม role (user/reviewer/admin).
 - **login_logs**: บันทึกการเข้าใช้งาน (email, timestamp, IP, user agent, geo location, success, reason).
-- **personnel**: ข้อมูลบุคลากร (HR)
+- **personnel**: ข้อมูลบุคลากร (HR) - *Supports Soft Delete & Audit Log v1*
 - **students**: ข้อมูลนิสิต (Reg)
 
 ## 2. KPI JSON Blueprint
@@ -60,7 +60,18 @@
 - `getKpiMatrixData(kpiIds, year, dimension)`: Aggregates data by dimension for radar/pie charts.
 - `getAvailableFilters(categoryId)`: dynamic generation of dropdown options based on existing data.
 
-## 6. Dashboard Chart ↔ Data-Service Mapping — v1.4
+## 6. Audit & Persistence Standards (ALCOA+)
+All master data collections (Personnel, Student, Research) follow these standards:
+- **Soft Delete**: `is_deleted` (boolean) flag. Query must filter `where("is_deleted", "!=", true)`.
+- **Audit Fields**:
+  - `created_at`: ISO Date String
+  - `created_by`: User Email
+  - `updated_at`: ISO Date String
+  - `updated_by`: User Email
+  - `deleted_at`: ISO Date String (optional)
+  - `deleted_by`: User Email (optional)
+
+## 7. Dashboard Chart ↔ Data-Service Mapping — v1.4
 | Dashboard | Chart | KPI ID(s) | Data Function | Data Pattern |
 |:----------|:------|:----------|:--------------|:-------------|
 | **Academic** | Licensure & OSCE | 7.1.1, 7.1.2 | `getKpiTrendData` | year_series |

@@ -19,6 +19,7 @@ import ChartGallery from "@/components/dashboard/ChartGallery";
 import AnnualReportDashboard from "@/components/dashboard/AnnualReportDashboard";
 import DashboardCard from "@/components/dashboard/DashboardCard";
 import { useAuth } from "@/contexts/AuthContext";
+import { useSearchParams } from "next/navigation";
 import { translations, Language, TranslationKey } from "@/lib/translations";
 import {
   Users,
@@ -39,6 +40,7 @@ import { formatNumber } from "@/lib/utils";
 
 export default function Dashboard() {
   const { user, userRole, loading: authLoading, error: authError, signInWithGoogle, signOut } = useAuth();
+  const searchParams = useSearchParams();
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('Dashboard');
   const [lang, setLang] = useState<Language>('th');
@@ -86,7 +88,13 @@ export default function Dashboard() {
     fetchDashboard().then(() => setLoading(false));
   }, [fetchDashboard]);
 
-  // Fetch category data when tab changes
+  // Handle Tab from Query Param
+  useEffect(() => {
+    const tab = searchParams.get("tab");
+    if (tab && ['Dashboard', 'Academic', 'Staff/HR', 'Hospital', 'Strategic', 'Input', 'Review', 'Admin', 'Reports', 'AnnualReport'].includes(tab)) {
+      setActiveTab(tab);
+    }
+  }, [searchParams]);
   useEffect(() => {
     const fetchCategory = async () => {
       setDataLoading(true);

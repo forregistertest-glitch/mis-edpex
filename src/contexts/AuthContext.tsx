@@ -68,7 +68,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     useEffect(() => {
         const initAuth = async () => {
             // Force session persistence (User must login every time tab/browser is closed)
-            // Force session persistence (User must login every time tab/browser is closed or refreshed)
             const { setPersistence, inMemoryPersistence } = await import("firebase/auth");
             await setPersistence(auth, inMemoryPersistence);
 
@@ -111,7 +110,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setError(null);
         try {
             const provider = new GoogleAuthProvider();
-            // Persistence is already set in useEffect, but setting it here again ensures it applies to this sign-in flow
             // Persistence is already set in useEffect, but setting it here again ensures it applies to this sign-in flow
             const { setPersistence, inMemoryPersistence } = await import("firebase/auth");
             await setPersistence(auth, inMemoryPersistence);

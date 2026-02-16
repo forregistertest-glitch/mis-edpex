@@ -21,15 +21,23 @@ export const exportPersonnelToExcel = (personnelList: Personnel[]) => {
     "วันเกิด", // Birth Date
     "วันบรรจุ", // Start Date
     "ปีที่จะ ครบเกษียณ", // Retirement Year
-    "Gen" // Generation
+    "Gen", // Generation
+    "Created Date",
+    "Created By",
+    "Updated Date",
+    "Updated By"
   ];
 
   // Map data to rows
   const rows = personnelList.map(p => {
-    // Format dates to Thai format if needed, but standard Excel date is usually best.
-    // However, CSV/Excel usually expects simple strings or date objects.
-    // Let's use ISO string YYYY-MM-DD for consistency, or standard JS Date.
-    
+    // Helper to format timestamp
+    const fmt = (ts: any) => {
+       if (!ts) return "";
+       if (typeof ts === 'string') return ts;
+       if (ts.toDate) return ts.toDate().toISOString();
+       return "";
+    };
+
     return [
       p.personnel_id,
       p.title_th,
@@ -46,7 +54,11 @@ export const exportPersonnelToExcel = (personnelList: Personnel[]) => {
       p.birth_date,
       p.start_date,
       p.retirement_year,
-      p.generation
+      p.generation,
+      fmt(p.created_at),
+      p.created_by,
+      fmt(p.updated_at),
+      p.updated_by
     ];
   });
 
@@ -58,6 +70,6 @@ export const exportPersonnelToExcel = (personnelList: Personnel[]) => {
   XLSX.utils.book_append_sheet(wb, ws, "Personnel");
 
   // Generate file download
-  const dateStr = DateTime.now().toFormat('yyyy-MM-dd');
+  const dateStr = DateTime.now().toFormat('yyyy-MM-dd_HHmm');
   XLSX.writeFile(wb, `รายชื่อบุคลากร_${dateStr}.xlsx`);
 };
