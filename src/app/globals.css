@@ -7,7 +7,7 @@
   /* Slate-900 equivalent */
 
   /* KU Vet Colors */
-  --ku-vet-blue: #71C5E8;
+  --ku-vet-blue: #71c5e8;
   /* PMS 297 C */
   --ku-vet-blue-dark: #5ab0d5;
   /* Slightly darker for hover */
@@ -20,7 +20,6 @@
   --color-foreground: var(--foreground);
   --font-sans: var(--font-sarabun), ui-sans-serif, system-ui, sans-serif;
   --font-mono: var(--font-geist-mono), ui-monospace, SFMono-Regular, monospace;
-
 
   /* Custom Color Extensions */
   --color-ku-blue: var(--ku-vet-blue);
@@ -55,4 +54,55 @@ body {
   color: var(--foreground);
   font-family: var(--font-sarabun), "Sarabun", "Bai Jamjuree", sans-serif;
   font-feature-settings: "ss01", "ss02", "cv01", "cv02";
+}
+
+/* Global Input Styles for Legibility */
+input,
+select,
+textarea {
+  color: #1f2937 !important; /* Gray-800 - Forces dark text */
+  background-color: #ffffff !important;
+  border-color: #cbd5e1; /* Slate-300 - Darker border */
+}
+
+/* Specific Fix for Select Dropdowns */
+select option {
+  background-color: #ffffff !important;
+  color: #1f2937 !important;
+}
+
+/* Ensure long text wraps in inputs/selects if possible, or truncates properly */
+select {
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+  padding-right: 2rem; /* Space for arrow */
+}
+
+/* Placeholder styling */
+input::placeholder,
+textarea::placeholder {
+  color: #94a3b8 !important; /* Slate-400 */
+  opacity: 1;
+}
+
+/* Inactive/Disabled state */
+input:disabled,
+select:disabled,
+textarea:disabled {
+  color: #64748b !important; /* Slate-500 */
+  background-color: #f1f5f9 !important; /* Slate-100 */
+  cursor: not-allowed;
+  opacity: 0.8;
+}
+
+/* Sharp Icons */
+svg {
+  shape-rendering: geometricPrecision;
+}
+
+/* Inactive Icons - Softer look */
+button:disabled svg,
+.text-gray-400 svg {
+  opacity: 0.6;
 }

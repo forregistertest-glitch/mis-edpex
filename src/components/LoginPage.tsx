@@ -20,37 +20,23 @@ export default function LoginPage({ onSignIn, loading, error }: LoginPageProps) 
 
             <div className="w-full max-w-md relative z-10">
                 {/* Logo & Title — White + text-shadow */}
-                <div className="text-center mb-8">
-                    <div className="inline-flex items-center gap-3 mb-4">
-                        <img
-                            src="https://vet.ku.ac.th/vv2018/download/KU/KU_logo.png"
-                            alt="KU Logo"
-                            className="w-16 h-16 object-contain drop-shadow-lg"
-                        />
-                    </div>
-                    <h1 className="text-3xl font-bold text-white mb-2"
-                        style={{ textShadow: '0 2px 4px rgba(0,0,0,0.2)' }}>
-                        KUVMIS
-                    </h1>
-                    <p className="text-sm leading-relaxed"
-                        style={{ color: 'rgba(255,255,255,0.85)', textShadow: '0 1px 2px rgba(0,0,0,0.15)' }}>
-                        ระบบสารสนเทศเพื่อการจัดการ (MIS)<br />
-                        และการวิเคราะห์ KPI (EdPEx)
-                    </p>
-                    <p className="text-xs mt-2" style={{ color: '#133045' }}>
-                        คณะสัตวแพทยศาสตร์ มหาวิทยาลัยเกษตรศาสตร์
-                    </p>
-                </div>
-
                 {/* Login Card — White card on light blue bg */}
                 <div className="bg-white/90 backdrop-blur-xl rounded-3xl p-8 border border-white/50 shadow-2xl">
                     <div className="text-center mb-6">
-                        <div className="w-14 h-14 rounded-2xl flex items-center justify-center mx-auto mb-4"
-                            style={{ backgroundColor: '#71C5E8' }}>
-                            <ShieldCheck size={28} className="text-white" style={{ filter: 'drop-shadow(0 1px 2px rgba(0,0,0,0.2))' }} />
+                        <div className="w-20 h-20 rounded-2xl flex items-center justify-center mx-auto mb-4 p-2 bg-white/80 shadow-sm border border-slate-100">
+                             <img
+                                src="https://vet.ku.ac.th/vv2018/download/KU/KU_logo.png"
+                                alt="KU Logo"
+                                className="w-full h-full object-contain"
+                            />
                         </div>
-                        <h2 className="text-xl font-bold mb-1" style={{ color: '#133045' }}>เข้าสู่ระบบ</h2>
-                        <p className="text-sm" style={{ color: '#5ab0d5' }}>ใช้ Google Account ที่ได้รับอนุญาต</p>
+                        <h2 className="text-xl font-bold mb-1 text-slate-800">
+                            ระบบสารสนเทศเพื่อการจัดการ (MIS)<br/>
+                            และการวิเคราะห์ KPI (EdPEx)
+                        </h2>
+                        <p className="text-sm font-medium text-slate-600 mt-2">
+                            คณะสัตวแพทยศาสตร์ มหาวิทยาลัยเกษตรศาสตร์
+                        </p>
                     </div>
 
                     {/* Error Message */}
@@ -84,11 +70,38 @@ export default function LoginPage({ onSignIn, loading, error }: LoginPageProps) 
                     <p className="text-center text-xs mt-6" style={{ color: '#5ab0d5' }}>
                         เฉพาะบุคลากรที่ได้รับอนุญาตเท่านั้น (@ku.th)
                     </p>
+
+                    {/* Features Checklist */}
+                    <div className="mt-8 space-y-3 pt-6 border-t border-slate-100">
+                         <div className="flex items-center gap-2 text-xs font-medium text-slate-400">
+                            <ShieldCheck size={14} className="text-green-400" />
+                            <span>Audit Logging (ALCOA+): ระบบบันทึกการเปลี่ยนแปลงข้อมูล</span>
+                         </div>
+                         <div className="flex items-center gap-2 text-xs font-medium text-slate-400">
+                            <ShieldCheck size={14} className="text-green-400" />
+                            <span>Google Authorization</span>
+                         </div>
+                         <div className="flex items-center gap-2 text-xs font-medium text-slate-400">
+                            <ShieldCheck size={14} className="text-green-400" />
+                            <span>Permission and User management</span>
+                         </div>
+                         <div className="flex items-center gap-2 text-xs font-medium text-slate-400">
+                            <ShieldCheck size={14} className="text-green-400" />
+                            <span>Login record: log</span>
+                         </div>
+                    </div>
+
+                    {/* Quote */}
+                    <div className="mt-6 pt-4 border-t border-slate-100 text-center">
+                        <p className="text-xl font-serif italic text-slate-300 leading-relaxed">
+                            "ไม่ต้องรู้ทุกเรื่อง แต่รู้ให้จริงในสิ่งที่ควรรู้"
+                        </p>
+                    </div>
                 </div>
 
                 {/* Footer */}
                 <p className="text-center text-[11px] mt-6" style={{ color: '#133045', opacity: 0.6 }}>
-                    KUVMIS v1.0 · ปีการศึกษา 2568
+                    KUVMIS v1.0 · Last update: 16 Feb 2026 12:11 TH
                 </p>
             </div>
         </div>

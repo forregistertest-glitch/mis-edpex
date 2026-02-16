@@ -1,12 +1,13 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
+import Link from "next/link";
 import {
     Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, BarElement,
     Title, Tooltip, Legend, Filler, RadialLinearScale,
 } from "chart.js";
 import { Line, Bar, Radar } from "react-chartjs-2";
-import { Users, Loader2, RefreshCw, HeartPulse, Shield, Award, UserCheck } from "lucide-react";
+import { Users, Loader2, RefreshCw, HeartPulse, Shield, Award, UserCheck, Database } from "lucide-react";
 import ChartFilterBar, { ChartViewMode } from "./ChartFilterBar";
 import DashboardCard from "./DashboardCard";
 import type { Language } from "@/lib/translations";
@@ -120,6 +121,12 @@ export default function StaffDashboard({ lang }: StaffDashboardProps) {
 
     return (
         <div className="space-y-6 animate-in fade-in duration-500">
+            <div className="flex justify-between items-center bg-white p-4 rounded-xl shadow-sm border border-gray-100">
+                <h2 className="text-xl font-bold text-gray-800">
+                    {th ? 'แดชบอร์ดบุคลากร' : 'Staff/HR Dashboard'}
+                </h2>
+            </div>
+
             <ChartFilterBar years={filters.years} selectedYear={selectedYear} onYearChange={setSelectedYear}
                 periods={filters.periods} selectedPeriod={selectedPeriod} onPeriodChange={setSelectedPeriod}
                 dimensions={filters.dimensions} selectedDimension={selectedDimension} onDimensionChange={setSelectedDimension}

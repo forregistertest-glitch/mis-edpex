@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import DataExplorer from "@/components/DataExplorer";
+import InputHub from "@/components/InputHub";
 import KpiInputForm from "@/components/KpiInputForm";
 import DocViewer from "@/components/DocViewer";
 import LoginPage from "@/components/LoginPage";
@@ -372,7 +373,7 @@ export default function Dashboard() {
             <StrategicDashboard lang={lang} />
           ) : activeTab === 'Input' ? (
             <div className="animate-in fade-in duration-500">
-              <KpiInputForm lang={lang} />
+              <InputHub lang={lang} />
             </div>
           ) : activeTab === 'Review' ? (
             <div className="animate-in fade-in duration-500">
