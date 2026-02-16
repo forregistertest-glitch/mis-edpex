@@ -14,6 +14,7 @@ import {
     Calendar,
     Download,
     FileText,
+    Search,
 } from "lucide-react";
 import SystemDocs from "./SystemDocs";
 import {
@@ -56,6 +57,7 @@ export default function AdminPanel({ lang }: Props) {
     const [newName, setNewName] = useState("");
     const [newRole, setNewRole] = useState("user");
     const [formError, setFormError] = useState("");
+    const [searchTerm, setSearchTerm] = useState("");
 
     // Delete confirm
     const [deleteEmail, setDeleteEmail] = useState<string | null>(null);
@@ -230,13 +232,33 @@ export default function AdminPanel({ lang }: Props) {
                                 </p>
                             </div>
                         </div>
-                        <button
-                            onClick={() => setShowAddForm(!showAddForm)}
-                            className="flex items-center gap-2 px-4 py-2.5 bg-[#71C5E8] text-white rounded-xl text-sm font-medium hover:bg-[#5ab0d5] transition-all shadow-lg shadow-[#71C5E8]/20 hover:scale-[1.02] active:scale-95"
-                        >
-                            <UserPlus size={16} />
-                            {lang === "th" ? "เพิ่มผู้ใช้" : "Add User"}
-                        </button>
+                        <div className="flex items-center gap-3">
+                            <div className="relative">
+                                <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+                                <input
+                                    type="text"
+                                    placeholder={lang === 'th' ? "ค้นหาชื่อ หรือ Email..." : "Search name or email..."}
+                                    value={searchTerm}
+                                    onChange={(e) => setSearchTerm(e.target.value)}
+                                    className="pl-9 pr-4 py-2 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-blue-100 focus:border-blue-300 outline-none w-64"
+                                />
+                            </div>
+                            <button 
+                                onClick={loadUsers}
+                                disabled={loading}
+                                className="p-2 text-slate-500 hover:text-blue-600 hover:bg-blue-50 rounded-xl transition-all"
+                                title={lang === 'th' ? "รีเฟรช" : "Refresh"}
+                            >
+                                <Loader2 size={18} className={loading ? "animate-spin" : ""} />
+                            </button>
+                            <button
+                                onClick={() => setShowAddForm(!showAddForm)}
+                                className="flex items-center gap-2 px-4 py-2.5 bg-[#71C5E8] text-white rounded-xl text-sm font-medium hover:bg-[#5ab0d5] transition-all shadow-lg shadow-[#71C5E8]/20 hover:scale-[1.02] active:scale-95"
+                            >
+                                <UserPlus size={16} />
+                                {lang === "th" ? "เพิ่มผู้ใช้" : "Add User"}
+                            </button>
+                        </div>
                     </div>
 
                     {/* Add User Form */}
@@ -313,7 +335,10 @@ export default function AdminPanel({ lang }: Props) {
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {users.map((u) => {
+                                    {users.filter(u => 
+                                        u.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
+                                        u.email.toLowerCase().includes(searchTerm.toLowerCase())
+                                    ).map((u) => {
                                         const rc = roleColors[u.role] || roleColors.user;
                                         const isSelf = u.email === user?.email;
                                         return (

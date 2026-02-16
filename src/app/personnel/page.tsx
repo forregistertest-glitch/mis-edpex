@@ -4,14 +4,16 @@ import { useState, useEffect, useRef, Suspense } from "react";
 import Link from "next/link";
 import { Personnel } from "@/types/personnel";
 import { PersonnelService } from "@/services/personnelService";
-import { Plus, Search, Edit, Trash2, Download, Upload, BarChart3, ArrowLeft, ArrowUpAZ, ArrowDownAZ, Calendar, Hash } from "lucide-react";
+import { Plus, Search, Edit, Trash2, Download, Upload, BarChart3, ArrowLeft, ArrowUpAZ, ArrowDownAZ, Calendar, Hash, FileSpreadsheet, RefreshCw } from "lucide-react";
 import { exportPersonnelToExcel } from "@/utils/personnelExport";
 import { parsePersonnelExcel } from "@/utils/personnelImport";
-import { useAuth } from "@/contexts/AuthContext"; // Import useAuth
-import { useSearchParams } from "next/navigation"; // Import useSearchParams
+import { useAuth } from "@/contexts/AuthContext"; 
+import { useSearchParams, useRouter } from "next/navigation";
+import PersonnelForm from "@/components/personnel/PersonnelForm";
 
 function PersonnelContent() {
-  const { user } = useAuth(); // Get user
+  const router = useRouter();
+  const { user } = useAuth();
   const [personnel, setPersonnel] = useState<Personnel[]>([]);
   const [loading, setLoading] = useState(true);
   const [importProgress, setImportProgress] = useState<{ current: number; total: number } | null>(null);
@@ -22,17 +24,13 @@ function PersonnelContent() {
     fetchPersonnel();
   }, []);
 
-  // Handle Edit via Query Param
   const searchParams = useSearchParams();
   useEffect(() => {
     const editId = searchParams.get("edit");
-    if (editId && personnel.length > 0) {
-      const p = personnel.find(item => item.id === editId);
-      if (p) {
-        handleEditClick(p);
-      }
+    if (editId) {
+      router.push(`/personnel/${editId}/edit`);
     }
-  }, [searchParams, personnel]);
+  }, [searchParams]);
 
   const fetchPersonnel = async () => {
     try {
@@ -41,7 +39,6 @@ function PersonnelContent() {
       setPersonnel(data);
     } catch (error) {
       console.error("Failed to fetch personnel:", error);
-      alert("Failed to load personnel data.");
     } finally {
       setLoading(false);
     }
@@ -55,35 +52,27 @@ function PersonnelContent() {
       setPersonnel(personnel.filter((p) => p.id !== id));
     } catch (error) {
       console.error("Failed to delete personnel:", error);
-      alert("Failed to delete personnel.");
     }
   };
 
-  // Pagination State
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 50;
 
-  // Edit Modal State
-  const [editingId, setEditingId] = useState<string | null>(null);
-  const [editForm, setEditForm] = useState<Partial<Personnel>>({});
+  const [editingPersonnel, setEditingPersonnel] = useState<Personnel | null>(null);
 
-  // Sorting State
   const [sortBy, setSortBy] = useState<'personnel_id' | 'updated_at'>('updated_at');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
   
-  // View Tab State
   const [viewTab, setViewTab] = useState<'active' | 'disabled' | 'all'>('active');
 
   useEffect(() => {
-    setCurrentPage(1); // Reset to page 1 on search
+    setCurrentPage(1);
   }, [searchTerm]);
 
   const filteredPersonnel = personnel.filter((p) => {
-    // 1. Tab Filter
     if (viewTab === 'active' && p.is_deleted === true) return false;
     if (viewTab === 'disabled' && p.is_deleted !== true) return false;
 
-    // 2. Search Filter
     const searchLower = searchTerm.toLowerCase();
     const fullName = `${p.title_th || ''}${p.first_name_th || ''} ${p.last_name_th || ''}`.toLowerCase();
     const pId = String(p.personnel_id || '').toLowerCase();
@@ -97,18 +86,18 @@ function PersonnelContent() {
     );
   }).sort((a, b) => {
     if (sortBy === 'personnel_id') {
-       return sortOrder === 'asc' 
-         ? a.personnel_id.localeCompare(b.personnel_id)
-         : b.personnel_id.localeCompare(a.personnel_id);
+        const valA = String(a.personnel_id || "");
+        const valB = String(b.personnel_id || "");
+        return sortOrder === 'asc' 
+          ? valA.localeCompare(valB, undefined, { numeric: true })
+          : valB.localeCompare(valA, undefined, { numeric: true });
     } else {
-       // Sort by Updated At (Handling Firestore Timestamp or Date string)
        const timeA = a.updated_at ? new Date(a.updated_at.toDate ? a.updated_at.toDate() : a.updated_at).getTime() : 0;
        const timeB = b.updated_at ? new Date(b.updated_at.toDate ? b.updated_at.toDate() : b.updated_at).getTime() : 0;
        return sortOrder === 'asc' ? timeA - timeB : timeB - timeA;
     }
   });
 
-  // Pagination Logic
   const totalPages = Math.ceil(filteredPersonnel.length / itemsPerPage);
   const paginatedPersonnel = filteredPersonnel.slice(
     (currentPage - 1) * itemsPerPage,
@@ -117,28 +106,6 @@ function PersonnelContent() {
 
   const startEntry = (currentPage - 1) * itemsPerPage + 1;
   const endEntry = Math.min(currentPage * itemsPerPage, filteredPersonnel.length);
-
-  const handleEditClick = (p: Personnel) => {
-    setEditingId(p.id!);
-    setEditForm({ ...p });
-  };
-
-  const handleEditSave = async () => {
-    if (!user?.email) { alert("You must be logged in to update."); return; }
-    if (!editingId || !editForm.first_name_th) return;
-    try {
-      setLoading(true);
-      await PersonnelService.updatePersonnel(editingId, editForm, user.email);
-      setPersonnel(prev => prev.map(p => p.id === editingId ? { ...p, ...editForm } as Personnel : p));
-      setEditingId(null);
-      alert("Updated successfully");
-    } catch (error) {
-      console.error("Update failed:", error);
-      alert("Failed to update.");
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const PaginationControls = () => (
     <div className="flex items-center justify-between px-4 py-3 bg-white border-t border-gray-100 sm:px-6">
@@ -157,7 +124,6 @@ function PersonnelContent() {
             >
               Previous
             </button>
-            {/* Simple Page Numbers */}
             {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
                let pNum = i + 1;
                if (totalPages > 5 && currentPage > 3) pNum = currentPage - 2 + i;
@@ -186,68 +152,46 @@ function PersonnelContent() {
     </div>
   );
 
-  const handleExport = () => {
-    exportPersonnelToExcel(filteredPersonnel);
-  };
-
-  const handleImportClick = () => {
-    fileInputRef.current?.click();
-  };
-
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!user?.email) { alert("You must be logged in to import."); return; }
     const file = e.target.files?.[0];
     if (!file) return;
 
     if (!confirm(`Importing ${file.name}. This might take a while. Continue?`)) {
-       if (e.target) e.target.value = ""; // Reset
+       if (e.target) e.target.value = ""; 
        return;
     }
 
     setLoading(true);
-    setImportProgress({ current: 0, total: 0 }); // Init progress
+    setImportProgress({ current: 0, total: 0 });
     
     try {
       const result = await parsePersonnelExcel(file, user.email, (processed, total) => {
         setImportProgress({ current: processed, total: total });
       });
-      
-      let msg = `Import complete!\nSuccess: ${result.success}\nErrors: ${result.errors.length}`;
-      if (result.errors.length > 0) {
-        msg += `\nFirst 5 errors:\n${result.errors.slice(0, 5).join("\n")}`;
-      }
-      alert(msg);
-      fetchPersonnel(); // Refresh list
+      alert(`Import complete!\nSuccess: ${result.success}\nErrors: ${result.errors.length}`);
+      fetchPersonnel();
     } catch (error) {
       console.error("Import failed:", error);
-      alert("Import failed. Check console for details.");
     } finally {
       setLoading(false);
-      setImportProgress(null); // Reset progress
-      if (fileInputRef.current) fileInputRef.current.value = ""; // Reset
+      setImportProgress(null);
+      if (fileInputRef.current) fileInputRef.current.value = "";
     }
   };
 
   const handleDeleteAll = async () => {
     if (!user?.email) { alert("You must be logged in to delete all."); return; }
     if (!confirm("⚠️ WARNING: This will delete ALL personnel records! Are you sure?")) return;
-    if (!confirm("Unique ID check: Please confirm again to DELETE EVERYTHING.")) return;
-    
     setLoading(true);
     try {
       await PersonnelService.deleteAllPersonnel(user.email);
-      alert("All records deleted successfully.");
       setPersonnel([]);
     } catch (error) {
-      console.error("Delete all failed:", error);
-      alert("Failed to delete all records.");
+       console.error(error);
     } finally {
       setLoading(false);
     }
-  };
-
-  const handleSeedData = async () => {
-    // ... existing ...
   };
 
   const handleFixData = async () => {
@@ -255,11 +199,10 @@ function PersonnelContent() {
     setLoading(true);
     try {
       const count = await PersonnelService.migrateData();
-      alert(`Successfully fixed visibility for ${count} records.`);
+      alert(`Successfully fixed visibility and backfilled ${count} records.`);
       fetchPersonnel();
     } catch (error) {
       console.error("Fix failed:", error);
-      alert("Failed to fix data.");
     } finally {
       setLoading(false);
     }
@@ -267,7 +210,6 @@ function PersonnelContent() {
 
   return (
     <div className="container mx-auto p-6 font-sarabun">
-      {/* ... Header ... */}
       <div className="flex justify-between items-center mb-6">
         <div className="flex items-center gap-4">
           <Link href="/?tab=Input" className="p-2 hover:bg-gray-100 rounded-full transition-colors text-gray-500 hover:text-gray-700">
@@ -284,15 +226,27 @@ function PersonnelContent() {
              </span>
           )}
           <button onClick={handleFixData} className="text-blue-500 hover:text-blue-700 px-3 py-2 text-sm underline">Fix Visibility</button>
-          <button onClick={handleSeedData} className="text-gray-500 hover:text-gray-700 px-3 py-2 text-sm underline">+ Sample Data</button>
           <button onClick={handleDeleteAll} className="text-red-400 hover:text-red-600 px-3 py-2 text-sm underline">Delete All</button>
           <input type="file" ref={fileInputRef} onChange={handleFileChange} className="hidden" accept=".xlsx, .xls, .csv" />
-          <button onClick={handleImportClick} disabled={loading} className={`bg-amber-500 hover:bg-amber-600 text-white px-4 py-2 rounded-lg flex items-center gap-2 shadow-sm transition-colors ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}>
+          <button onClick={() => fileInputRef.current?.click()} disabled={loading} className={`bg-amber-500 hover:bg-amber-600 text-white px-4 py-2 rounded-lg flex items-center gap-2 shadow-sm transition-colors ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}>
             <Upload size={20} /> Import Excel
           </button>
-          <button onClick={handleExport} className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center gap-2 shadow-sm transition-colors">
-            <Download size={20} /> Export Excel
-          </button>
+          <div className="flex gap-1">
+             <button 
+               onClick={() => exportPersonnelToExcel(filteredPersonnel)} 
+               className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-l-lg flex items-center gap-2 shadow-sm transition-colors border-r border-blue-500 text-sm"
+               title="Export filtered results"
+             >
+               <Download size={18} /> Export Filtered Result
+             </button>
+             <button 
+               onClick={() => exportPersonnelToExcel(personnel)} 
+               className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-r-lg shadow-sm transition-colors flex items-center gap-2 text-sm"
+               title="Export all raw data"
+             >
+               <FileSpreadsheet size={18} /> Export Raw Data
+             </button>
+          </div>
           <Link href="/personnel/report" className="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg flex items-center gap-2 shadow-sm transition-colors">
              <BarChart3 size={20} /> Reports
           </Link>
@@ -303,20 +257,28 @@ function PersonnelContent() {
       </div>
 
       <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-        {/* Search Bar & Top Pagination */}
         <div className="p-4 border-b border-gray-100 flex flex-col md:flex-row gap-4 justify-between items-center">
-          <div className="relative flex-1 max-w-md w-full">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
-            <input
-              type="text"
-              placeholder="ค้นหาชื่อ, สกุล, หรือสังกัด..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
-            />
+          <div className="flex flex-1 gap-2 max-w-md w-full">
+            <div className="relative flex-1">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
+              <input
+                type="text"
+                placeholder="ค้นหาชื่อ, สกุล, หรือสังกัด..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
+              />
+            </div>
+            <button 
+              onClick={fetchPersonnel}
+              disabled={loading}
+              className="flex items-center gap-2 px-3 py-2 bg-slate-50 text-slate-500 hover:bg-slate-100 hover:text-blue-600 border border-slate-200 rounded-lg text-sm font-medium transition-all"
+              title="รีเฟรชข้อมูล"
+            >
+              <RefreshCw className={loading ? "animate-spin" : ""} size={16} /> 
+            </button>
           </div>
           
-          {/* Sorting Controls */}
           <div className="flex items-center gap-2">
             <button 
               onClick={() => {
@@ -340,34 +302,13 @@ function PersonnelContent() {
             </button>
           </div>
 
-          {/* Tab Selection */}
           <div className="flex border-b border-gray-100 px-4">
-            <button 
-              onClick={() => setViewTab('active')}
-              className={`px-4 py-3 text-sm font-bold transition-all border-b-2 ${viewTab === 'active' ? 'border-green-600 text-green-700' : 'border-transparent text-gray-400 hover:text-gray-600'}`}
-            >
-              รายการปกติ ({personnel.filter(p => p.is_deleted !== true).length})
-            </button>
-            <button 
-              onClick={() => setViewTab('disabled')}
-              className={`px-4 py-3 text-sm font-bold transition-all border-b-2 ${viewTab === 'disabled' ? 'border-red-600 text-red-700' : 'border-transparent text-gray-400 hover:text-gray-600'}`}
-            >
-              รายการที่ยกเลิก ({personnel.filter(p => p.is_deleted === true).length})
-            </button>
-            <button 
-              onClick={() => setViewTab('all')}
-              className={`px-4 py-3 text-sm font-bold transition-all border-b-2 ${viewTab === 'all' ? 'border-blue-600 text-blue-700' : 'border-transparent text-gray-400 hover:text-gray-600'}`}
-            >
-              ทั้งหมด ({personnel.length})
-            </button>
-          </div>
-
-          <div className="text-sm text-gray-500">
-            {viewTab === 'active' ? 'แสดงเฉพาะรายการที่ใช้งานอยู่' : viewTab === 'disabled' ? 'แสดงรายการที่ถูกยกเลิก (Soft Deleted)' : 'แสดงข้อมูลทั้งหมด'}: {filteredPersonnel.length} records
+            <button onClick={() => setViewTab('active')} className={`px-4 py-3 text-sm font-bold transition-all border-b-2 ${viewTab === 'active' ? 'border-green-600 text-green-700' : 'border-transparent text-gray-400 hover:text-gray-600'}`}>รายการปกติ ({personnel.filter(p => !p.is_deleted).length})</button>
+            <button onClick={() => setViewTab('disabled')} className={`px-4 py-3 text-sm font-bold transition-all border-b-2 ${viewTab === 'disabled' ? 'border-red-600 text-red-700' : 'border-transparent text-gray-400 hover:text-gray-600'}`}>รายการที่ยกเลิก ({personnel.filter(p => p.is_deleted).length})</button>
+            <button onClick={() => setViewTab('all')} className={`px-4 py-3 text-sm font-bold transition-all border-b-2 ${viewTab === 'all' ? 'border-blue-600 text-blue-700' : 'border-transparent text-gray-400 hover:text-gray-600'}`}>ทั้งหมด ({personnel.length})</button>
           </div>
         </div>
 
-        {/* Table */}
         <div className="overflow-x-auto">
           <PaginationControls />
           <table className="w-full text-left border-collapse">
@@ -385,9 +326,9 @@ function PersonnelContent() {
             </thead>
             <tbody className="divide-y divide-gray-100">
               {loading ? (
-                <tr><td colSpan={8} className="p-8 text-center text-gray-500">{importProgress ? 'กำลังนำเข้าข้อมูล...' : 'กำลังโหลดข้อมูล...'}</td></tr>
+                <tr><td colSpan={7} className="p-8 text-center text-gray-500">{importProgress ? 'กำลังนำเข้าข้อมูล...' : 'กำลังโหลดข้อมูล...'}</td></tr>
               ) : paginatedPersonnel.length === 0 ? (
-                <tr><td colSpan={8} className="p-8 text-center text-gray-500">ไม่พบข้อมูลบุคลากร</td></tr>
+                <tr><td colSpan={7} className="p-8 text-center text-gray-500">ไม่พบข้อมูลบุคลากร</td></tr>
               ) : (
                 paginatedPersonnel.map((p) => (
                   <tr key={p.id} className="hover:bg-gray-50 transition-colors">
@@ -403,48 +344,29 @@ function PersonnelContent() {
                     </td>
                     <td className="p-4 text-[11px] text-gray-500">
                        <div className="flex flex-col">
-                         <span className="font-medium">{p.created_at ? new Date(p.created_at.toDate ? p.created_at.toDate() : p.created_at).toLocaleString('th-TH', { dateStyle: 'short', timeStyle: 'short' }) : '-'}</span>
-                         <span className="text-gray-400">{p.created_by?.split('@')[0] || '-'}</span>
+                         <span className="font-medium text-slate-700">
+                           {p.created_at ? new Date(p.created_at).toLocaleString('th-TH', { dateStyle: 'short', timeStyle: 'short' }) : '-'}
+                         </span>
+                         <span className="text-gray-400">{p.created_by?.includes('@') ? p.created_by.split('@')[0] : (p.created_by || '-')}</span>
                        </div>
                     </td>
                     <td className="p-4 text-[11px] text-gray-500">
                        <div className="flex flex-col">
-                         <span className="font-medium">{p.updated_at ? new Date(p.updated_at.toDate ? p.updated_at.toDate() : p.updated_at).toLocaleString('th-TH', { dateStyle: 'short', timeStyle: 'short' }) : '-'}</span>
-                         <span className="text-gray-400">{p.updated_by?.split('@')[0] || '-'}</span>
+                         <span className="font-medium text-slate-700">
+                           {p.updated_at ? new Date(p.updated_at).toLocaleString('th-TH', { dateStyle: 'short', timeStyle: 'short' }) : '-'}
+                         </span>
+                         <span className="text-gray-400">{p.updated_by?.includes('@') ? p.updated_by.split('@')[0] : (p.updated_by || '-')}</span>
                        </div>
                     </td>
                     <td className="p-4">
-                      {p.employment_status.includes("(") ? (
-                        <div>
-                          <span className={`block text-sm font-medium ${p.employment_status.includes("พนักงาน") ? "text-blue-700" : "text-gray-900"}`}>
-                             {p.employment_status.split("(")[0]}
-                          </span>
-                          <span className="text-xs text-gray-500">
-                             ({p.employment_status.split("(")[1]}
-                          </span>
-                        </div>
-                      ) : (
-                        <span className={`text-sm font-medium ${p.employment_status.includes("พนักงาน") ? "text-blue-700" : "text-gray-900"}`}>
-                          {p.employment_status}
-                        </span>
-                      )}
+                       <div className="text-sm font-medium text-blue-700 whitespace-pre-line">
+                         {p.employment_status || "-"}
+                       </div>
                     </td>
                     <td className="p-4 text-right">
                       <div className="flex justify-end gap-2">
-                        <button
-                          onClick={() => handleEditClick(p)}
-                          className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
-                          title="แก้ไข"
-                        >
-                          <Edit size={18} />
-                        </button>
-                        <button
-                          onClick={() => handleDelete(p.id!, `${p.first_name_th} ${p.last_name_th}`)}
-                          className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-                          title="ลบ (Soft Delete)"
-                        >
-                          <Trash2 size={18} />
-                        </button>
+                        <button onClick={() => router.push(`/personnel/${p.id}/edit`)} className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"><Edit size={18} /></button>
+                        <button onClick={() => handleDelete(p.id!, `${p.first_name_th} ${p.last_name_th}`)} className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"><Trash2 size={18} /></button>
                       </div>
                     </td>
                   </tr>
@@ -456,68 +378,13 @@ function PersonnelContent() {
         </div>
       </div>
 
-      {/* Edit Modal */}
-      {editingId && (
-        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-xl shadow-xl w-full max-w-lg p-6 space-y-4 animate-in fade-in zoom-in duration-200">
-            <h3 className="text-xl font-bold text-gray-800">Edit Personnel</h3>
-            
-            {/* Read-only ID Alert */}
-            <div className="bg-blue-50 text-blue-800 p-3 rounded-lg text-sm border border-blue-200 flex gap-2 items-center">
-               <Hash size={16} />
-               <span>Personnel ID cannot be changed once created.</span>
-            </div>
-
-            <div className="grid grid-cols-2 gap-4">
-               <div>
-                  <label className="text-xs font-semibold text-gray-500">ID</label>
-                  <input 
-                    className="w-full border p-2 rounded bg-gray-100 text-gray-500 cursor-not-allowed" 
-                    value={editForm.personnel_id} 
-                    disabled 
-                    title="ID cannot be edited"
-                  />
-               </div>
-               <div>
-                  <label className="text-xs font-semibold text-gray-500">Title</label>
-                  <input className="w-full border p-2 rounded" value={editForm.title_th || ''} onChange={e => setEditForm({...editForm, title_th: e.target.value})} />
-               </div>
-               <div>
-                  <label className="text-xs font-semibold text-gray-500">First Name</label>
-                  <input className="w-full border p-2 rounded" value={editForm.first_name_th || ''} onChange={e => setEditForm({...editForm, first_name_th: e.target.value})} />
-               </div>
-               <div>
-                  <label className="text-xs font-semibold text-gray-500">Last Name</label>
-                  <input className="w-full border p-2 rounded" value={editForm.last_name_th || ''} onChange={e => setEditForm({...editForm, last_name_th: e.target.value})} />
-               </div>
-               <div className="col-span-2">
-                  <label className="text-xs font-semibold text-gray-500">Position</label>
-                  <input className="w-full border p-2 rounded" value={editForm.position || ''} onChange={e => setEditForm({...editForm, position: e.target.value})} />
-               </div>
-               <div className="col-span-2">
-                  <label className="text-xs font-semibold text-gray-500">Department</label>
-                  <input className="w-full border p-2 rounded" value={editForm.department || ''} onChange={e => setEditForm({...editForm, department: e.target.value})} />
-               </div>
-            </div>
-            <div className="flex gap-2 justify-end pt-4">
-               <button onClick={() => setEditingId(null)} className="px-4 py-2 text-gray-600 hover:bg-gray-100 rounded-lg">Cancel</button>
-               <button onClick={handleEditSave} className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Save Changes</button>
-            </div>
-          </div>
-        </div>
-      )}
-
     </div>
   );
 }
 
 export default function PersonnelPage() {
   return (
-    <Suspense fallback={
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-600"></div>
-      </div>
-    }>
+    <Suspense fallback={<div className="flex items-center justify-center min-h-screen"><div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-600"></div></div>}>
       <PersonnelContent />
     </Suspense>
   );

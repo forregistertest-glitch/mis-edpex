@@ -3,8 +3,8 @@
 | Field | Value |
 |:------|:------|
 | **Doc ID** | KUVMIS-DOC-004 |
-| **Version** | 1.02c |
-| **Last Updated** | 2026-02-16T18:05:00+07:00 |
+| **Version** | 1.02d |
+| **Last Updated** | 2026-02-16T19:07:00+07:00 |
 | **Author** | KUVMIS Development Team |
 | **Status** | Released |
 
@@ -14,7 +14,7 @@
 - **performance_data**: Stores the actual performance values, linked by `kpi_id`, `year`, `period`, and `dimension`.
 - **authorized_users**: รายชื่อ Email ที่อนุญาตเข้าระบบ พร้อม role (user/reviewer/admin).
 - **login_logs**: บันทึกการเข้าใช้งาน (email, timestamp, IP, user agent, geo location, success, reason).
-- **personnel**: ข้อมูลบุคลากร (HR) - *Supports Soft Delete & Audit Log v1*
+- **personnel**: ข้อมูลบุคลากร (HR) - *Supports Full Schema & ISO Dates v.1.02d*
 - **students**: ข้อมูลนิสิต (Reg)
 
 ## 2. KPI JSON Blueprint
@@ -96,12 +96,31 @@ All master data collections (Personnel, Student, Research) follow these standard
 | **Strategic** | Animal Welfare | 7.4.14, 7.4.15 | `getKpiTrendData` | year_series |
 | **Strategic** | Lab Standards | 7.4.12 | `getKpiTrendData` | year_series |
 
-## 7. Enums & Value Lists (New)
-### 7.1 Personnel
-- **Type**: ข้าราชการ, พนักงานมหาวิทยาลัย, พนักงานเงินรายได้, ลูกจ้างประจำ, ลูกจ้างชั่วคราว
-- **Position**: อาจารย์, ผู้ช่วยศาสตราจารย์, รองศาสตราจารย์, ศาสตราจารย์, เจ้าหน้าที่บริหารงานทั่วไป, นักวิชาการศึกษา, ฯลฯ
-- **DegreeLevel**: ปริญญาตรี, ปริญญาโท, ปริญญาเอก
+## 8. Collection Details — Personnel (v.1.02d)
+| Field | Type | Description | ALCOA+ |
+|:---|:---|:---|:---:|
+| `id` | string | Firestore Document ID | ✅ |
+| `personnel_id` | string | เลขประจำตัวบุคลากร | ✅ |
+| `title_th` | string | คำนำหน้าชื่อ (นาย/นาง/นางสาว/ดร./...) | ✅ |
+| `first_name_th` | string | ชื่อภาษาไทย | ✅ |
+| `last_name_th` | string | นามสกุลภาษาไทย | ✅ |
+| `position` | string | ตำแหน่งบริหารหรือวิชาการ | ✅ |
+| `affiliation` | string | หน่วยงาน/สังกัดย่อย (เช่น รพ.สัตว์) | ✅ |
+| `department` | string | ภาควิชา/ฝ่าย | ✅ |
+| `campus` | string | วิทยาเขต (บางเขน/กำแพงแสน/...) | ✅ |
+| `employment_status` | string | ประเภทการจ้างงาน | ✅ |
+| `gender` | string | เพศ (ชาย/หญิง) | ✅ |
+| `education_level` | string | ระดับการศึกษาสูงสุด | ✅ |
+| `degree_name` | string | ชื่อปริญญาและสาขาที่จบ | ✅ |
+| `birth_date` | string (ISO) | วันเกิด | ✅ |
+| `start_date` | string (ISO) | วันที่เริ่มงาน | ✅ |
+| `retirement_year` | number | ปีที่เกษียณอายุ (พ.ศ.) | ✅ |
+| `generation` | string | รุ่น (เช่น Baby Boomer, Gen X, Gen Y) | ✅ |
+| `is_deleted` | boolean | สถานะการลบ (Soft Delete) | ✅ |
+| `created_at` | string (ISO) | วันที่สร้างข้อมูล | ✅ |
+| `created_by` | string | Email/Username ผู้สร้าง | ✅ |
+| `updated_at` | string (ISO) | วันที่แก้ไขล่าสุด | ✅ |
+| `updated_by` | string | Email/Username ผู้แก้ไข | ✅ |
 
-### 7.2 Student
-- **Status**: กำลังศึกษา, สำเร็จการศึกษา, พ้นสภาพ, ลาพักการศึกษา
-- **DegreeLevel**: ปริญญาตรี, ปริญญาโท, ปริญญาเอก, ประกาศนียบัตรบัณฑิต
+---
+*เอกสารนี้ปรับปรุงล่าสุดเพื่อรองรับ HR Module Phase I — KUVMIS v.1.02d*

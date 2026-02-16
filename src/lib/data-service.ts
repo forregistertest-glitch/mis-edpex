@@ -718,6 +718,31 @@ export async function clearCollection(collectionName: string): Promise<number> {
 // ─── Personnel Management ──────────────────────────────────────
 import { Personnel } from "@/types/personnel";
 
+// Get single personnel by ID
+export async function getPersonnelById(id: string): Promise<Personnel | null> {
+  try {
+    const docRef = doc(db, "personnel", id);
+    const snap = await getDocs(query(collection(db, "personnel"), where("__name__", "==", id)));
+    
+    if (snap.empty) return null;
+    
+    const data = snap.docs[0].data();
+    
+    // Standardize dates
+    if (data.updated_at && typeof data.updated_at.toDate === "function") {
+      data.updated_at = data.updated_at.toDate().toISOString();
+    }
+    if (data.created_at && typeof data.created_at.toDate === "function") {
+      data.created_at = data.created_at.toDate().toISOString();
+    }
+    
+    return { id: id, ...data } as Personnel;
+  } catch (error) {
+    console.error("Error getting personnel by id:", error);
+    return null;
+  }
+}
+
 // Get all personnel
 export async function getPersonnel(): Promise<Personnel[]> {
   const q = collection(db, "personnel");
@@ -725,7 +750,19 @@ export async function getPersonnel(): Promise<Personnel[]> {
   
   // Map all records and sort by latest updated
   return snap.docs
-    .map((d: QueryDocumentSnapshot<DocumentData>) => ({ id: d.id, ...d.data() } as Personnel))
+    .map((d: QueryDocumentSnapshot<DocumentData>) => {
+      const data = d.data();
+      
+      // Standardize dates to ISO strings for UI consistency
+      if (data.updated_at && typeof data.updated_at.toDate === "function") {
+        data.updated_at = data.updated_at.toDate().toISOString();
+      }
+      if (data.created_at && typeof data.created_at.toDate === "function") {
+        data.created_at = data.created_at.toDate().toISOString();
+      }
+      
+      return { id: d.id, ...data } as Personnel;
+    })
     .sort((a: Personnel, b: Personnel) => {
       const timeA = a.updated_at ? new Date(a.updated_at).getTime() : 0;
       const timeB = b.updated_at ? new Date(b.updated_at).getTime() : 0;

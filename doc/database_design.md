@@ -4,8 +4,8 @@
 | Field | Value |
 |:------|:------|
 | **Doc ID** | KUVMIS-DOC-005 |
-| **Version** | 1.02c |
-| **Last Updated** | 2026-02-16T18:05:00+07:00 |
+| **Version** | 1.02d |
+| **Last Updated** | 2026-02-16T19:00:00+07:00 |
 | **Author** | KUVMIS Development Team |
 | **Status** | Released |
 
@@ -254,4 +254,4 @@ input_forms (7 ฟอร์ม)
 | 6 | Real-time data sync | ⬜ |
 
 ---
-*เอกสารนี้ปรับปรุงล่าสุดเมื่อ 16 ก.พ. 2569 — KUVMIS v.1.02c*
+*เอกสารนี้ปรับปรุงล่าสุดเมื่อ 16 ก.พ. 2569 — KUVMIS v.1.02d*
