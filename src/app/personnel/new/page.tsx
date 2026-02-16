@@ -7,8 +7,10 @@ import { Personnel } from "@/types/personnel";
 import { ArrowLeft, Save, Loader2 } from "lucide-react";
 import Link from "next/link";
 import { DateTime } from "luxon";
+import { useAuth } from "@/contexts/AuthContext";
 
 export default function NewPersonnelPage() {
+  const { user } = useAuth();
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState<Partial<Personnel>>({
@@ -59,6 +61,11 @@ export default function NewPersonnelPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!user?.email) {
+      alert("Please login first.");
+      return;
+    }
+
     if (!formData.personnel_id || !formData.first_name_th) {
       alert("Please fill in required fields.");
       return;
@@ -66,7 +73,7 @@ export default function NewPersonnelPage() {
 
     setLoading(true);
     try {
-      await PersonnelService.addPersonnel(formData as Personnel);
+      await PersonnelService.addPersonnel(formData as Personnel, user.email);
       router.push("/personnel");
     } catch (error) {
       console.error("Error saving personnel:", error);
