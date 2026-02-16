@@ -40,6 +40,7 @@ export async function GET(request: Request) {
       "kpi_master_data": { th: "KPI Master Data", en: "61 KPIs Definition" },
       "performance_seed_data": { th: "ข้อมูลจำลองผลการดำเนินงาน", en: "Performance Seed Data" },
       "data_integrity_plan": { th: "แผนการรักษาความถูกต้องของข้อมูล", en: "Data Integrity Plan" },
+      "user_hr_manual": { th: "📄 คู่มือการจัดการผู้ใช้ & HR (v.1.02d)", en: "User & HR Manual" }
     };
 
     const files = fs.readdirSync(DOC_DIR).filter((f) => f.endsWith(".md"));
@@ -54,11 +55,14 @@ export async function GET(request: Request) {
         size: stat.size,
         modified: stat.mtime.toISOString(),
         isGuide: baseName === "user_guide",
+        isHrManual: baseName === "user_hr_manual",
         isManual: baseName === "input_manual"
       };
     }).sort((a, b) => {
       if (a.isGuide) return -1;
       if (b.isGuide) return 1;
+      if (a.isHrManual) return -1;
+      if (b.isHrManual) return 1;
       if (a.isManual) return -1;
       if (b.isManual) return 1;
       return a.title.localeCompare(b.title);

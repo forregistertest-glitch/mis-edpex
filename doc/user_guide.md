@@ -4,8 +4,9 @@
 | Field | Value |
 |:------|:------|
 | **Doc ID** | KUVMIS-DOC-002 |
-| **Version** | 1.5.0 |
-| **Last Updated** | 2026-02-12T09:20:00+07:00 |
+| **Version** | 1.02d |
+| **Standard** | ISO 27001 / EdPEx Compliance |
+| **Last Updated** | 2026-02-16T19:25:00+07:00 |
 | **Author** | KUVMIS Development Team |
 | **Status** | Released |
 

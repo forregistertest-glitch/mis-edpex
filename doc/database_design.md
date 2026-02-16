@@ -5,7 +5,8 @@
 |:------|:------|
 | **Doc ID** | KUVMIS-DOC-005 |
 | **Version** | 1.02d |
-| **Last Updated** | 2026-02-16T19:00:00+07:00 |
+| **Standard** | ISO 27001 / EdPEx Compliance |
+| **Last Updated** | 2026-02-16T19:25:00+07:00 |
 | **Author** | KUVMIS Development Team |
 | **Status** | Released |
 

@@ -29,12 +29,16 @@ function mdToHtml(md: string): string {
   const codeBlocks: string[] = [];
   html = html.replace(/```(\w*)\n([\s\S]*?)```/g, (_, lang, code) => {
     const idx = codeBlocks.length;
-    codeBlocks.push(
-      `<pre class="md-code-block"><code class="language-${lang || "text"}">${code
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")}</code></pre>`
-    );
+    if (lang === "mermaid") {
+        codeBlocks.push(`<div class="mermaid">${code.trim()}</div>`);
+    } else {
+        codeBlocks.push(
+          `<pre class="md-code-block"><code class="language-${lang || "text"}">${code
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")}</code></pre>`
+        );
+    }
     return `%%CODEBLOCK_${idx}%%`;
   });
 
@@ -108,6 +112,40 @@ export default function DocViewer({ onClose, t, userEmail }: { onClose: () => vo
   const [loading, setLoading] = useState(true);
   const [docLoading, setDocLoading] = useState(false);
   const [isMaximized, setIsMaximized] = useState(false);
+  const isSolarized = selectedDoc === "user_hr_manual.md";
+
+  // Mermaid Support
+  useEffect(() => {
+    if (isSolarized && !docLoading && docContent) {
+      const script = document.createElement("script");
+      script.src = "https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js";
+      script.async = true;
+      script.onload = () => {
+        // @ts-ignore
+        window.mermaid.initialize({ 
+          startOnLoad: false, 
+          theme: isSolarized ? 'base' : 'neutral',
+          themeVariables: isSolarized ? {
+            primaryColor: '#eee8d5',
+            primaryTextColor: '#586e75',
+            primaryBorderColor: '#93a1a1',
+            lineColor: '#93a1a1',
+            secondaryColor: '#fdf6e3',
+            tertiaryColor: '#eee8d5'
+          } : {},
+          securityLevel: 'loose',
+          fontFamily: 'Sarabun, sans-serif'
+        });
+        // @ts-ignore
+        window.mermaid.init(undefined, document.querySelectorAll('.mermaid'));
+      };
+      document.body.appendChild(script);
+      
+      return () => {
+         // Cleanup if needed, but script can stay
+      };
+    }
+  }, [selectedDoc, docLoading, docContent, isSolarized]);
 
   useEffect(() => {
     fetchDocs();
@@ -285,28 +323,70 @@ export default function DocViewer({ onClose, t, userEmail }: { onClose: () => vo
                       const printWin = window.open('', '_blank');
                       if (printWin) {
                         const content = mdToHtml(docContent);
+                        const docInfo = docs.find(d => d.name === selectedDoc);
+                        const solarizedStyles = isSolarized ? `
+                          body { background: #fdf6e3; color: #586e75; font-family: 'JetBrains Mono', monospace; }
+                          .md-h1 { border-bottom: 2px solid #eee8d5; color: #b58900; }
+                          .meta { color: #93a1a1; }
+                          .md-table th { background: #eee8d5; color: #586e75; border-bottom-color: #93a1a1; }
+                          .md-table td { border-bottom-color: #eee8d5; color: #657b83; }
+                          .md-alert-NOTE { background: #eee8d5; border-left-color: #268bd2; color: #268bd2; }
+                          .mermaid { background: transparent; }
+                        ` : `
+                          body { color: #334155; }
+                          .md-h1 { border-bottom: 2px solid #e2e8f0; }
+                          .meta { color: #64748b; }
+                          .md-table th { background: #f8fafc; }
+                          .md-alert { border-left: 4px solid #3b82f6; background: #eff6ff; }
+                        `;
+
                         printWin.document.write(`
                           <html>
                             <head>
                               <title>${selectedDoc}</title>
                               <style>
                                 @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap');
-                                body { font-family: 'JetBrains Mono', monospace; padding: 40px; color: #334155; line-height: 1.6; font-size: 11pt; }
-                                .md-h1 { font-size: 18pt; font-weight: 800; border-bottom: 2px solid #e2e8f0; padding-bottom: 10px; margin-bottom: 20px; }
-                                .meta { font-size: 10pt; color: #64748b; margin-bottom: 30px; }
-                                .md-table { width: 100%; border-collapse: collapse; margin: 20px 0; font-size: 9pt; }
-                                .md-table th, .md-table td { border: 1px solid #e2e8f0; padding: 10px; text-align: left; }
-                                .md-table th { background: #f8fafc; font-weight: bold; }
-                                .md-alert { border-left: 4px solid #3b82f6; background: #eff6ff; padding: 15px; margin: 20px 0; border-radius: 4px; }
-                                @page { size: A4; margin: 20mm; }
-                                @media print { body { padding: 0; } }
+                                @import url('https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;700&display=swap');
+                                body { padding: 40px; line-height: 1.6; font-size: 10pt; }
+                                .md-h1 { font-size: 18pt; font-weight: 800; padding-bottom: 10px; margin-bottom: 20px; }
+                                .meta { font-size: 9pt; margin-bottom: 30px; font-weight: bold; }
+                                .md-table { width: 100%; border-collapse: collapse; margin: 20px 0; font-size: 8pt; }
+                                .md-table th, .md-table td { border: 1px solid #e2e8f0; padding: 8px; text-align: left; }
+                                .md-alert { padding: 15px; margin: 20px 0; border-radius: 4px; border-left-width: 4px; border-left-style: solid; }
+                                .mermaid { text-align: center; margin: 20px 0; }
+                                @page { size: A4; margin: 15mm; }
+                                @media print { 
+                                  body { padding: 0; } 
+                                  button { display: none; }
+                                }
+                                ${solarizedStyles}
                               </style>
                             </head>
                             <body>
-                              <div class="md-h1">${docs.find(d => d.name === selectedDoc)?.title || selectedDoc}</div>
-                              <div class="meta">อัปเดตล่าสุด: ${new Date(docs.find(d => d.name === selectedDoc)?.modified || '').toLocaleDateString('th-TH')} | ขนาด: ${fmtSize(docs.find(d => d.name === selectedDoc)?.size || 0)}</div>
-                              ${content}
-                              <script>window.onload = () => { window.print(); window.close(); }</script>
+                              <div class="md-h1">${docInfo?.title || selectedDoc}</div>
+                              <div class="meta">อัปเดตล่าสุด: ${new Date(docInfo?.modified || '').toLocaleDateString('th-TH')} | ขนาด: ${fmtSize(docInfo?.size || 0)}</div>
+                              <div id="print-content">${content}</div>
+                              <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+                              <script>
+                                window.onload = () => {
+                                  mermaid.initialize({ 
+                                    startOnLoad: true, 
+                                    theme: '${isSolarized ? 'base' : 'neutral'}',
+                                    themeVariables: ${isSolarized ? JSON.stringify({
+                                      primaryColor: '#eee8d5',
+                                      primaryTextColor: '#586e75',
+                                      primaryBorderColor: '#93a1a1',
+                                      lineColor: '#93a1a1',
+                                      secondaryColor: '#fdf6e3',
+                                      tertiaryColor: '#eee8d5'
+                                    }) : '{}'}
+                                  });
+                                  setTimeout(() => {
+                                    window.print();
+                                    // window.close();
+                                  }, 1500);
+                                };
+                              </script>
                             </body>
                           </html>
                         `);
@@ -352,45 +432,44 @@ export default function DocViewer({ onClose, t, userEmail }: { onClose: () => vo
                 <p className="text-sm mt-4 font-semibold text-slate-400">กำลังโหลดเนื้อหา...</p>
               </div>
             ) : (
-              <div className={`${isMaximized ? "max-w-none px-12 lg:px-24" : "max-w-5xl px-8 lg:px-16"} mx-auto bg-white min-h-full shadow-sm border-x border-slate-100 py-12`}>
+              <div className={`${isMaximized ? "max-w-none px-12 lg:px-24" : "max-w-5xl px-8 lg:px-16"} mx-auto ${isSolarized ? 'bg-[#fdf6e3]' : 'bg-white'} min-h-full shadow-sm border-x border-slate-100 py-12`}>
                 {/* Metadata positioned right under the Title (h1) */}
                 <div className="mb-8">
-                  <h1 className="md-h1" style={{ borderBottom: 'none', marginBottom: '4px' }}>
+                  <h1 className={`${isSolarized ? 'text-[#b58900]' : 'text-slate-800'} text-2xl font-extrabold mb-1`}>
                     {docs.find(d => d.name === selectedDoc)?.title}
                   </h1>
-                  <div className="flex items-center gap-3 text-slate-400 text-sm">
-                    <span className="flex items-center gap-1"><Clock size={14} /> อัปเดตเมื่อ {new Date(docs.find(d => d.name === selectedDoc)?.modified || '').toLocaleDateString("th-TH")}</span>
+                  <div className={`flex items-center gap-3 ${isSolarized ? 'text-[#93a1a1]' : 'text-slate-400'} text-xs font-semibold`}>
+                    <span className="flex items-center gap-1"><Clock size={12} /> อัปเดตเมื่อ {new Date(docs.find(d => d.name === selectedDoc)?.modified || '').toLocaleDateString("th-TH")}</span>
                     <span>•</span>
-                    <span className="flex items-center gap-1"><HardDrive size={14} /> {fmtSize(docs.find(d => d.name === selectedDoc)?.size || 0)}</span>
+                    <span className="flex items-center gap-1"><HardDrive size={12} /> {fmtSize(docs.find(d => d.name === selectedDoc)?.size || 0)}</span>
                   </div>
-                  <div className="mt-6 border-b-2 border-slate-100" />
+                  <div className={`mt-6 border-b-2 ${isSolarized ? 'border-[#eee8d5]' : 'border-slate-100'}`} />
                 </div>
 
                 <style>{`
-                  .md-preview-root { font-family: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', 'SF Mono', 'Consolas', monospace; font-size: 0.8125rem; line-height: 1.8; color: #334155; }
+                  .md-preview-root { font-family: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', 'SF Mono', 'Consolas', monospace; font-size: 0.8125rem; line-height: 1.8; color: ${isSolarized ? '#586e75' : '#334155'}; }
                   .md-h1 { display: none; } /* Hidden inside root if already shown in the manual metadata block above */
-                  .md-preview-root .md-h1 { display: block; font-size: 1.5rem; font-weight: 800; color: #0f172a; margin: 0 0 1.5rem; padding-bottom: 0.75rem; border-bottom: 2px solid #f1f5f9; line-height: 1.2; }
-                  .md-h2 { font-size: 1.25rem; font-weight: 700; color: #1e293b; margin: 2rem 0 1rem; padding-bottom: 0.5rem; border-bottom: 1px solid #f8fafc; }
-                  .md-h3 { font-size: 1.1rem; font-weight: 700; color: #334155; margin: 1.5rem 0 0.75rem; }
+                  .md-preview-root .md-h1 { display: block; font-size: 1.6rem; font-weight: 800; color: ${isSolarized ? '#b58900' : '#0f172a'}; margin: 0 0 1.5rem; padding-bottom: 0.75rem; border-bottom: 2px solid ${isSolarized ? '#eee8d5' : '#f1f5f9'}; line-height: 1.2; }
+                  .md-h2 { font-size: 1.3rem; font-weight: 700; color: ${isSolarized ? '#b58900' : '#1e293b'}; margin: 2.5rem 0 1rem; padding-bottom: 0.5rem; border-bottom: 1px solid ${isSolarized ? '#eee8d5' : '#f8fafc'}; }
+                  .md-h3 { font-size: 1.15rem; font-weight: 700; color: ${isSolarized ? '#cb4b16' : '#334155'}; margin: 1.8rem 0 0.8rem; }
                   .md-p { margin-bottom: 1.25rem; text-align: justify; }
-                  .md-blockquote { border-left: 4px solid #e2e8f0; padding: 1rem 1.5rem; color: #64748b; font-style: italic; background: #f8fafc; border-radius: 0 0.75rem 0.75rem 0; margin: 1.5rem 0; }
-                  .md-code-block { background: #0f172a; color: #f8fafc; padding: 1.5rem; border-radius: 1rem; margin: 1.5rem 0; overflow-x: auto; font-size: 0.75rem; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); }
-                  .md-inline-code { background: #f1f5f9; color: #e11d48; padding: 0.2rem 0.4rem; border-radius: 0.4rem; font-weight: 600; }
-                  .md-table-wrap { overflow-x: auto; margin: 1.5rem 0; border-radius: 1rem; border: 1px solid #e2e8f0; background: white; max-height: none; display: block; }
+                  .md-blockquote { border-left: 4px solid ${isSolarized ? '#93a1a1' : '#e2e8f0'}; padding: 1rem 1.5rem; color: ${isSolarized ? '#93a1a1' : '#64748b'}; font-style: italic; background: ${isSolarized ? '#eee8d5' : '#f8fafc'}; border-radius: 0 0.75rem 0.75rem 0; margin: 1.5rem 0; }
+                  .md-code-block { background: ${isSolarized ? '#eee8d5' : '#0f172a'}; color: ${isSolarized ? '#657b83' : '#f8fafc'}; padding: 1.5rem; border-radius: 1rem; margin: 1.5rem 0; overflow-x: auto; font-size: 0.75rem; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); border: 1px solid ${isSolarized ? '#93a1a1/20' : 'transparent'}; }
+                  .md-inline-code { background: ${isSolarized ? '#eee8d5' : '#f1f5f9'}; color: ${isSolarized ? '#dc322f' : '#e11d48'}; padding: 0.2rem 0.4rem; border-radius: 0.4rem; font-weight: 600; }
+                  .md-table-wrap { overflow-x: auto; margin: 1.5rem 0; border-radius: 1rem; border: 1px solid ${isSolarized ? '#93a1a1' : '#e2e8f0'}; background: ${isSolarized ? '#fdf6e3' : 'white'}; max-height: none; display: block; }
                   .md-table { width: 100%; border-collapse: collapse; font-size: 0.75rem; }
-                  .md-table th { background: #f8fafc; padding: 1rem; text-align: left; font-weight: 700; color: #475569; border-bottom: 2px solid #e2e8f0; }
-                  .md-table td { padding: 1rem; border-bottom: 1px solid #f1f5f9; color: #64748b; white-space: pre; }
-                  .md-table tr:hover td { background: #f1f5f9/30; color: #0f172a; }
+                  .md-table th { background: ${isSolarized ? '#eee8d5' : '#f8fafc'}; padding: 1rem; text-align: left; font-weight: 700; color: ${isSolarized ? '#586e75' : '#475569'}; border-bottom: 2px solid ${isSolarized ? '#93a1a1' : '#e2e8f0'}; }
+                  .md-table td { padding: 1rem; border-bottom: 1px solid ${isSolarized ? '#eee8d5' : '#f1f5f9'}; color: ${isSolarized ? '#657b83' : '#64748b'}; white-space: pre; }
+                  .md-table tr:hover td { background: ${isSolarized ? '#eee8d5/50' : '#f1f5f9/30'}; color: ${isSolarized ? '#073642' : '#0f172a'}; }
                   .md-alert { padding: 1rem 1.5rem; border-radius: 0.75rem; border-left: 4px solid transparent; margin: 1.5rem 0; }
-                  .md-alert-NOTE { background: #eff6ff; border-left-color: #3b82f6; color: #1e40af; }
-                  .md-alert-TIP { background: #f0fdf4; border-left-color: #22c55e; color: #166534; }
-                  .md-alert-IMPORTANT { background: #fff7ed; border-left-color: #f97316; color: #9a3412; }
-                  .md-alert-WARNING { background: #fff1f2; border-left-color: #e11d48; color: #9f1239; }
-                  .md-hr { border: 0; border-top: 2px solid #f1f5f9; margin: 2rem 0; }
+                  .md-alert-NOTE { background: ${isSolarized ? '#eff6ff' : '#eff6ff'}; border-left-color: #3b82f6; color: #1e40af; }
+                  .md-hr { border: 0; border-top: 2px solid ${isSolarized ? '#eee8d5' : '#f1f5f9'}; margin: 2rem 0; }
                   .md-ul, .md-ol { margin-bottom: 1.25rem; padding-left: 1.5rem; }
                   .md-li, .md-oli { margin-bottom: 0.4rem; }
                   .md-ul { list-style-type: disc; }
                   .md-ol { list-style-type: decimal; }
+                  .mermaid { background: ${isSolarized ? '#eee8d5' : 'white'}; padding: 1.5rem; border-radius: 1rem; margin: 1.5rem 0; text-align: center; }
+                  .mermaid svg { max-width: 100%; height: auto; }
                 `}</style>
                 <div className="md-preview-root" dangerouslySetInnerHTML={{ __html: mdToHtml(docContent) }} />
               </div>
