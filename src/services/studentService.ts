@@ -136,6 +136,7 @@ export const StudentService = {
       await updateDoc(docRef, {
         ...data,
         updated_at: Timestamp.now(),
+        updated_by: userEmail
       });
 
       await AuditLogService.log({
@@ -169,10 +170,12 @@ export const StudentService = {
   // Delete
   deleteStudent: async (studentId: string, userEmail: string) => {
     try {
-      const oldData = await StudentService.getStudentByStudentId(studentId);
-      
       const docRef = doc(db, COLLECTION_NAME, studentId);
-      await deleteDoc(docRef);
+      await updateDoc(docRef, {
+        is_deleted: true,
+        updated_at: Timestamp.now(),
+        updated_by: userEmail
+      });
 
       await AuditLogService.log({
         action: 'DELETE',
@@ -182,7 +185,7 @@ export const StudentService = {
         status: 'SUCCESS',
         details: { 
            student_id: studentId,
-           name: oldData?.full_name_th || "Unknown"
+           note: "Soft delete performed"
         }
       });
 
@@ -233,4 +236,20 @@ export const StudentService = {
       throw error;
     }
   },
+
+  // Migrate/Fix data visibility
+  migrateData: async () => {
+    const querySnapshot = await getDocs(collection(db, COLLECTION_NAME));
+    const batch = writeBatch(db);
+    let count = 0;
+    querySnapshot.docs.forEach((d) => {
+      const data = d.data();
+      if (data.is_deleted === undefined) {
+        batch.update(d.ref, { is_deleted: false });
+        count++;
+      }
+    });
+    await batch.commit();
+    return count;
+  }
 };

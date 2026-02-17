@@ -4,9 +4,9 @@
 | Field | Value |
 |:------|:------|
 | **Doc ID** | KUVMIS-DOC-003 |
-| **Version** | 1.02d |
+| **Version** | 1.03 |
 | **Standard** | ISO 27001 / EdPEx Compliance |
-| **Last Updated** | 2026-02-16T19:28:00+07:00 |
+| **Last Updated** | 2026-02-17T20:30:00+07:00 |
 | **Author** | KUVMIS Development Team |
 | **Status** | Released |
 
@@ -116,9 +116,14 @@
     - **Restricted Access:** Visible only to Superadmin (`nipon.w@ku.th`).
     - **Localized Content:** Full Thai translation for Architecture, DB Design, and Data Dictionary.
 
-### 1.8 Personnel & Student Data (New)
-- **Personnel Module:** Import/View staff data (HR).
-- **Student Module:** Import/View student data (Reg).
+### 1.8 Personnel & Student Data (v.1.03)
+- **Personnel Module:** Import/View/Edit staff data (HR) — Full-page edit, Excel import/export.
+- **Student Module:** Comprehensive graduate student management system:
+  - **Student List Table:** Multi-column search (รหัส, ชื่อ, สาขา, อาจารย์, ภาควิชา, ระดับ, สถานะ), sort by ID/date, view tabs (active/disabled/all), pagination.
+  - **Student Form (Full-page):** 4-tab form (Profile, Education, Progress, Publications) with Autocomplete fields for advisor, major, and department.
+  - **Advisor Management (`/advisor`):** CRUD table matching HR UI patterns. View students under each advisor via expandable rows (Eye button).
+  - **Excel Import/Export:** 4 import modes (Profile, Publications, Progress, Smart Import). 2 export modes (Filtered/All with sub-sheets).
+  - **Seed Data (`/seed`):** Temporary page for populating test data via browser (4 students + 4 advisors from real CSV).
 
 ## 2. Shared Components
 - **ChartFilterBar:** Unified control for Year, Quarter (Period), Dimension, and View Mode (Chart/Table).

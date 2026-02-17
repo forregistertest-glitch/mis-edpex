@@ -4,13 +4,14 @@ import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { GraduateStudent } from "@/types/student";
 import { StudentService } from "@/services/studentService";
-import { Plus, Search, Edit, Trash2, Download, Upload, ArrowLeft, GraduationCap } from "lucide-react";
+import { Plus, Search, Edit, Trash2, Download, Upload, ArrowLeft, GraduationCap, BarChart3, ArrowUpAZ, ArrowDownAZ, Calendar, Hash, FileSpreadsheet, RefreshCw, Grid2X2Check, ChevronUp, Users } from "lucide-react";
 import { exportStudentsToExcel } from "@/utils/studentExport";
 import { parseStudentExcel } from "@/utils/studentImport";
 import { useAuth } from "@/contexts/AuthContext";
+import StudentForm from "@/components/student/StudentForm";
 
 export default function StudentPage() {
-  const { user } = useAuth();
+  const { user, userRole } = useAuth();
   const [students, setStudents] = useState<GraduateStudent[]>([]);
   const [loading, setLoading] = useState(true);
   const [importProgress, setImportProgress] = useState<{ current: number; total: number } | null>(null);
@@ -46,26 +47,48 @@ export default function StudentPage() {
     }
   };
 
+  const [sortBy, setSortBy] = useState<'student_id' | 'updated_at'>('updated_at');
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
+  const [viewTab, setViewTab] = useState<'active' | 'disabled' | 'all'>('active');
+
   // Pagination State
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 50;
 
-  // Edit Modal State
-  const [editingId, setEditingId] = useState<string | null>(null);
-  const [editForm, setEditForm] = useState<Partial<GraduateStudent>>({});
-
   useEffect(() => {
-    setCurrentPage(1); // Reset on search
-  }, [searchTerm]);
+    setCurrentPage(1); // Reset on search or tab change
+  }, [searchTerm, viewTab]);
 
   const filteredStudents = students.filter((s) => {
+    if (viewTab === 'active' && s.is_deleted === true) return false;
+    if (viewTab === 'disabled' && s.is_deleted !== true) return false;
+
     const searchLower = searchTerm.toLowerCase();
+    const fullName = `${s.title_th || ''}${s.first_name_th || ''} ${s.last_name_th || ''}`.toLowerCase();
     return (
-      s.full_name_th.toLowerCase().includes(searchLower) ||
+      fullName.includes(searchLower) ||
+      (s.full_name_th || '').toLowerCase().includes(searchLower) ||
       s.student_id.toLowerCase().includes(searchLower) ||
-      s.major_name.toLowerCase().includes(searchLower) ||
-      s.advisor_name.toLowerCase().includes(searchLower)
+      (s.major_name || '').toLowerCase().includes(searchLower) ||
+      (s.advisor_name || '').toLowerCase().includes(searchLower) ||
+      (s.advisor_department || '').toLowerCase().includes(searchLower) ||
+      (s.degree_level || '').toLowerCase().includes(searchLower) ||
+      (s.program_type || '').toLowerCase().includes(searchLower) ||
+      (s.current_status || '').toLowerCase().includes(searchLower) ||
+      (s.major_code || '').toLowerCase().includes(searchLower)
     );
+  }).sort((a, b) => {
+    if (sortBy === 'student_id') {
+        const valA = String(a.student_id || "");
+        const valB = String(b.student_id || "");
+        return sortOrder === 'asc' 
+          ? valA.localeCompare(valB, undefined, { numeric: true })
+          : valB.localeCompare(valA, undefined, { numeric: true });
+    } else {
+       const timeA = a.updated_at ? new Date(a.updated_at.toDate ? a.updated_at.toDate() : a.updated_at).getTime() : 0;
+       const timeB = b.updated_at ? new Date(b.updated_at.toDate ? b.updated_at.toDate() : b.updated_at).getTime() : 0;
+       return sortOrder === 'asc' ? timeA - timeB : timeB - timeA;
+    }
   });
 
   // Pagination Logic
@@ -78,57 +101,98 @@ export default function StudentPage() {
   const startEntry = (currentPage - 1) * itemsPerPage + 1;
   const endEntry = Math.min(currentPage * itemsPerPage, filteredStudents.length);
 
-  const handleEditClick = (s: GraduateStudent) => {
-    setEditingId(s.student_id);
-    setEditForm({ ...s });
-  };
-
-  const handleEditSave = async () => {
-    if (!user?.email) { alert("กรุณาเข้าสู่ระบบเพื่อดำเนินการ"); return; }
-    if (!editingId || !editForm.full_name_th) return;
+  const handleExport = async (all: boolean = false) => {
     try {
       setLoading(true);
-      await StudentService.updateStudent(editingId, editForm, user.email);
-      setStudents(prev => prev.map(s => s.student_id === editingId ? { ...s, ...editForm } as GraduateStudent : s));
-      setEditingId(null);
-      alert("บันทึกข้อมูลเรียบร้อยแล้ว");
-    } catch (error) {
-      console.error("Update failed:", error);
-      alert("บันทึกไม่สำเร็จ");
-    } finally {
-      setLoading(false);
-    }
-  };
+      const studentData = all ? students : filteredStudents;
+      let pubs: any[] = [];
+      let progs: any[] = [];
 
-  const handleExport = () => {
-    exportStudentsToExcel(filteredStudents);
+      if (all) {
+         const { AcademicService } = await import("@/services/academicService");
+         const [fetchedPubs, fetchedProgs] = await Promise.all([
+            AcademicService.getAllPublications(),
+            AcademicService.getAllProgress()
+         ]);
+         pubs = fetchedPubs;
+         progs = fetchedProgs;
+      }
+      
+      exportStudentsToExcel(studentData, pubs, progs);
+    } catch (error) {
+       console.error("Export failed:", error);
+       alert("การส่งออกข้อมูลล้มเหลว");
+    } finally {
+       setLoading(false);
+    }
   };
 
   const handleImportClick = () => {
     fileInputRef.current?.click();
   };
 
+  const [importType, setImportType] = useState<'student' | 'publication' | 'progress'>('student');
+
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!user?.email) { alert("กรุณาเข้าสู่ระบบเพื่อดำเนินการ"); return; }
     const file = e.target.files?.[0];
     if (!file) return;
 
-    if (!confirm(`กำลังนำเข้าไฟล์ ${file.name} ระบบจะทำการข้ามข้อมูลที่ซ้ำกันหรืออัปเดตข้อมูลเดิมตามรหัสนิสิต ต้องการดำเนินการต่อหรือไม่?`)) {
+    if (!window.confirm(`ยืนยันการนำเข้าข้อมูลจากไฟล์: ${file.name}?`)) {
        if (e.target) e.target.value = "";
        return;
     }
 
     setLoading(true);
     setImportProgress({ current: 0, total: 0 });
-    
+
     try {
-      const result = await parseStudentExcel(file, user.email, (processed, total) => {
-        setImportProgress({ current: processed, total: total });
-      });
+      // Dynamic imports
+      const { parseStudentExcel, parsePublicationsExcel, parseProgressExcel, parseMultiSheetExcel } = await import("@/utils/studentImport");
+      const { StudentService } = await import("@/services/studentService");
+      const { AcademicService } = await import("@/services/academicService");
+
+      let successCount = 0;
+      let errorMsgs: string[] = [];
+
+      if (importType === 'student') {
+         const result = await parseStudentExcel(file, user.email, (processed, total) => setImportProgress({ current: processed, total }));
+         if (result.success && result.data && result.data.length > 0) {
+            await StudentService.addStudentBatch(result.data, user.email);
+            successCount = result.data.length;
+         }
+         errorMsgs = result.errors || [];
+      } 
+      else if (importType === 'publication') {
+         const result = await parsePublicationsExcel(file, user.email, (processed, total) => setImportProgress({ current: processed, total }));
+         if (result.success && result.data && result.data.length > 0) {
+            await AcademicService.addPublicationBatch(result.data, user.email);
+            successCount = result.count;
+         }
+         errorMsgs = result.errors || [];
+      }
+      else if (importType === 'progress') {
+         const result = await parseProgressExcel(file, user.email, (processed, total) => setImportProgress({ current: processed, total }));
+         if (result.success && result.data && result.data.length > 0) {
+             await AcademicService.addProgressBatch(result.data, user.email);
+             successCount = result.count;
+         }
+         errorMsgs = result.errors || [];
+      }
+      else if (importType === 'smart') {
+         const result = await parseMultiSheetExcel(file, user.email);
+         if (result.success) {
+            if (result.students?.length) await StudentService.addStudentBatch(result.students, user.email);
+            if (result.publications?.length) await AcademicService.addPublicationBatch(result.publications, user.email);
+            if (result.progress?.length) await AcademicService.addProgressBatch(result.progress, user.email);
+            successCount = (result.students?.length || 0) + (result.publications?.length || 0) + (result.progress?.length || 0);
+         }
+         errorMsgs = result.errors;
+      }
       
-      let msg = `นำเข้าข้อมูลเสร็จสิ้น!\nสำเร็จ: ${result.success}\nข้อผิดพลาด: ${result.errors.length}`;
-      if (result.errors.length > 0) {
-        msg += `\nข้อผิดพลาด 5 รายการแรก:\n${result.errors.slice(0, 5).join("\n")}`;
+      let msg = `นำเข้าเสร็จสิ้น!\nสำเร็จ: ${successCount} รายการ\nข้อผิดพลาด: ${errorMsgs.length}`;
+      if (errorMsgs.length > 0) {
+        msg += `\nตัวอย่างข้อผิดพลาด:\n${errorMsgs.slice(0, 5).join("\n")}`;
       }
       alert(msg);
       fetchStudents();
@@ -142,150 +206,303 @@ export default function StudentPage() {
     }
   };
 
-  const PaginationControls = () => (
+  const handleFixData = async () => {
+    if (!confirm("Fix data visibility for existing records?")) return;
+    setLoading(true);
+    try {
+      const count = await StudentService.migrateData();
+      alert(`Successfully fixed visibility and backfilled ${count} records.`);
+      fetchStudents();
+    } catch (error) {
+      console.error("Fix failed:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleDeleteAll = async () => {
+    if (!user?.email) { alert("กรุณาเข้าสู่ระบบเพื่อดำเนินการ"); return; }
+    if (!confirm("⚠️ คำเตือน: ระบบจะลบข้อมูลนิสิตทั้งหมด! ต้องการดำเนินการต่อหรือไม่?")) return;
+    setLoading(true);
+    try {
+      await StudentService.deleteAllStudents(user.email);
+      setStudents([]);
+    } catch (error) {
+       console.error(error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const PaginationControls = ({ showBackToTop = true }: { showBackToTop?: boolean }) => (
     <div className="flex items-center justify-between px-4 py-3 bg-white border-t border-gray-100 sm:px-6">
       <div className="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
         <div>
           <p className="text-sm text-gray-700">
-            แสดง {startEntry} ถึง {endEntry} จากทั้งหมด {filteredStudents.length} รายการ
+            แสดง <span className="font-medium">{startEntry}</span> ถึง <span className="font-medium">{endEntry}</span> จาก <span className="font-medium">{filteredStudents.length}</span> รายการ
           </p>
         </div>
-        <div className="flex gap-1">
+        <div>
+          <nav className="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
             <button
               onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
               disabled={currentPage === 1}
-              className={`px-3 py-1 border rounded text-sm ${currentPage === 1 ? 'text-gray-300' : 'text-gray-500 hover:bg-gray-50'}`}
+              className={`relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium ${currentPage === 1 ? 'text-gray-300' : 'text-gray-500 hover:bg-gray-50'}`}
             >
-              ย้อนกลับ
+              ก่อนหน้า
             </button>
-            <span className="px-4 py-1 text-sm font-medium border rounded bg-blue-50 text-blue-600">
-                หน้า {currentPage} จาก {totalPages || 1}
-            </span>
+            {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+               let pNum = i + 1;
+               if (totalPages > 5 && currentPage > 3) pNum = currentPage - 2 + i;
+               if (pNum > totalPages) return null;
+               
+               return (
+                <button
+                  key={pNum}
+                  onClick={() => setCurrentPage(pNum)}
+                  className={`relative inline-flex items-center px-4 py-2 border text-sm font-medium ${currentPage === pNum ? 'z-10 bg-blue-50 border-blue-500 text-blue-600' : 'bg-white border-gray-300 text-gray-500 hover:bg-gray-50'}`}
+                >
+                  {pNum}
+                </button>
+               );
+            })}
             <button
               onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
               disabled={currentPage === totalPages || totalPages === 0}
-              className={`px-3 py-1 border rounded text-sm ${currentPage === totalPages || totalPages === 0 ? 'text-gray-300' : 'text-gray-500 hover:bg-gray-50'}`}
+              className={`relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium ${currentPage === totalPages || totalPages === 0 ? 'text-gray-300' : 'text-gray-500 hover:bg-gray-50'}`}
             >
               ถัดไป
             </button>
+          </nav>
         </div>
+        {showBackToTop && (
+          <div>
+            <button 
+              onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+              className="flex items-center gap-1.5 px-3 py-2 bg-slate-50 text-slate-500 hover:bg-slate-100 hover:text-blue-600 border border-slate-200 rounded-lg text-sm font-medium transition-all group"
+              title="Back to Top"
+            >
+              <ChevronUp size={16} className="group-hover:-translate-y-0.5 transition-transform" />
+              <span className="hidden md:inline">Back to Top</span>
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );
 
   return (
-    <div className="container mx-auto p-6 font-sarabun bg-[#F8FAFC] min-h-screen">
-      <div className="flex justify-between items-center mb-8">
+    <div className="container mx-auto p-6 font-sarabun">
+      <div className="flex justify-between items-center mb-6">
         <div className="flex items-center gap-4">
-          <Link href="/?tab=Input" className="p-2 hover:bg-white rounded-xl shadow-sm transition-all text-[#236c96]">
+          <Link href="/?tab=Input" className="p-2 hover:bg-gray-100 rounded-full transition-colors text-gray-500 hover:text-gray-700">
              <ArrowLeft size={24} />
           </Link>
-          <div className="flex items-center gap-3">
-            <div className="bg-[#E0F2FE] p-2.5 rounded-xl">
-               <GraduationCap className="text-[#236c96]" size={28} />
-            </div>
-            <div>
-               <h1 className="text-2xl font-bold text-slate-800">ระบบข้อมูลนิสิต (Academic)</h1>
-               <p className="text-xs text-slate-500 font-medium">จัดการข้อมูลนิสิตระดับบัณฑิตศึกษา</p>
-            </div>
-          </div>
+          <h1 className="text-2xl font-bold flex items-center gap-3">
+             <div className="bg-green-600 p-2 rounded-lg shadow-sm">
+                <GraduationCap size={24} className="text-white" />
+             </div>
+             ระบบข้อมูลนิสิต (Academic)
+          </h1>
         </div>
-        <div className="flex gap-3">
+        <div className="flex gap-2">
           {importProgress && (
-             <span className="text-sm text-blue-600 flex items-center bg-blue-50 px-4 rounded-xl font-bold animate-pulse border border-blue-100">
-                นำเข้า... {importProgress.current} / {importProgress.total}
+             <span className="text-sm text-blue-600 flex items-center bg-blue-50 px-3 rounded-lg animate-pulse">
+                กำลังนำเข้า... {importProgress.current} / {importProgress.total} รายการ
              </span>
           )}
-          <input type="file" ref={fileInputRef} onChange={handleFileChange} className="hidden" accept=".xlsx, .xls, .csv" />
-          <button onClick={handleImportClick} disabled={loading} className="bg-white hover:bg-slate-50 text-[#236c96] border border-[#C1EAF9] px-5 py-2.5 rounded-xl flex items-center gap-2 shadow-sm transition-all font-bold">
-            <Upload size={20} /> นำเข้า Excel
-          </button>
-          <button onClick={handleExport} className="bg-[#71C5E8] hover:bg-[#5bb4d7] text-white px-5 py-2.5 rounded-xl flex items-center gap-2 shadow-md transition-all font-bold">
-            <Download size={20} /> ส่งออก Excel
-          </button>
-          <Link href="/student/new" className="bg-[#236c96] hover:bg-[#1a5578] text-white px-5 py-2.5 rounded-xl flex items-center gap-2 shadow-md transition-all font-bold">
-             <Plus size={20} /> เพิ่มนิสิตใหม่
+          {userRole === 'admin' && (
+            <div className="flex items-center gap-2 mr-2">
+               <button onClick={handleFixData} className="text-slate-300 hover:text-[#236c96] transition-colors p-1 hover:bg-slate-100 rounded" title="Fix visibility (Experimental)">
+                 <Grid2X2Check size={16} />
+               </button>
+               <button onClick={handleDeleteAll} className="text-slate-300 hover:text-red-500 transition-colors p-1 hover:bg-slate-100 rounded" title="ลบข้อมูลทั้งหมด">
+                 <Trash2 size={16} />
+               </button>
+            </div>
+          )}
+          {/* Original file input removed as new UI has it embedded */}
+          {/* <input type="file" ref={fileInputRef} onChange={handleFileChange} className="hidden" accept=".xlsx, .xls, .csv" /> */}
+          
+          <div className="flex gap-2">
+            <select 
+              value={importType} 
+              onChange={(e) => setImportType(e.target.value as any)}
+              className="px-3 py-2 border rounded-lg text-sm bg-white"
+            >
+              <option value="student">นำเข้า: ข้อมูลนิสิต (Profile)</option>
+              <option value="publication">นำเข้า: ผลงานตีพิมพ์ (Publications)</option>
+              <option value="progress">นำเข้า: ความก้าวหน้า (Progress)</option>
+              <option value="smart">Smart Import (รวมหลาย Sheet)</option>
+            </select>
+            <label className="flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg cursor-pointer transition-colors shadow-sm">
+              <Upload size={18} />
+              <span className="font-medium text-sm">นำเข้า Excel</span>
+              <input
+                type="file"
+                accept=".xlsx, .xls"
+                onChange={handleFileChange}
+                className="hidden"
+                disabled={loading} // Using 'loading' state for 'isImporting'
+              />
+            </label>
+            <button
+               onClick={() => handleExport(false)}
+               className="flex items-center gap-2 bg-slate-600 hover:bg-slate-700 text-white px-4 py-2 rounded-lg transition-colors shadow-sm"
+            >
+              <Download size={18} />
+              <span className="font-medium text-sm">ส่งออก (แสดงผล)</span>
+            </button>
+            <button
+               onClick={() => handleExport(true)}
+               className="flex items-center gap-2 bg-slate-800 hover:bg-slate-900 text-white px-4 py-2 rounded-lg transition-colors shadow-sm"
+            >
+              <Download size={18} />
+              <span className="font-medium text-sm">ส่งออก (ทั้งหมด)</span>
+            </button>
+          </div>
+          <Link href="/advisor" className="bg-teal-600 hover:bg-teal-700 text-white px-4 py-2 rounded-lg flex items-center gap-2 shadow-sm transition-colors text-sm">
+             <Users size={18} />
+             อาจารย์
           </Link>
+          <Link href="/student/report" className="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg flex items-center gap-2 shadow-sm transition-colors text-sm">
+             <BarChart3 size={18} />
+             รายงาน
+          </Link>
+           <Link 
+             href="/student/new"
+             className="bg-green-600 hover:bg-green-700 text-white px-5 py-2.5 rounded-lg flex items-center gap-2 shadow-sm transition-colors text-sm font-medium"
+           >
+              <Plus size={18} />
+              เพิ่มนิสิตใหม่
+           </Link>
         </div>
       </div>
 
-      <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
-        <div className="p-6 border-b border-slate-100 flex flex-col md:flex-row gap-4 justify-between items-center bg-white">
-          <div className="relative flex-1 max-w-md w-full">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
-            <input
-              type="text"
-              placeholder="ค้นหาชื่อ, รหัส, สาขา, หรือที่ปรึกษา..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-12 pr-4 py-3 bg-slate-50 border-none rounded-xl focus:ring-2 focus:ring-[#71C5E8] transition-all text-sm"
-            />
+      <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+        <div className="p-4 border-b border-gray-100 flex flex-col md:flex-row gap-4 justify-between items-center">
+          <div className="flex flex-1 gap-2 max-w-md w-full">
+            <div className="relative flex-1">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
+              <input
+                type="text"
+                placeholder="ค้นหา รหัส, ชื่อ, สาขา, อาจารย์, ภาควิชา, ระดับ, สถานะ..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
+              />
+            </div>
+            <button 
+              onClick={fetchStudents}
+              disabled={loading}
+              className="flex items-center gap-2 px-3 py-2 bg-slate-50 text-slate-500 hover:bg-slate-100 hover:text-blue-600 border border-slate-200 rounded-lg text-sm font-medium transition-all"
+              title="รีเฟรชข้อมูล"
+            >
+              <RefreshCw className={loading ? "animate-spin" : ""} size={16} /> 
+            </button>
           </div>
-          <div className="text-sm font-semibold text-slate-500 bg-slate-100 px-4 py-1.5 rounded-full">
-            ทั้งหมด: <span className="text-[#236c96]">{filteredStudents.length}</span> รายการ
+          
+          <div className="flex items-center gap-2">
+            <button 
+              onClick={() => {
+                if (sortBy === 'student_id') setSortOrder(prev => prev === 'asc' ? 'desc' : 'asc');
+                else { setSortBy('student_id'); setSortOrder('asc'); }
+              }}
+              className={`flex items-center gap-1 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${sortBy === 'student_id' ? 'bg-blue-50 text-blue-600 border border-blue-200' : 'bg-white text-gray-600 border border-gray-200 hover:bg-gray-50'}`}
+            >
+              <Hash size={16} /> ID
+              {sortBy === 'student_id' && (sortOrder === 'asc' ? <ArrowUpAZ size={14} /> : <ArrowDownAZ size={14} />)}
+            </button>
+            <button 
+              onClick={() => {
+                if (sortBy === 'updated_at') setSortOrder(prev => prev === 'asc' ? 'desc' : 'asc');
+                else { setSortBy('updated_at'); setSortOrder('desc'); }
+              }}
+              className={`flex items-center gap-1 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${sortBy === 'updated_at' ? 'bg-blue-50 text-blue-600 border border-blue-200' : 'bg-white text-gray-600 border border-gray-200 hover:bg-gray-50'}`}
+            >
+              <Calendar size={16} /> Latest
+              {sortBy === 'updated_at' && (sortOrder === 'asc' ? <ArrowUpAZ size={14} /> : <ArrowDownAZ size={14} />)}
+            </button>
+          </div>
+
+          <div className="flex border-b border-gray-100 px-4">
+            <button onClick={() => setViewTab('active')} className={`px-4 py-3 text-sm font-bold transition-all border-b-2 ${viewTab === 'active' ? 'border-green-600 text-green-700' : 'border-transparent text-gray-400 hover:text-gray-600'}`}>รายการปกติ ({students.filter(s => !s.is_deleted).length})</button>
+            <button onClick={() => setViewTab('disabled')} className={`px-4 py-3 text-sm font-bold transition-all border-b-2 ${viewTab === 'disabled' ? 'border-red-600 text-red-700' : 'border-transparent text-gray-400 hover:text-gray-600'}`}>รายการที่ยกเลิก ({students.filter(s => s.is_deleted).length})</button>
+            <button onClick={() => setViewTab('all')} className={`px-4 py-3 text-sm font-bold transition-all border-b-2 ${viewTab === 'all' ? 'border-blue-600 text-blue-700' : 'border-transparent text-gray-400 hover:text-gray-600'}`}>ทั้งหมด ({students.length})</button>
           </div>
         </div>
 
         <div className="overflow-x-auto">
-          <table className="w-full text-left">
+          <PaginationControls showBackToTop={false} />
+          <table className="w-full text-left border-collapse">
             <thead>
-              <tr className="bg-slate-50/50 text-slate-500 text-[11px] uppercase tracking-wider font-bold">
-                <th className="px-6 py-4">รหัสนิสิต</th>
-                <th className="px-6 py-4">ชื่อ-นามสกุล</th>
-                <th className="px-6 py-4">ระดับ/หลักสูตร</th>
-                <th className="px-6 py-4">สาขาวิชา</th>
-                <th className="px-6 py-4">สถานะ</th>
-                <th className="px-6 py-4 text-right">ดำเนินการ</th>
+              <tr className="bg-gray-50 text-gray-600 text-sm uppercase">
+                <th className="p-4 border-b font-semibold w-24">รหัสนิสิต</th>
+                <th className="p-4 border-b font-semibold w-64">ชื่อ-นามสกุล</th>
+                <th className="p-4 border-b font-semibold">ระดับ/หลักสูตร</th>
+                <th className="p-4 border-b font-semibold">สาขาวิชา</th>
+                <th className="p-4 border-b font-semibold w-32">Created</th>
+                <th className="p-4 border-b font-semibold w-32">Updated</th>
+                <th className="p-4 border-b font-semibold w-24">สถานะ</th>
+                <th className="p-4 border-b font-semibold text-right w-24">Action</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-100 text-sm">
+            <tbody className="divide-y divide-gray-100">
               {loading ? (
-                <tr><td colSpan={6} className="p-12 text-center text-slate-400 font-medium">
-                  <div className="flex flex-col items-center gap-3">
-                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#236c96]"></div>
-                    {importProgress ? 'กำลังนำเข้าข้อมูล...' : 'กำลังโหลดข้อมูล...'}
-                  </div>
+                <tr><td colSpan={7} className="p-12 text-center text-gray-500">
+                   <div className="flex flex-col items-center gap-2">
+                      <RefreshCw className="animate-spin text-blue-600" size={24} />
+                      {importProgress ? 'กำลังนำเข้าข้อมูล...' : 'กำลังโหลดข้อมูล...'}
+                   </div>
                 </td></tr>
               ) : paginatedStudents.length === 0 ? (
-                <tr><td colSpan={6} className="p-12 text-center text-slate-400 font-medium">ไม่พบข้อมูลนิสิต</td></tr>
+                <tr><td colSpan={7} className="p-12 text-center text-gray-500 font-medium">ไม่พบข้อมูลนิสิต</td></tr>
               ) : (
                 paginatedStudents.map((s) => (
-                  <tr key={s.student_id} className="hover:bg-slate-50/50 transition-colors group">
-                    <td className="px-6 py-4 text-slate-900 font-bold font-mono text-xs">{s.student_id}</td>
-                    <td className="px-6 py-4">
-                       <div className="font-bold text-slate-700">{s.full_name_th}</div>
-                       <div className="text-[10px] text-slate-400">{s.advisor_name}</div>
+                  <tr key={s.student_id} className="hover:bg-gray-50 transition-colors group">
+                    <td className="p-4 text-gray-900 font-mono text-sm font-bold">{s.student_id}</td>
+                    <td className="p-4">
+                      <div className="font-bold text-gray-900 border-b border-transparent group-hover:border-blue-200 transition-all inline-block">{s.full_name_th}</div>
+                      <div className="text-xs text-gray-500 mt-0.5">{s.advisor_name}</div>
+                      {s.is_deleted && <span className="ml-2 text-[10px] bg-red-100 text-red-700 px-1.5 py-0.5 rounded font-bold border border-red-200 uppercase">Cancelled</span>}
                     </td>
-                    <td className="px-6 py-4">
-                       <div className="text-slate-600 font-medium">{s.degree_level}</div>
-                       <div className="text-[10px] text-slate-400">{s.program_type}</div>
+                    <td className="p-4 text-gray-700">
+                      <div className="font-bold text-slate-800">{s.degree_level}</div>
+                      <div className="text-xs text-slate-500 font-medium">{s.program_type}</div>
                     </td>
-                    <td className="px-6 py-4 text-slate-600 truncate max-w-[150px]" title={s.major_name}>
-                      {s.major_name}
+                    <td className="p-4 text-gray-700">
+                      <span className="block text-sm font-bold">{s.major_name}</span>
+                      <span className="text-xs text-gray-500 font-medium">{s.major_code}</span>
                     </td>
-                    <td className="px-6 py-4">
-                       <span className={`px-2.5 py-1 rounded-full text-[10px] font-bold ${
-                         s.current_status === 'สำเร็จ' ? 'bg-green-50 text-green-600 border border-green-100' : 
-                         s.current_status === 'กำลังศึกษา' ? 'bg-blue-50 text-blue-600 border border-blue-100' :
-                         'bg-slate-100 text-slate-500'
+                    <td className="p-4 text-[11px] text-gray-500">
+                       <div className="flex flex-col">
+                         <span className="font-medium text-slate-700">
+                           {s.created_at ? new Date(s.created_at).toLocaleString('th-TH', { dateStyle: 'short', timeStyle: 'short' }) : '-'}
+                         </span>
+                         <span className="text-gray-400">{s.created_by?.includes('@') ? s.created_by.split('@')[0] : (s.created_by || '-')}</span>
+                       </div>
+                    </td>
+                    <td className="p-4 text-[11px] text-gray-500">
+                       <div className="flex flex-col">
+                         <span className="font-medium text-slate-700">
+                           {s.updated_at ? new Date(s.updated_at.toDate ? s.updated_at.toDate() : s.updated_at).getTime() > 0 ? new Date(s.updated_at.toDate ? s.updated_at.toDate() : s.updated_at).toLocaleString('th-TH', { dateStyle: 'short', timeStyle: 'short' }) : '-' : '-'}
+                         </span>
+                         <span className="text-gray-400">{s.updated_by?.includes('@') ? s.updated_by.split('@')[0] : (s.updated_by || '-')}</span>
+                       </div>
+                    </td>
+                    <td className="p-4">
+                       <div className={`text-xs font-bold px-3 py-1 rounded-full inline-block border ${
+                         s.current_status === 'สำเร็จ' ? 'bg-green-50 text-green-700 border-green-200' : 
+                         s.current_status === 'กำลังศึกษา' ? 'bg-blue-50 text-blue-700 border-blue-200' :
+                         'bg-gray-100 text-gray-600 border-gray-200'
                        }`}>
                           {s.current_status}
-                       </span>
+                       </div>
                     </td>
-                    <td className="px-6 py-4 text-right">
-                      <div className="flex justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                        <button
-                          onClick={() => handleEditClick(s)}
-                          className="p-2 text-slate-400 hover:text-[#236c96] hover:bg-[#E0F2FE] rounded-lg transition-all"
-                        >
-                          <Edit size={16} />
-                        </button>
-                        <button
-                          onClick={() => handleDelete(s.student_id, s.full_name_th)}
-                          className="p-2 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all"
-                        >
-                          <Trash2 size={16} />
-                        </button>
+                    <td className="p-4 text-right">
+                       <div className="flex justify-end gap-1 opacity-10 md:opacity-0 group-hover:opacity-100 transition-all">
+                        <Link href={`/student/${s.student_id}/edit`} title="แก้ไข" className="p-2 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all"><Edit size={18} /></Link>
+                        <button onClick={() => handleDelete(s.student_id, s.full_name_th)} title="ลบ/ยกเลิก" className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all"><Trash2 size={18} /></button>
                       </div>
                     </td>
                   </tr>
@@ -296,50 +513,6 @@ export default function StudentPage() {
           <PaginationControls />
         </div>
       </div>
-
-      {/* Edit Modal (Simplified for now) */}
-      {editingId && (
-        <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-xl p-8 space-y-6 animate-in fade-in zoom-in duration-200">
-            <h3 className="text-xl font-bold text-slate-800 border-b pb-4">แก้ไขข้อมูลนิสิต</h3>
-            <div className="grid grid-cols-2 gap-5">
-               <div className="col-span-1">
-                  <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">รหัสนิสิต</label>
-                  <input className="w-full bg-slate-50 border-none rounded-xl p-3 text-sm font-bold text-slate-400 cursor-not-allowed" value={editForm.student_id} disabled />
-               </div>
-               <div className="col-span-1">
-                  <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">ชื่อ-นามสกุล</label>
-                  <input className="w-full bg-slate-50 border-none rounded-xl p-3 text-sm font-bold" value={editForm.full_name_th || ''} onChange={e => setEditForm({...editForm, full_name_th: e.target.value})} />
-               </div>
-               <div className="col-span-2">
-                  <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">สถานะปัจจุบัน</label>
-                  <select 
-                    className="w-full bg-slate-50 border-none rounded-xl p-3 text-sm font-bold" 
-                    value={editForm.current_status || ''} 
-                    onChange={e => setEditForm({...editForm, current_status: e.target.value})}
-                  >
-                    <option value="กำลังศึกษา">กำลังศึกษา</option>
-                    <option value="สำเร็จ">สำเร็จ</option>
-                    <option value="พ้นสภาพ">พ้นสภาพ</option>
-                    <option value="ลาออก">ลาออก</option>
-                  </select>
-               </div>
-               <div className="col-span-1">
-                  <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">อาจารย์ที่ปรึกษา</label>
-                  <input className="w-full bg-slate-50 border-none rounded-xl p-3 text-sm font-bold" value={editForm.advisor_name || ''} onChange={e => setEditForm({...editForm, advisor_name: e.target.value})} />
-               </div>
-               <div className="col-span-1">
-                  <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">สังกัดที่ปรึกษา</label>
-                  <input className="w-full bg-slate-50 border-none rounded-xl p-3 text-sm font-bold" value={editForm.advisor_department || ''} onChange={e => setEditForm({...editForm, advisor_department: e.target.value})} />
-               </div>
-            </div>
-            <div className="flex gap-3 justify-end pt-4">
-               <button onClick={() => setEditingId(null)} className="px-6 py-2.5 text-slate-500 font-bold hover:bg-slate-50 rounded-xl transition-all">ยกเลิก</button>
-               <button onClick={handleEditSave} className="px-8 py-2.5 bg-[#236c96] text-white rounded-xl shadow-lg shadow-blue-900/20 hover:bg-[#1a5578] transition-all font-bold">บันทึกการเปลี่ยนแปลง</button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }

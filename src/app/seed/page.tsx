@@ -1,394 +1,241 @@
 "use client";
 
 import { useState } from "react";
-import { seedKpiMaster, seedKpiEntries, clearCollection } from "@/lib/data-service";
-import type { KpiMaster } from "@/lib/data-service";
-import { useAuth } from "@/contexts/AuthContext";
+import { Database, Loader2, CheckCircle, AlertTriangle, ArrowLeft } from "lucide-react";
 import Link from "next/link";
-import { ShieldX, Loader2 } from "lucide-react";
-import kpiMasterRaw from "../../../db_design/kpi_master.json";
+import { db } from "@/lib/firebase";
+import { doc, setDoc, collection, serverTimestamp } from "firebase/firestore";
 
-// ─── Aggregation map by data_pattern ───────────────────────────
-function getAggregation(pattern: string): "sum" | "avg" | "latest" | "count" | "append" {
-  switch (pattern) {
-    case "year_series": return "avg";
-    case "matrix": return "sum";
-    case "survey": return "latest";
-    case "narrative": return "append";
-    case "milestone": return "latest";
-    default: return "avg";
-  }
-}
+// ข้อมูลจำลอง 4 นิสิต (จาก CSV จริง)
+const sampleStudents = [
+  {
+    student_id: "6014900080",
+    title_th: "นางสาว",
+    first_name_th: "พิริยาภรณ์",
+    last_name_th: "เฑียรเดชสกุล",
+    full_name_th: "นางสาวพิริยาภรณ์ เฑียรเดชสกุล",
+    gender: "หญิง",
+    nationality: "ไทย",
+    degree_level: "ปริญญาโท",
+    program_type: "ปกติ",
+    major_code: "XI16",
+    major_name: "วิทยาศาสตร์สุขภาพสัตว์และชีวเวชศาสตร์",
+    advisor_name: "รศ.น.สพ.ดร.พิษณุ ตุลยกุล",
+    advisor_department: "สัตวแพทยสาธารณสุขศาสตร์",
+    admit_semester: "ภาคต้น",
+    admit_year: 2560,
+    expected_grad_semester: "ภาคปลาย",
+    expected_grad_year: 2561,
+    current_status: "จบการศึกษา",
+    study_plan: "ก แบบ ก 1",
+    thesis_title_th: "การศึกษาเปรียบเทียบการทำงานของเอนไซม์ไซโตโครมพี 450 ฯ",
+    thesis_title_en: "Comparative Metabolism of Cytochrome P450 and GST Activity in Liver of Crocodile and Livestock",
+    english_test_pass: "ผ่าน",
+    graduated_semester: "ภาคปลาย",
+    graduated_year: 2564,
+    on_plan: false,
+  },
+  {
+    student_id: "6014900144",
+    title_th: "นางสาว",
+    first_name_th: "จุฬารัตน์",
+    last_name_th: "เหลาเพิ่ม",
+    full_name_th: "นางสาวจุฬารัตน์ เหลาเพิ่ม",
+    gender: "หญิง",
+    nationality: "ไทย",
+    degree_level: "ปริญญาโท",
+    program_type: "ปกติ",
+    major_code: "XI16",
+    major_name: "วิทยาศาสตร์สุขภาพสัตว์และชีวเวชศาสตร์",
+    advisor_name: "ศ.น.สพ.ดร.จตุพร รัตนศรีสมพร",
+    advisor_department: "เวชศาสตร์คลินิกสัตว์เลี้ยง",
+    admit_semester: "ภาคปลาย",
+    admit_year: 2560,
+    expected_grad_semester: "ภาคต้น",
+    expected_grad_year: 2562,
+    current_status: "จบการศึกษา",
+    study_plan: "ก แบบ ก 1",
+    thesis_title_th: "การพัฒนาชุดตรวจเชื้อ เฮลิโคแบคเตอร์ ด้วยการทดสอบการผลิตเอนไซม์ยูรีเอสในเยื่อบุกระเพาะอาหารสุนัข",
+    thesis_title_en: "Development of a Urease Kit to Detect for Helicobacter spp. in Dogs Gastric Mucosa",
+    english_test_pass: "ผ่าน",
+    graduated_year: 2563,
+    on_plan: false,
+  },
+  {
+    student_id: "6014900152",
+    title_th: "นางสาว",
+    first_name_th: "พิชชาพร",
+    last_name_th: "ไวยมิตรา",
+    full_name_th: "นางสาวพิชชาพร ไวยมิตรา",
+    gender: "หญิง",
+    nationality: "ไทย",
+    degree_level: "ปริญญาโท",
+    program_type: "ปกติ",
+    major_code: "XI16",
+    major_name: "วิทยาศาสตร์สุขภาพสัตว์และชีวเวชศาสตร์",
+    advisor_name: "ศ.ดร.วิน สุรเชษฐพงษ์",
+    advisor_department: "จุลชีววิทยาและวิทยาภูมิคุ้มกัน",
+    admit_semester: "ภาคปลาย",
+    admit_year: 2560,
+    expected_grad_semester: "ภาคต้น",
+    expected_grad_year: 2562,
+    current_status: "จบการศึกษา",
+    study_plan: "ก แบบ ก 1",
+    thesis_title_en: "Effects of Probiotic on Tilapia Lake Virus Infection in Nile Tilapia and Red Hybrid Tilapia",
+    english_test_pass: "ผ่าน",
+    graduated_semester: "ภาคต้น",
+    graduated_year: 2563,
+    on_plan: false,
+  },
+  {
+    student_id: "6514900999",
+    title_th: "นาย",
+    first_name_th: "ทดสอบ",
+    last_name_th: "กำลังศึกษา",
+    full_name_th: "นายทดสอบ กำลังศึกษา",
+    title_en: "Mr.",
+    first_name_en: "Test",
+    last_name_en: "InProgress",
+    full_name_en: "Mr. Test InProgress",
+    gender: "ชาย",
+    nationality: "ไทย",
+    degree_level: "ปริญญาเอก",
+    program_type: "ปกติ",
+    major_code: "XI16",
+    major_name: "วิทยาศาสตร์สุขภาพสัตว์และชีวเวชศาสตร์",
+    advisor_name: "รศ.น.สพ.ดร.พิษณุ ตุลยกุล",
+    advisor_department: "สัตวแพทยสาธารณสุขศาสตร์",
+    admit_semester: "ภาคต้น",
+    admit_year: 2565,
+    expected_grad_semester: "ภาคปลาย",
+    expected_grad_year: 2568,
+    current_status: "กำลังศึกษา",
+    study_plan: "แบบ 1.1",
+    english_test_pass: "ไม่ผ่าน",
+  },
+];
 
-// ─── Generate sample entries ───────────────────────────────────
-function generateSampleEntries() {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const entries: any[] = [];
-  const years = [2564, 2565, 2566, 2567, 2568];
-  const periodsQ = ["Q1", "Q2", "Q3", "Q4"];
-  const now = new Date().toISOString();
+const sampleAdvisors = [
+  { full_name: "รศ.น.สพ.ดร.พิษณุ ตุลยกุล", department: "สัตวแพทยสาธารณสุขศาสตร์" },
+  { full_name: "ศ.น.สพ.ดร.จตุพร รัตนศรีสมพร", department: "เวชศาสตร์คลินิกสัตว์เลี้ยง" },
+  { full_name: "ศ.ดร.วิน สุรเชษฐพงษ์", department: "จุลชีววิทยาและวิทยาภูมิคุ้มกัน" },
+  { full_name: "รศ.น.สพ.อดิศร ยะวงศา", department: "เวชศาสตร์คลินิกสัตว์ใหญ่และสัตวป่า" },
+];
 
-  const yearData: Record<string, number[]> = {
-    "7.1.1": [76.3, 78.5, 79.2, 80.1, 81.7],
-    "7.1.2": [70.0, 72.5, 75.0, 77.3, 79.8],
-    "7.1.3": [150, 165, 180, 192, 210],
-    "7.1.7": [800, 850, 920, 980, 1050],
-    "7.1.13": [85, 90, 95, 98, 105],
-    "7.1.14": [92.5, 93.0, 93.8, 94.2, 95.1],
-    "7.1.16": [15, 17, 19, 21, 23],
-    "7.1.17": [3500000, 4200000, 4800000, 5100000, 5500000],
-    "7.1.18": [6, 8, 9, 10, 12],
-    "7.1.19": [7000000, 8500000, 9200000, 10500000, 11200000],
-    "7.2.3": [85, 88, 90, 93, 95],
-    "7.2.6": [3.8, 3.9, 4.0, 4.1, 4.2],
-    "7.2.7": [12000, 13500, 14200, 15000, 15800],
-    "7.2.8": [1200000, 1500000, 1800000, 2100000, 2400000],
-    "7.2.9": [4.2, 4.3, 4.4, 4.5, 4.6],
-    "7.2.10": [3.9, 4.0, 4.1, 4.1, 4.2],
-    "7.2.11": [450, 480, 520, 550, 600],
-    "7.2.14": [120, 145, 160, 180, 210],
-    "7.2.12": [200, 220, 250, 280, 310],
-    "7.3.3": [320, 325, 330, 335, 340],
-    "7.3.4": [5.2, 4.8, 4.5, 4.2, 3.9],
-    "7.3.5": [2, 1, 1, 0, 0],
-    "7.3.7": [8, 9, 10, 11, 12],
-    "7.3.9": [88, 89, 90, 91, 92],
-    "7.3.10": [3.8, 3.9, 4.0, 4.1, 4.33],
-    "7.4.5": [3, 2, 1, 0, 0],
-    "7.4.6": [0, 0, 0, 0, 0],
-    "7.4.11": [3.8, 4.0, 4.2, 4.3, 4.5],
-    "7.4.12": [1, 1, 2, 2, 3],
-    "7.4.14": [4, 5, 6, 7, 8],
-    "7.4.15": [2000, 2500, 3000, 3500, 4000],
-  };
-
-  for (const [kpiId, values] of Object.entries(yearData)) {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const master = (kpiMasterRaw as any[]).find((k: any) => k.kpi_id === kpiId);
-    const target = master?.target_value || null;
-    for (let i = 0; i < years.length; i++) {
-      entries.push({
-        kpi_id: kpiId, fiscal_year: years[i], period: "annual",
-        value: values[i], target, dimension: null, dimension_value: null,
-        unit: master?.unit || "", notes: "", submitted_by: "system_seed",
-        submitted_at: now, status: "approved",
-      });
-    }
-  }
-
-  // Quarterly data (2568 only)
-  const quarterlyKpis: Record<string, number[]> = {
-    "7.1.1": [78.5, 80.2, 81.7, 86.4],
-    "7.3.4": [4.5, 3.8, 3.2, 4.1],
-    "7.2.7": [3800, 4100, 3900, 4000],
-  };
-  for (const [kpiId, values] of Object.entries(quarterlyKpis)) {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const master = (kpiMasterRaw as any[]).find((k: any) => k.kpi_id === kpiId);
-    for (let q = 0; q < 4; q++) {
-      entries.push({
-        kpi_id: kpiId, fiscal_year: 2568, period: periodsQ[q],
-        value: values[q], target: master?.target_value || null,
-        dimension: null, dimension_value: null, unit: master?.unit || "",
-        notes: `Quarter ${q + 1} data`, submitted_by: "system_seed",
-        submitted_at: now, status: "approved",
-      });
-    }
-  }
-
-  // Matrix: Hospital branches (7.2.7)
-  const branches = [
-    { name: "รพส.มก.บางเขน", value: 8500 },
-    { name: "รพส.มก.กำแพงแสน", value: 4200 },
-    { name: "รพส.มก.หนองโว", value: 1800 },
-    { name: "รพส.มก.หัวหิน", value: 1300 },
-  ];
-  for (const branch of branches) {
-    entries.push({
-      kpi_id: "7.2.7", fiscal_year: 2568, period: "annual",
-      value: branch.value, target: null, dimension: "สาขา",
-      dimension_value: branch.name, unit: "ราย", notes: "",
-      submitted_by: "system_seed", submitted_at: now, status: "approved",
-    });
-  }
-
-  // Matrix: Revenue sources (7.4.7)
-  const revenues: Record<string, number[]> = {
-    "CE": [500000, 600000, 750000, 900000, 1100000],
-    "ศูนย์ประชุม": [200000, 300000, 350000, 400000, 500000],
-    "วัคซีน": [800000, 950000, 1100000, 1300000, 1500000],
-  };
-  for (const [source, values] of Object.entries(revenues)) {
-    for (let i = 0; i < years.length; i++) {
-      entries.push({
-        kpi_id: "7.4.7", fiscal_year: years[i], period: "annual",
-        value: values[i], target: null, dimension: "แหล่งรายได้",
-        dimension_value: source, unit: "บาท", notes: "",
-        submitted_by: "system_seed", submitted_at: now, status: "approved",
-      });
-    }
-  }
-
-  // Matrix: Grad by field (7.1.5)
-  const fields = ["วิทยาศาสตร์สุขภาพสัตว์", "คลินิกศึกษา", "เภสัชวิทยา", "ระบาดวิทยา"];
-  for (const field of fields) {
-    for (let i = 0; i < years.length; i++) {
-      entries.push({
-        kpi_id: "7.1.5", fiscal_year: years[i], period: "annual",
-        value: Math.floor(Math.random() * 5) + 2, target: null,
-        dimension: "สาขา", dimension_value: field, unit: "คน", notes: "",
-        submitted_by: "system_seed", submitted_at: now, status: "approved",
-      });
-    }
-  }
-
-  // Matrix: Staff by type (7.3.3)
-  const staffTypes: Record<string, number[]> = {
-    "ข้าราชการ": [45, 43, 42, 40, 38],
-    "พนักงาน มก.": [120, 125, 128, 130, 135],
-    "พนักงานเงินรายได้": [80, 82, 85, 88, 90],
-    "อาจารย์": [55, 56, 57, 58, 60],
-    "สัตวแพทย์ รพ.": [20, 19, 18, 19, 17],
-  };
-  for (const [type, values] of Object.entries(staffTypes)) {
-    for (let i = 0; i < years.length; i++) {
-      entries.push({
-        kpi_id: "7.3.3", fiscal_year: years[i], period: "annual",
-        value: values[i], target: null, dimension: "ประเภทตำแหน่ง",
-        dimension_value: type, unit: "คน", notes: "",
-        submitted_by: "system_seed", submitted_at: now, status: "approved",
-      });
-    }
-  }
-
-  // Resignation data (7.3.11)
-  const resignationBands = ["0-3 ปี", "3-7 ปี", "7+ ปี"];
-  const resignationVals = [[3, 2, 2, 1, 1], [1, 1, 0, 1, 0], [0, 1, 0, 0, 0]];
-  for (let b = 0; b < resignationBands.length; b++) {
-    for (let i = 0; i < years.length; i++) {
-      entries.push({
-        kpi_id: "7.3.11", fiscal_year: years[i], period: "annual",
-        value: resignationVals[b][i], target: null, dimension: "อายุงาน",
-        dimension_value: resignationBands[b], unit: "คน", notes: "",
-        submitted_by: "system_seed", submitted_at: now, status: "approved",
-      });
-    }
-  }
-
-  return entries;
-}
-
-// ─── Seed Page Component ───────────────────────────────────────
 export default function SeedPage() {
-  const { user, userRole, loading: authLoading } = useAuth();
-  const [logs, setLogs] = useState<string[]>([]);
-  const [isRunning, setIsRunning] = useState(false);
-  const [masterCount, setMasterCount] = useState(0);
-  const [entryCount, setEntryCount] = useState(0);
-  const [mode, setMode] = useState<"idle" | "seed" | "clear" | "reseed">("idle");
+  const [status, setStatus] = useState<"idle" | "seeding" | "done" | "error">("idle");
+  const [log, setLog] = useState<string[]>([]);
 
-  // ── Auth Guard: Admin only ──
-  if (authLoading) {
-    return (
-      <div className="min-h-screen bg-slate-50 flex items-center justify-center">
-        <Loader2 size={32} className="animate-spin text-blue-600" />
-      </div>
-    );
-  }
+  const addLog = (msg: string) => {
+    setLog(prev => [...prev, `[${new Date().toLocaleTimeString()}] ${msg}`]);
+  };
 
-  if (!user || userRole !== "admin") {
-    return (
-      <div className="min-h-screen bg-slate-50 flex items-center justify-center p-8">
-        <div className="bg-white rounded-3xl shadow-xl border border-slate-200 p-10 max-w-md w-full text-center space-y-4">
-          <div className="w-16 h-16 bg-red-100 rounded-2xl flex items-center justify-center mx-auto">
-            <ShieldX size={32} className="text-red-500" />
-          </div>
-          <h1 className="text-xl font-bold text-slate-800">ไม่มีสิทธิ์เข้าถึง</h1>
-          <p className="text-sm text-slate-500">
-            หน้านี้สำหรับ Admin เท่านั้น
-          </p>
-          <Link href="/" className="inline-block mt-4 text-sm text-blue-600 hover:underline">
-            ← กลับไปหน้า Dashboard
-          </Link>
-        </div>
-      </div>
-    );
-  }
-
-  const log = (msg: string) => setLogs((prev) => [...prev, `[${new Date().toLocaleTimeString("th-TH")}] ${msg}`]);
-
-  const buildKpiList = (): KpiMaster[] =>
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    (kpiMasterRaw as any[]).map((k: any) => ({
-      kpi_id: k.kpi_id, category_id: k.category_id, name_th: k.name_th,
-      name_en: k.name_en, unit: k.unit, data_pattern: k.data_pattern,
-      target_value: k.target_value, aggregation: getAggregation(k.data_pattern),
-      frequency: k.frequency, department_id: k.department_id,
-    }));
-
-  // ── Seed Only ──
   const handleSeed = async () => {
-    setIsRunning(true);
-    setMode("seed");
-    setLogs([]);
+    if (!confirm("ต้องการเพิ่มข้อมูลจำลอง 4 นิสิต + 4 อาจารย์ เข้า Firebase?")) return;
+    
+    setStatus("seeding");
+    setLog([]);
+    addLog("เริ่มต้น Seed Data...");
+
     try {
-      log("📋 กำลัง seed kpi_master (61 KPI)...");
-      const mc = await seedKpiMaster(buildKpiList());
-      setMasterCount(mc);
-      log(`✅ kpi_master: ${mc} records`);
+      // Seed Students
+      for (const student of sampleStudents) {
+        const docRef = doc(db, "graduate_students", student.student_id);
+        await setDoc(docRef, {
+          ...student,
+          created_at: serverTimestamp(),
+          updated_at: serverTimestamp(),
+          created_by: "seed-script",
+          is_deleted: false,
+        }, { merge: true });
+        addLog(`✅ นิสิต: ${student.full_name_th} (${student.student_id})`);
+      }
 
-      log("📊 กำลัง seed kpi_entries...");
-      const entries = generateSampleEntries();
-      const ec = await seedKpiEntries(entries);
-      setEntryCount(ec);
-      log(`✅ kpi_entries: ${ec} records`);
-      log(`🎉 Seed เสร็จสิ้น! รวม ${mc + ec} documents`);
-    } catch (error: unknown) {
-      log(`❌ Error: ${error instanceof Error ? error.message : String(error)}`);
-    } finally {
-      setIsRunning(false);
-    }
-  };
+      // Seed Advisors
+      for (const advisor of sampleAdvisors) {
+        const docRef = doc(collection(db, "advisors"));
+        await setDoc(docRef, {
+          ...advisor,
+          created_at: serverTimestamp(),
+          updated_at: serverTimestamp(),
+          created_by: "seed-script",
+          is_deleted: false,
+        });
+        addLog(`✅ อาจารย์: ${advisor.full_name}`);
+      }
 
-  // ── Clear Only ──
-  const handleClear = async () => {
-    setIsRunning(true);
-    setMode("clear");
-    setLogs([]);
-    try {
-      log("🗑️ กำลังลบ kpi_entries...");
-      const ec = await clearCollection("kpi_entries");
-      log(`✅ ลบ kpi_entries: ${ec} documents`);
-
-      log("🗑️ กำลังลบ kpi_master...");
-      const mc = await clearCollection("kpi_master");
-      log(`✅ ลบ kpi_master: ${mc} documents`);
-
-      setMasterCount(0);
-      setEntryCount(0);
-      log(`🧹 ล้างข้อมูลเสร็จสิ้น! ลบทั้งหมด ${mc + ec} documents`);
-    } catch (error: unknown) {
-      log(`❌ Error: ${error instanceof Error ? error.message : String(error)}`);
-    } finally {
-      setIsRunning(false);
-    }
-  };
-
-  // ── Clear + Re-seed ──
-  const handleReseed = async () => {
-    setIsRunning(true);
-    setMode("reseed");
-    setLogs([]);
-    try {
-      // Step 1: Clear
-      log("🗑️ Step 1/3: กำลังลบ kpi_entries...");
-      const delEntries = await clearCollection("kpi_entries");
-      log(`   ลบ entries: ${delEntries} documents`);
-
-      log("🗑️ Step 2/3: กำลังลบ kpi_master...");
-      const delMasters = await clearCollection("kpi_master");
-      log(`   ลบ masters: ${delMasters} documents`);
-      log(`✅ ล้างข้อมูลเสร็จ — ลบทั้งหมด ${delEntries + delMasters} documents`);
-
-      // Step 2: Re-seed
-      log("📋 Step 3/3: กำลัง seed ข้อมูลใหม่...");
-      const mc = await seedKpiMaster(buildKpiList());
-      setMasterCount(mc);
-      log(`   kpi_master: ${mc} records`);
-
-      const entries = generateSampleEntries();
-      const ec = await seedKpiEntries(entries);
-      setEntryCount(ec);
-      log(`   kpi_entries: ${ec} records`);
-
-      log(`🎉 Re-seed เสร็จสิ้น! ข้อมูลใหม่ทั้งหมด ${mc + ec} documents`);
-    } catch (error: unknown) {
-      log(`❌ Error: ${error instanceof Error ? error.message : String(error)}`);
-    } finally {
-      setIsRunning(false);
+      addLog("🎉 Seed Data สำเร็จทั้งหมด!");
+      setStatus("done");
+    } catch (error: any) {
+      addLog(`❌ Error: ${error.message}`);
+      setStatus("error");
     }
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 flex items-center justify-center p-8">
-      <div className="bg-white rounded-3xl shadow-xl border border-slate-200 p-10 max-w-2xl w-full space-y-6">
-        <div className="text-center">
-          <h1 className="text-2xl font-bold text-slate-800">🌱 Database Seed Tool</h1>
-          <p className="text-sm text-slate-500 mt-2">
-            สร้าง / ล้าง / สร้างใหม่ ข้อมูลใน Firestore (kpi_master + kpi_entries)
-          </p>
-        </div>
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50">
+      <div className="max-w-2xl mx-auto px-6 py-10">
+        <Link href="/student" className="inline-flex items-center gap-2 text-gray-500 hover:text-gray-700 mb-6 text-sm">
+          <ArrowLeft size={16} /> กลับไปหน้ารายชื่อ
+        </Link>
+        
+        <div className="bg-white rounded-2xl shadow-sm border p-8">
+          <div className="flex items-center gap-3 mb-2">
+            <div className="bg-blue-600 p-2.5 rounded-xl">
+              <Database className="text-white" size={24} />
+            </div>
+            <div>
+              <h1 className="text-xl font-bold text-gray-800">Seed Data (ข้อมูลจำลอง)</h1>
+              <p className="text-sm text-gray-500">เพิ่มข้อมูลตัวอย่างสำหรับทดสอบระบบ</p>
+            </div>
+          </div>
 
-        {/* Action Buttons */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <div className="mt-6 bg-blue-50 border border-blue-200 rounded-xl p-4 text-sm text-blue-800">
+            <p className="font-semibold mb-2">จะเพิ่มข้อมูลต่อไปนี้:</p>
+            <ul className="space-y-1 ml-4 list-disc">
+              <li><strong>นิสิต 4 คน</strong> — 3 คนจบแล้ว, 1 คนกำลังศึกษา (จาก CSV จริง)</li>
+              <li><strong>อาจารย์ 4 คน</strong> — จากข้อมูลที่ปรึกษาใน CSV</li>
+            </ul>
+          </div>
+
           <button
             onClick={handleSeed}
-            disabled={isRunning}
-            className={`py-4 rounded-2xl font-bold transition-all ${isRunning ? "bg-slate-200 text-slate-400 cursor-not-allowed"
-              : "bg-blue-600 text-white hover:bg-blue-700 shadow-lg shadow-blue-600/20 hover:scale-[1.02] active:scale-95"
-              }`}
+            disabled={status === "seeding"}
+            className={`mt-6 w-full py-3 rounded-xl font-medium text-white flex items-center justify-center gap-2 transition-colors ${
+              status === "seeding" 
+                ? "bg-gray-400 cursor-not-allowed" 
+                : status === "done"
+                  ? "bg-green-600 hover:bg-green-700"
+                  : "bg-blue-600 hover:bg-blue-700"
+            }`}
           >
-            {isRunning && mode === "seed" ? "⏳ กำลัง seed..." : "🚀 Seed เพิ่ม"}
+            {status === "seeding" && <Loader2 className="animate-spin" size={20} />}
+            {status === "done" && <CheckCircle size={20} />}
+            {status === "error" && <AlertTriangle size={20} />}
+            {status === "idle" && "🚀 เริ่ม Seed Data"}
+            {status === "seeding" && "กำลังเพิ่มข้อมูล..."}
+            {status === "done" && "สำเร็จ! กลับไปหน้ารายชื่อได้เลย"}
+            {status === "error" && "เกิดข้อผิดพลาด"}
           </button>
 
-          <button
-            onClick={handleClear}
-            disabled={isRunning}
-            className={`py-4 rounded-2xl font-bold transition-all ${isRunning ? "bg-slate-200 text-slate-400 cursor-not-allowed"
-              : "bg-red-500 text-white hover:bg-red-600 shadow-lg shadow-red-500/20 hover:scale-[1.02] active:scale-95"
-              }`}
-          >
-            {isRunning && mode === "clear" ? "⏳ กำลังลบ..." : "🗑️ ล้างข้อมูลทั้งหมด"}
-          </button>
-
-          <button
-            onClick={handleReseed}
-            disabled={isRunning}
-            className={`py-4 rounded-2xl font-bold transition-all ${isRunning ? "bg-slate-200 text-slate-400 cursor-not-allowed"
-              : "bg-emerald-600 text-white hover:bg-emerald-700 shadow-lg shadow-emerald-600/20 hover:scale-[1.02] active:scale-95"
-              }`}
-          >
-            {isRunning && mode === "reseed" ? "⏳ กำลัง re-seed..." : "♻️ ล้าง + Seed ใหม่"}
-          </button>
-        </div>
-
-        <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 text-xs text-amber-800">
-          <strong>💡 สำหรับการพรีเซ็นต์:</strong> กด <strong>&quot;ล้าง + Seed ใหม่&quot;</strong> เพื่อรีเซ็ตข้อมูลกลับสู่สถานะเริ่มต้น
-          → จากนั้นกลับไปหน้า Dashboard เพื่อดูข้อมูลใหม่
-        </div>
-
-        {/* Log Console */}
-        {logs.length > 0 && (
-          <div className="bg-slate-900 rounded-xl p-5 max-h-64 overflow-y-auto">
-            {logs.map((line, i) => (
-              <div key={i} className="text-xs font-mono text-slate-300 leading-relaxed">
-                {line}
-              </div>
-            ))}
-            {isRunning && (
-              <div className="text-xs font-mono text-blue-400 animate-pulse mt-1">▶ กำลังทำงาน...</div>
-            )}
-          </div>
-        )}
-
-        {/* Stats */}
-        {masterCount > 0 && entryCount > 0 && !isRunning && (
-          <div className="grid grid-cols-2 gap-4">
-            <div className="bg-blue-50 rounded-xl p-4 text-center">
-              <div className="text-2xl font-bold text-blue-700">{masterCount}</div>
-              <div className="text-xs text-blue-500 mt-1">KPI Master</div>
+          {log.length > 0 && (
+            <div className="mt-4 bg-gray-900 text-green-400 rounded-xl p-4 text-xs font-mono max-h-60 overflow-y-auto">
+              {log.map((l, i) => (
+                <div key={i} className="py-0.5">{l}</div>
+              ))}
             </div>
-            <div className="bg-green-50 rounded-xl p-4 text-center">
-              <div className="text-2xl font-bold text-green-700">{entryCount}</div>
-              <div className="text-xs text-green-500 mt-1">KPI Entries</div>
-            </div>
-          </div>
-        )}
+          )}
 
-        <div className="text-center">
-          <Link href="/" className="text-sm text-blue-600 hover:underline">
-            ← กลับไปหน้า Dashboard
-          </Link>
+          {status === "done" && (
+            <div className="mt-4 flex gap-3">
+              <Link href="/student" className="flex-1 text-center py-2.5 bg-green-600 text-white rounded-xl text-sm font-medium hover:bg-green-700">
+                📋 ดูรายชื่อนิสิต
+              </Link>
+              <Link href="/advisor" className="flex-1 text-center py-2.5 bg-teal-600 text-white rounded-xl text-sm font-medium hover:bg-teal-700">
+                👩‍🏫 ดูอาจารย์
+              </Link>
+            </div>
+          )}
         </div>
       </div>
     </div>

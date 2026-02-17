@@ -4,7 +4,7 @@ import { useState, useEffect, useRef, Suspense } from "react";
 import Link from "next/link";
 import { Personnel } from "@/types/personnel";
 import { PersonnelService } from "@/services/personnelService";
-import { Plus, Search, Edit, Trash2, Download, Upload, BarChart3, ArrowLeft, ArrowUpAZ, ArrowDownAZ, Calendar, Hash, FileSpreadsheet, RefreshCw } from "lucide-react";
+import { Plus, Search, Edit, Trash2, Download, Upload, BarChart3, ArrowLeft, ArrowUpAZ, ArrowDownAZ, Calendar, Hash, FileSpreadsheet, RefreshCw, Users, Grid2X2Check, ChevronUp } from "lucide-react";
 import { exportPersonnelToExcel } from "@/utils/personnelExport";
 import { parsePersonnelExcel } from "@/utils/personnelImport";
 import { useAuth } from "@/contexts/AuthContext"; 
@@ -13,7 +13,7 @@ import PersonnelForm from "@/components/personnel/PersonnelForm";
 
 function PersonnelContent() {
   const router = useRouter();
-  const { user } = useAuth();
+  const { user, userRole } = useAuth();
   const [personnel, setPersonnel] = useState<Personnel[]>([]);
   const [loading, setLoading] = useState(true);
   const [importProgress, setImportProgress] = useState<{ current: number; total: number } | null>(null);
@@ -107,7 +107,7 @@ function PersonnelContent() {
   const startEntry = (currentPage - 1) * itemsPerPage + 1;
   const endEntry = Math.min(currentPage * itemsPerPage, filteredPersonnel.length);
 
-  const PaginationControls = () => (
+  const PaginationControls = ({ showBackToTop = true }: { showBackToTop?: boolean }) => (
     <div className="flex items-center justify-between px-4 py-3 bg-white border-t border-gray-100 sm:px-6">
       <div className="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
         <div>
@@ -148,6 +148,18 @@ function PersonnelContent() {
             </button>
           </nav>
         </div>
+        {showBackToTop && (
+          <div>
+            <button 
+              onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+              className="flex items-center gap-1.5 px-3 py-2 bg-slate-50 text-slate-500 hover:bg-slate-100 hover:text-green-600 border border-slate-200 rounded-lg text-sm font-medium transition-all group"
+              title="Back to Top"
+            >
+              <ChevronUp size={16} className="group-hover:-translate-y-0.5 transition-transform" />
+              <span className="hidden md:inline">Back to Top</span>
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );
@@ -215,7 +227,10 @@ function PersonnelContent() {
           <Link href="/?tab=Input" className="p-2 hover:bg-gray-100 rounded-full transition-colors text-gray-500 hover:text-gray-700">
              <ArrowLeft size={24} />
           </Link>
-          <h1 className="text-2xl font-bold flex items-center gap-2">
+          <h1 className="text-2xl font-bold flex items-center gap-3">
+             <div className="bg-green-600 p-2 rounded-lg shadow-sm">
+                <Users size={24} className="text-white" />
+             </div>
              ระบบบุคลากร (HR)
           </h1>
         </div>
@@ -225,8 +240,16 @@ function PersonnelContent() {
                 กำลังนำเข้า... {importProgress.current} / {importProgress.total} รายการ
              </span>
           )}
-          <button onClick={handleFixData} className="text-blue-500 hover:text-blue-700 px-3 py-2 text-sm underline">Fix Visibility</button>
-          <button onClick={handleDeleteAll} className="text-red-400 hover:text-red-600 px-3 py-2 text-sm underline">Delete All</button>
+          {userRole === 'admin' && (
+             <div className="flex items-center gap-2 mr-2">
+                <button onClick={handleFixData} className="text-slate-300 hover:text-green-600 transition-colors p-1 hover:bg-slate-100 rounded" title="Fix visibility (Experimental)">
+                  <Grid2X2Check size={16} />
+                </button>
+                <button onClick={handleDeleteAll} className="text-slate-300 hover:text-red-500 transition-colors p-1 hover:bg-slate-100 rounded" title="Delete All Data">
+                  <Trash2 size={16} />
+                </button>
+             </div>
+          )}
           <input type="file" ref={fileInputRef} onChange={handleFileChange} className="hidden" accept=".xlsx, .xls, .csv" />
           <button onClick={() => fileInputRef.current?.click()} disabled={loading} className={`bg-amber-500 hover:bg-amber-600 text-white px-4 py-2 rounded-lg flex items-center gap-2 shadow-sm transition-colors ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}>
             <Upload size={20} /> Import Excel
@@ -247,11 +270,11 @@ function PersonnelContent() {
                <FileSpreadsheet size={18} /> Export Raw Data
              </button>
           </div>
-          <Link href="/personnel/report" className="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg flex items-center gap-2 shadow-sm transition-colors">
-             <BarChart3 size={20} /> Reports
+          <Link href="/personnel/report" className="bg-purple-600 hover:bg-purple-700 text-white px-5 py-2.5 rounded-lg flex items-center gap-2 shadow-sm transition-colors text-sm font-medium">
+             <BarChart3 size={18} /> Reports
           </Link>
-          <Link href="/personnel/new" className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg flex items-center gap-2 shadow-sm transition-colors">
-             <Plus size={20} /> เพิ่มบุคลากรใหม่
+          <Link href="/personnel/new" className="bg-green-600 hover:bg-green-700 text-white px-5 py-2.5 rounded-lg flex items-center gap-2 shadow-sm transition-colors text-sm font-medium">
+             <Plus size={18} /> เพิ่มบุคลากรใหม่
           </Link>
         </div>
       </div>
@@ -310,7 +333,7 @@ function PersonnelContent() {
         </div>
 
         <div className="overflow-x-auto">
-          <PaginationControls />
+          <PaginationControls showBackToTop={false} />
           <table className="w-full text-left border-collapse">
             <thead>
               <tr className="bg-gray-50 text-gray-600 text-sm uppercase">
