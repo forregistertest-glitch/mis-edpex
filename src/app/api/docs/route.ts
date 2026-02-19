@@ -40,9 +40,9 @@ export async function GET(request: Request) {
       "kpi_master_data": { th: "KPI Master Data", en: "61 KPIs Definition" },
       "performance_seed_data": { th: "ข้อมูลจำลองผลการดำเนินงาน", en: "Performance Seed Data" },
       "data_integrity_plan": { th: "แผนการรักษาความถูกต้องของข้อมูล", en: "Data Integrity Plan" },
-      "user_hr_manual": { th: "📄 คู่มือการจัดการผู้ใช้ & HR (v.1.02d)", en: "User & HR Manual" },
-      "import_export_manual": { th: "📥 คู่มือ Import / Export / Backup (v1.1b)", en: "Import, Export & Backup Manual" },
-      "convert_script_guide": { th: "🐍 คู่มือ Script แปลงไฟล์ Excel", en: "Excel Conversion Script Guide" }
+      "user_hr_manual": { th: "คู่มือการจัดการผู้ใช้ & HR (v.1.1b)", en: "User & HR Manual" },
+      "import_export_manual": { th: "คู่มือ Import / Export / Backup (v1.1b)", en: "Import, Export & Backup Manual" },
+      "convert_script_guide": { th: "คู่มือ Script แปลงไฟล์ Excel", en: "Excel Conversion Script Guide" }
     };
 
     const files = fs.readdirSync(DOC_DIR).filter((f) => f.endsWith(".md"));

@@ -209,24 +209,7 @@ export default function DocViewer({ onClose, t, userEmail }: { onClose: () => vo
     window.print();
   };
 
-  const iconMap: Record<string, string> = {
-    "app_architecture": "🏗️",
-    "database_design": "🗄️",
-    "data_dictionary": "📖",
-    "features_list": "⭐",
-    "input_manual": "📝",
-    "firebase_capacity": "🔥",
-    "qa": "✅",
-    "kpi_master_data": "📊",
-    "performance_seed_data": "🧪",
-    "import_export_manual": "📥",
-    "convert_script_guide": "🐍",
-  };
 
-  const getIcon = (name: string) => {
-    const base = name.replace(".md", "");
-    return iconMap[base] || "📄";
-  };
 
   const fmtSize = (bytes: number) => {
     if (bytes < 1024) return `${bytes} B`;
@@ -281,7 +264,7 @@ export default function DocViewer({ onClose, t, userEmail }: { onClose: () => vo
                   }`}
                 >
                   <div className="flex items-start gap-3">
-                    <span className="text-2xl mt-0.5">{getIcon(doc.name)}</span>
+                    <FileText size={18} className={`mt-0.5 shrink-0 ${selectedDoc === doc.name ? "text-white/80" : "text-blue-500"}`} />
                     <div className="flex-1 min-w-0">
                       <p className={`text-[13px] font-bold leading-tight ${selectedDoc === doc.name ? "text-white" : "text-slate-800"}`}>
                         {doc.title}
@@ -294,7 +277,7 @@ export default function DocViewer({ onClose, t, userEmail }: { onClose: () => vo
                       <div className={`flex items-center gap-2 mt-1 text-[10px] ${selectedDoc === doc.name ? "text-white/60" : "text-slate-400"}`}>
                         <span className="flex items-center gap-0.5"><HardDrive size={10} />{fmtSize(doc.size)}</span>
                         <span>·</span>
-                        <span className="flex items-center gap-0.5"><Clock size={10} />{new Date(doc.modified).toLocaleDateString("th-TH")}</span>
+                        <span className="flex items-center gap-0.5"><Clock size={10} />{new Date(doc.modified).toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" })}</span>
                       </div>
                     </div>
                   </div>

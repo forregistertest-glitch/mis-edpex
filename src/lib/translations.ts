@@ -1,6 +1,6 @@
 export const translations = {
   th: {
-    systemName: "KUVMIS v1.01b",
+    systemName: "KUVMIS v1.1b",
     executiveOverview: "ภาพรวมสำหรับผู้บริหาร",
     academicYear: "ปีการศึกษา",
     dashboard: "แดชบอร์ด",
@@ -27,7 +27,7 @@ export const translations = {
     documentation: "เอกสารประกอบ",
   },
   en: {
-    systemName: "KUVMIS v1.01b",
+    systemName: "KUVMIS v1.1b",
     executiveOverview: "Executive Overview",
     academicYear: "Academic Year",
     dashboard: "Dashboard",
