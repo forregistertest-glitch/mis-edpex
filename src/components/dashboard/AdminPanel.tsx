@@ -15,8 +15,17 @@ import {
     Download,
     FileText,
     Search,
+    Activity, // Added for system logs
+    Database, // Added for system logs
+    Edit, // Added from diff, though not explicitly used in the provided diff for the edit button
+    Plus, // Added from diff
+    X, // Added from diff
+    Check, // Added from diff
+    BookOpen, // Added from diff
 } from "lucide-react";
 import SystemDocs from "./SystemDocs";
+import ScopusSearch from "./ScopusSearch";
+import { AuditLog, AuditLogService } from "@/services/auditLogService"; // Added for system logs
 import {
     getAuthorizedUsers,
     addAuthorizedUser,
@@ -27,6 +36,7 @@ import {
     clearMockLoginLogs,
     getLoginLogsCount,
     getLoginLogsByMonth,
+    updateUserDetails, // Added from diff
 } from "@/lib/data-service";
 import type { AuthorizedUser } from "@/lib/data-service";
 import { useAuth } from "@/contexts/AuthContext";
@@ -46,8 +56,9 @@ export default function AdminPanel({ lang }: Props) {
     const isSuperAdmin = user?.email === "nipon.w@ku.th";
     const [users, setUsers] = useState<AuthorizedUser[]>([]);
     const [loginLogs, setLoginLogs] = useState<any[]>([]);
+    const [systemLogs, setSystemLogs] = useState<AuditLog[]>([]); // Added for system logs
     const [totalLogsCount, setTotalLogsCount] = useState(0);
-    const [activeTab, setActiveTab] = useState<'users' | 'logs' | 'docs'>('users');
+    const [activeTab, setActiveTab] = useState<'users' | 'logs' | 'docs' | 'scopus' | 'system'>('users'); // Updated type
     const [loading, setLoading] = useState(true);
     const [actionLoading, setActionLoading] = useState(false);
 
@@ -97,6 +108,18 @@ export default function AdminPanel({ lang }: Props) {
             setLoginLogs(logs);
         } catch (err) {
             console.error("Load logs error:", err);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const loadSystemLogs = async () => {
+        setLoading(true);
+        try {
+            const logs = await AuditLogService.getLogs(100);
+            setSystemLogs(logs);
+        } catch (err) {
+            console.error("Load system logs error:", err);
         } finally {
             setLoading(false);
         }
@@ -176,7 +199,7 @@ export default function AdminPanel({ lang }: Props) {
         setActionLoading(true);
         try {
             // Dynamic import to avoid circular dependency if any, though regular import is fine here
-            const { updateUserDetails } = await import("@/lib/data-service");
+            // const { updateUserDetails } = await import("@/lib/data-service"); // Already imported at top
             await updateUserDetails(editUser.email, editName, editRole);
             setEditUser(null);
             await loadUsers();
@@ -213,6 +236,24 @@ export default function AdminPanel({ lang }: Props) {
                         {lang === 'th' ? 'เอกสารระบบ (Superadmin)' : 'System Docs'}
                     </button>
                 )}
+
+                <button
+                    onClick={() => setActiveTab('scopus')}
+                    className={`pb-3 text-sm font-bold transition-all px-2 border-b-2 flex items-center gap-2 ${activeTab === 'scopus' ? 'text-[#133045] border-[#71C5E8]' : 'text-slate-400 border-transparent hover:text-slate-600'}`}
+                >
+                    <Search size={16} />
+                    {lang === 'th' ? 'สืบค้นงานวิจัย (Scopus)' : 'Research Search'}
+                </button>
+
+                {isSuperAdmin && (
+                    <button
+                        onClick={() => { setActiveTab('system'); loadSystemLogs(); }}
+                        className={`pb-3 text-sm font-bold transition-all px-2 border-b-2 flex items-center gap-2 ${activeTab === 'system' ? 'text-[#133045] border-[#71C5E8]' : 'text-slate-400 border-transparent hover:text-slate-600'}`}
+                    >
+                        <Database size={16} />
+                        {lang === 'th' ? 'บันทึกกิจกรรมระบบ (Superadmin)' : 'System Logs'}
+                    </button>
+                )}
             </div>
 
             {/* Users Tab Content */}
@@ -243,7 +284,7 @@ export default function AdminPanel({ lang }: Props) {
                                     className="pl-9 pr-4 py-2 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-blue-100 focus:border-blue-300 outline-none w-64"
                                 />
                             </div>
-                            <button 
+                            <button
                                 onClick={loadUsers}
                                 disabled={loading}
                                 className="p-2 text-slate-500 hover:text-blue-600 hover:bg-blue-50 rounded-xl transition-all"
@@ -335,8 +376,8 @@ export default function AdminPanel({ lang }: Props) {
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {users.filter(u => 
-                                        u.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
+                                    {users.filter(u =>
+                                        u.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
                                         u.email.toLowerCase().includes(searchTerm.toLowerCase())
                                     ).map((u) => {
                                         const rc = roleColors[u.role] || roleColors.user;
@@ -362,7 +403,7 @@ export default function AdminPanel({ lang }: Props) {
                                                                 className="p-1.5 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all"
                                                                 title="แก้ไข"
                                                             >
-                                                                <UserPlus size={14} className="rotate-45" /> {/* Use a different icon or simple edit icon if available in import, using UserPlus for now */}
+                                                                <Edit size={14} /> {/* Changed to Edit icon */}
                                                             </button>
                                                             <button
                                                                 onClick={() => setDeleteEmail(u.email)}
@@ -404,6 +445,86 @@ export default function AdminPanel({ lang }: Props) {
             {activeTab === 'docs' && isSuperAdmin && (
                 <div className="animate-in fade-in">
                     <SystemDocs lang={lang} />
+                </div>
+            )}
+
+            {/* Scopus Tab Content */}
+            {activeTab === 'scopus' && (
+                <ScopusSearch lang={lang} />
+            )}
+
+            {/* System Logs Tab Content */}
+            {activeTab === "system" && isSuperAdmin && (
+                <div className="space-y-6 animate-in fade-in">
+                    <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+                        <div className="p-6 border-b border-slate-100 flex justify-between items-center">
+                            <h3 className="font-bold text-slate-700 flex items-center gap-2">
+                                <Database size={20} className="text-blue-600" />
+                                System Activity Logs (Last 100)
+                            </h3>
+                            <button
+                                onClick={loadSystemLogs}
+                                className="p-2 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                                title="Reload"
+                            >
+                                <Activity size={18} />
+                            </button>
+                        </div>
+                        <div className="overflow-x-auto">
+                            <table className="w-full text-sm text-left">
+                                <thead className="bg-slate-50 text-slate-500 font-bold border-b border-slate-200">
+                                    <tr>
+                                        <th className="px-6 py-4">Time</th>
+                                        <th className="px-6 py-4">User</th>
+                                        <th className="px-6 py-4">Action</th>
+                                        <th className="px-6 py-4">Collection</th>
+                                        <th className="px-6 py-4">Status</th>
+                                        <th className="px-6 py-4">Details</th>
+                                    </tr>
+                                </thead>
+                                <tbody className="divide-y divide-slate-100">
+                                    {systemLogs.map((log, i) => (
+                                        <tr key={i} className="hover:bg-slate-50 transition-colors">
+                                            <td className="px-6 py-4 text-slate-500 whitespace-nowrap">
+                                                {log.timestamp && typeof log.timestamp.toDate === 'function'
+                                                    ? log.timestamp.toDate().toLocaleString('th-TH')
+                                                    : 'N/A'}
+                                            </td>
+                                            <td className="px-6 py-4 font-medium text-slate-700">{log.user}</td>
+                                            <td className="px-6 py-4">
+                                                <span className={`px-2 py-1 rounded text-xs font-bold ${
+                                                    log.action === 'IMPORT' ? 'bg-purple-100 text-purple-700' :
+                                                    log.action === 'DELETE' ? 'bg-red-100 text-red-700' :
+                                                    log.action === 'UPDATE' ? 'bg-blue-100 text-blue-700' :
+                                                    'bg-slate-100 text-slate-700'
+                                                }`}>
+                                                    {log.action}
+                                                </span>
+                                            </td>
+                                            <td className="px-6 py-4 text-slate-600">{log.collection}/{log.doc_id}</td>
+                                            <td className="px-6 py-4">
+                                                <span className={`px-2 py-1 rounded text-xs font-bold ${
+                                                    log.status === 'SUCCESS' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
+                                                }`}>
+                                                    {log.status}
+                                                </span>
+                                            </td>
+                                            <td className="px-6 py-4 text-slate-500 max-w-xs truncate">
+                                                {JSON.stringify(log.details)}
+                                            </td>
+                                        </tr>
+                                    ))}
+                                    {systemLogs.length === 0 && (
+                                        <tr>
+                                            <td colSpan={6} className="px-6 py-8 text-center text-slate-400">
+                                                No system logs found
+                                            </td>
+                                        </tr>
+                                    )}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
                 </div>
             )}
 

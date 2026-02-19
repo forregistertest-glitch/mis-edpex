@@ -73,6 +73,28 @@ export const AcademicService = {
     }
   },
 
+  updatePublication: async (id: string, data: Partial<StudentPublication>, userEmail: string) => {
+    try {
+      const docRef = doc(db, PUBLICATIONS_COLLECTION, id);
+      await updateDoc(docRef, {
+        ...data,
+        updated_at: Timestamp.now(),
+        updated_by: userEmail
+      });
+
+      await AuditLogService.log({
+        action: 'UPDATE',
+        collection: PUBLICATIONS_COLLECTION,
+        doc_id: id,
+        user: userEmail,
+        status: 'SUCCESS',
+        details: { student_id: data.student_id, title: data.publication_title }
+      });
+    } catch (error) {
+      throw error;
+    }
+  },
+
   // --- Progress ---
 
   getProgressByStudentId: async (studentId: string): Promise<StudentProgress[]> => {
@@ -127,6 +149,28 @@ export const AcademicService = {
     }
   },
 
+  updateProgress: async (id: string, data: Partial<StudentProgress>, userEmail: string) => {
+    try {
+      const docRef = doc(db, PROGRESS_COLLECTION, id);
+      await updateDoc(docRef, {
+        ...data,
+        updated_at: Timestamp.now(),
+        updated_by: userEmail
+      });
+
+      await AuditLogService.log({
+        action: 'UPDATE',
+        collection: PROGRESS_COLLECTION,
+        doc_id: id,
+        user: userEmail,
+        status: 'SUCCESS',
+        details: { student_id: data.student_id, milestone: data.milestone_type }
+      });
+    } catch (error) {
+      throw error;
+    }
+  },
+
   // --- Batch Operations ---
 
   addPublicationBatch: async (publications: StudentPublication[], userEmail: string) => {
@@ -144,6 +188,15 @@ export const AcademicService = {
       });
       
       await batch.commit();
+      
+      await AuditLogService.log({
+        action: 'IMPORT',
+        collection: PUBLICATIONS_COLLECTION,
+        doc_id: 'BATCH',
+        user: userEmail,
+        status: 'SUCCESS',
+        details: { count: publications.length, source: 'Auto-Sync/Batch' }
+      });
     } catch (error) {
        console.error("Batch publication import failed:", error);
        throw error;
@@ -165,6 +218,15 @@ export const AcademicService = {
       });
 
       await batch.commit();
+
+      await AuditLogService.log({
+        action: 'IMPORT',
+        collection: PROGRESS_COLLECTION,
+        doc_id: 'BATCH',
+        user: userEmail,
+        status: 'SUCCESS',
+        details: { count: progressList.length, source: 'Batch Import' }
+      });
     } catch (error) {
        console.error("Batch progress import failed:", error);
        throw error;

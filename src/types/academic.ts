@@ -22,6 +22,8 @@ export interface StudentPublication {
 
   created_at?: any;
   created_by?: string;
+  updated_at?: any;
+  updated_by?: string;
 }
 
 export interface StudentProgress {
@@ -42,4 +44,6 @@ export interface StudentProgress {
   description?: string; // Optional details
   created_at?: any;
   created_by?: string;
+  updated_at?: any;
+  updated_by?: string;
 }

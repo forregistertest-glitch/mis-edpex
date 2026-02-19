@@ -123,14 +123,22 @@ export default function StudentPage() {
       let pubs: any[] = [];
       let progs: any[] = [];
 
+      const { AcademicService } = await import("@/services/academicService");
+      
+      // Always fetch related data (optimized for small-medium dataset)
+      const [fetchedPubs, fetchedProgs] = await Promise.all([
+         AcademicService.getAllPublications(),
+         AcademicService.getAllProgress()
+      ]);
+
       if (all) {
-         const { AcademicService } = await import("@/services/academicService");
-         const [fetchedPubs, fetchedProgs] = await Promise.all([
-            AcademicService.getAllPublications(),
-            AcademicService.getAllProgress()
-         ]);
          pubs = fetchedPubs;
          progs = fetchedProgs;
+      } else {
+         // Filter for current view
+         const studentIds = new Set(studentData.map((s: any) => s.student_id));
+         pubs = fetchedPubs.filter((p: any) => studentIds.has(p.student_id));
+         progs = fetchedProgs.filter((p: any) => studentIds.has(p.student_id));
       }
       
       exportStudentsToExcel(studentData, pubs, progs);

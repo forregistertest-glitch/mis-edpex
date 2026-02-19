@@ -46,9 +46,9 @@ export const exportStudentsToExcel = (
 
   // --- Sheet 2: Publications ---
   if (publications.length > 0) {
-    const pubHeaders = ["รหัสนิสิต", "ชื่อบทความ", "วารสาร", "ปี", "วันที่ตีพิมพ์", "Quartile", "น้ำหนัก"];
+    const pubHeaders = ["รหัสนิสิต", "ชื่อบทความ", "วารสาร", "ปี", "วันที่ตีพิมพ์", "Quartile", "น้ำหนัก", "ที่มาข้อมูล"];
     const pubRows = publications.map(p => [
-       p.student_id, p.publication_title, p.journal_name, p.year, p.publication_date, p.quartile, p.weight
+       p.student_id, p.publication_title, p.journal_name, p.year, p.publication_date, p.quartile, p.weight, p.database_source || 'Manual'
     ]);
     const wsPubs = XLSX.utils.aoa_to_sheet([pubHeaders, ...pubRows]);
     XLSX.utils.book_append_sheet(wb, wsPubs, "Publications");

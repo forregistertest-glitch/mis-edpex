@@ -61,30 +61,46 @@ export const parseStudentExcel = async (
         
         const allStudents: GraduateStudent[] = [];
         const errors: string[] = [];
+        
 
-        for (const name of workbook.SheetNames) {
-          const sheet = workbook.Sheets[name];
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          const json = XLSX.utils.sheet_to_json<any[]>(sheet, { header: 1 });
+
+        // Find sheet
+        let sheetName = workbook.SheetNames[0];
+        const targetSheetNames = ['Students', 'ข้อมูลนิสิต', '1. ข้อมูลนิสิต', 'นิสิต'];
+        const found = workbook.SheetNames.find(n => targetSheetNames.some(t => n.includes(t)));
+        if (found) sheetName = found;
+
+        const sheet = workbook.Sheets[sheetName];
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const json = XLSX.utils.sheet_to_json<any[]>(sheet, { header: 1 });
           
-          if (json.length === 0) continue;
+        if (!json || json.length === 0) {
+           // Try next sheet if current is empty? No, just resolve empty.
+           resolve({ success: false, data: [], errors: ["No data in sheet"] });
+           return;
+        }
 
-          // Find headers row - Look for "รหัสนิสิต"
+        // Variables reused in single loop block below
+        // const allStudents: GraduateStudent[] = []; // Already declared above
+        // const errors: string[] = []; // Already declared above
+
+        // Single Loop for this sheet
+        {
+          // Find headers row - Look for "รหัสนิสิต" or "Student ID"
           let headerRowIndex = -1;
           for (let r = 0; r < Math.min(json.length, 10); r++) {
              const row = json[r] as string[];
-             if (row && row.some(cell => String(cell).includes("รหัสนิสิต"))) {
+             if (row && row.some(cell => String(cell).includes("รหัสนิสิต") || String(cell).includes("Student ID"))) {
                headerRowIndex = r;
                break;
              }
           }
 
-          if (headerRowIndex === -1) continue;
-
-           const targetHeaders = (json[headerRowIndex] as any[]).map(h => String(h || "").trim());
-           const targetRows = json.slice(headerRowIndex + 1);
-
-           targetRows.forEach((row, rowIndex) => {
+          if (headerRowIndex !== -1) {
+             const targetHeaders = (json[headerRowIndex] as any[]).map(h => String(h || "").trim());
+             const targetRows = json.slice(headerRowIndex + 1);
+             
+             targetRows.forEach((row, rowIndex) => {
               if (!row || row.length === 0) return;
               
               const studentData: Partial<GraduateStudent> = {
@@ -142,6 +158,7 @@ export const parseStudentExcel = async (
                  // errors.push(`Row ${rowIndex + headerRowIndex + 2}: Missing ID or Name`);
               }
            });
+          }
         }
 
         resolve({ success: true, data: allStudents, errors });
@@ -167,10 +184,16 @@ const PUB_HEADER_MAP: Record<string, string> = {
   "Journal": "journal_name",
   "เผยแพร่ระหว่างวันที่": "publish_period",
   "ปีที่ (Volume)": "volume",
+  "ปีที่ (VOL)": "volume",
+  "ปีที่": "volume",
   "Volume": "volume",
+  "Vol": "volume",
+  "VOL": "volume",
   "ฉบับที่ (Issue)": "issue",
+  "ฉบับที่ (ISSUE)": "issue",
   "ฉบับที่": "issue",
   "Issue": "issue",
+  "ISSUE": "issue",
   "เลขหน้า": "pages",
   "Pages": "pages",
   "วันที่ตอบรับให้ตีพิมพ์": "acceptance_date",
@@ -200,24 +223,78 @@ export const parsePublicationsExcel = async (
       try {
         const data = e.target?.result;
         const workbook = XLSX.read(data, { type: 'binary' });
-        const sheetName = workbook.SheetNames[0];
+
+        // Auto-detect sheet
+        // Smart Sheet Detection
+        let sheetName = '';
+        let headerRowIndex = 0;
+        let foundSheet = false;
+
+        // 1. Scan all sheets (Stricter Check)
+        for (const name of workbook.SheetNames) {
+           const sheet = workbook.Sheets[name];
+           const json = XLSX.utils.sheet_to_json(sheet, { header: 1 }) as any[][];
+           for (let r = 0; r < Math.min(json.length, 20); r++) {
+              const row = json[r]?.map(c => String(c).trim()) || [];
+              
+              // Count matches of key terms
+              let matches = 0;
+              const keywords = ["ชื่อบทความ", "Publication Title", "Title", "Volume", "Vol", "Issue", "ฐานข้อมูล", "Database"];
+              keywords.forEach(k => {
+                 if (row.some(cell => cell.toLowerCase().includes(k.toLowerCase()))) matches++;
+              });
+
+              // Require at least 2 matches to confirm it is the Header Row
+              if (matches >= 2) {
+                 sheetName = name;
+                 headerRowIndex = r;
+                 foundSheet = true;
+                 console.log(`[Import] Found Publications in sheet '${name}' at row ${r} (Matches: ${matches})`);
+                 break;
+              }
+           }
+           if (foundSheet) break;
+        }
+
+        // 2. Fallback to name matching
+        if (!foundSheet) {
+          const targetSheetNames = ['Publications', 'ผลงานตีพิมพ์', '2. ผลงานตีพิมพ์', '2.ผลงานตีพิมพ์'];
+          const found = workbook.SheetNames.find(n => targetSheetNames.some(t => n.includes(t)));
+          if (found) sheetName = found;
+          else sheetName = workbook.SheetNames[0];
+        }
+
         const sheet = workbook.Sheets[sheetName];
         const jsonData = XLSX.utils.sheet_to_json(sheet, { header: 1 });
 
-        if (jsonData.length === 0) {
-          resolve({ success: false, count: 0, errors: ["Empty file"], data: [] });
+        if (!jsonData || jsonData.length === 0) {
+          resolve({ success: false, count: 0, errors: ["Empty sheet or file"], data: [] });
           return;
         }
 
-        const headers = (jsonData[0] as string[]).map(h => String(h).trim());
-        const rows = jsonData.slice(1);
+        // Use detected header row
+        const headers = (jsonData[headerRowIndex] as string[]).map(h => String(h).trim());
+        console.log('[Import Pubs] Detected Headers:', headers);
+        const rows = jsonData.slice(headerRowIndex + 1);
         const results: StudentPublication[] = [];
         const errors: string[] = [];
 
-        // Find header indices
+        // Find header indices (Soft Matching)
         const headerIndices: Record<string, number> = {};
+        const normalizedHeaders = headers.map(h => String(h).trim().toLowerCase());
+        
         Object.entries(PUB_HEADER_MAP).forEach(([th, key]) => {
-          const index = headers.findIndex(h => h === th);
+          // 1. Exact Match
+          let index = headers.findIndex(h => h === th);
+          // 2. Case Insensitive Match
+          if (index === -1) {
+             index = normalizedHeaders.findIndex(h => h === th.toLowerCase());
+          }
+           // 3. Partial Match (Be careful)
+          if (index === -1 && th.length > 4) {
+             index = normalizedHeaders.findIndex(h => h.includes(th.toLowerCase()));
+          }
+
           if (index !== -1) headerIndices[key] = index;
         });
 
@@ -300,24 +377,71 @@ export const parseProgressExcel = async (
       try {
         const data = e.target?.result;
         const workbook = XLSX.read(data, { type: 'binary' });
-        const sheetName = workbook.SheetNames[0];
+        // Auto-detect sheet
+        // Smart Sheet Detection
+        let sheetName = '';
+        let headerRowIndex = 0;
+        let foundSheet = false;
+
+        // 1. Scan all sheets (Stricter Check)
+        for (const name of workbook.SheetNames) {
+           const sheet = workbook.Sheets[name];
+           const json = XLSX.utils.sheet_to_json(sheet, { header: 1 }) as any[][];
+           for (let r = 0; r < Math.min(json.length, 20); r++) {
+              const row = json[r]?.map(c => String(c).trim()) || [];
+              
+              let matches = 0;
+              const keywords = ["หัวข้อ", "Milestone", "สถานะ", "Status", "Exam", "วันที่สอบ"];
+              keywords.forEach(k => {
+                 if (row.some(cell => cell.toLowerCase().includes(k.toLowerCase()))) matches++;
+              });
+
+              if (matches >= 2) {
+                 sheetName = name;
+                 headerRowIndex = r;
+                 foundSheet = true;
+                 console.log(`[Import] Found Progress in sheet '${name}' at row ${r}`);
+                 break;
+              }
+           }
+           if (foundSheet) break;
+        }
+
+        // 2. Fallback
+        if (!foundSheet) {
+          const targetSheetNames = ['Progress', 'ความก้าวหน้า', '3. รายงานความก้าวหน้า', '3.รายงานความก้าวหน้า'];
+          const found = workbook.SheetNames.find(n => targetSheetNames.some(t => n.includes(t)));
+          if (found) sheetName = found;
+          else sheetName = workbook.SheetNames[0];
+        }
+
         const sheet = workbook.Sheets[sheetName];
         const jsonData = XLSX.utils.sheet_to_json(sheet, { header: 1 });
 
+        // Use detected header row
         if (jsonData.length === 0) {
           resolve({ success: false, count: 0, errors: ["Empty file"], data: [] });
           return;
         }
 
-        const headers = (jsonData[0] as string[]).map(h => String(h).trim());
-        const rows = jsonData.slice(1);
+        // Use detected header row
+        const headers = (jsonData[headerRowIndex] as string[]).map(h => String(h).trim());
+        console.log('[Import Progress] Detected Headers:', headers);
+        const rows = jsonData.slice(headerRowIndex + 1);
         const results: StudentProgress[] = [];
         const errors: string[] = [];
 
-        // Find header indices
+        // Find header indices (Soft Matching)
         const headerIndices: Record<string, number> = {};
+        const normalizedHeaders = headers.map(h => String(h).trim().toLowerCase());
+
         Object.entries(PROGRESS_HEADER_MAP).forEach(([th, key]) => {
-          const index = headers.findIndex(h => h === th);
+          // 1. Exact Match
+          let index = headers.findIndex(h => h === th);
+          // 2. Case Insensitive Match
+          if (index === -1) {
+             index = normalizedHeaders.findIndex(h => h === th.toLowerCase());
+          }
           if (index !== -1) headerIndices[key] = index;
         });
 
@@ -471,10 +595,16 @@ export const parseMultiSheetExcel = async (
              
              const idxID = headers.findIndex(h => h.includes("รหัสนิสิต") || h.includes("Student ID"));
              const idxTitle = headers.findIndex(h => h.includes("ชื่อบทความ") || h.includes("Title") || h.includes("publication_title"));
-             const idxJournal = headers.findIndex(h => h.includes("วารสาร") || h.includes("Journal"));
-             const idxYear = headers.findIndex(h => h === "ปี" || h === "Year" || h === "year");
-             const idxDate = headers.findIndex(h => h.includes("วันที่") || h.includes("Date"));
+             const idxJournal = headers.findIndex(h => h.includes("วารสาร") || h.includes("Journal") || h.includes("journal_name"));
+             const idxYear = headers.findIndex(h => h === "ปี" || h === "Year" || h === "year" || h.includes("ปีที่ตีพิมพ์"));
+             const idxDate = headers.findIndex(h => h.includes("วันที่") || h.includes("Date") || h.includes("publication_date"));
              const idxQ = headers.findIndex(h => h.includes("Quartile") || h.includes("Q"));
+             
+             // New Fields
+             const idxVol = headers.findIndex(h => h.includes("Volume") || h.includes("Vol") || h.includes("ปีที่"));
+             const idxIssue = headers.findIndex(h => h.includes("Issue") || h.includes("ฉบับที่"));
+             const idxPages = headers.findIndex(h => h.includes("Pages") || h.includes("เลขหน้า"));
+             const idxDB = headers.findIndex(h => h.includes("Database") || h.includes("ฐานข้อมูล") || h.includes("ที่มาข้อมูล"));
 
              if (idxID > -1) pub.student_id = String(row[idxID]).replace(/[^0-9-]/g, '');
              if (idxTitle > -1) pub.publication_title = row[idxTitle];
@@ -482,6 +612,11 @@ export const parseMultiSheetExcel = async (
              if (idxYear > -1) pub.year = parseInt(row[idxYear]) || new Date().getFullYear();
              if (idxDate > -1) pub.publication_date = parseThaiDate(String(row[idxDate])) || row[idxDate];
              if (idxQ > -1) pub.quartile = row[idxQ];
+             
+             if (idxVol > -1 && row[idxVol]) pub.volume = String(row[idxVol]);
+             if (idxIssue > -1 && row[idxIssue]) pub.issue = String(row[idxIssue]);
+             if (idxPages > -1 && row[idxPages]) pub.pages = String(row[idxPages]);
+             if (idxDB > -1 && row[idxDB]) pub.database_source = String(row[idxDB]);
 
              if (pub.student_id && pub.publication_title) {
                  result.publications?.push(pub as StudentPublication);

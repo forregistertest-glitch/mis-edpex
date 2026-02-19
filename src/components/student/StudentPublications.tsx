@@ -176,7 +176,11 @@ export default function StudentPublications({ studentId, userEmail }: StudentPub
                <div className="flex justify-between items-start">
                   <div>
                     <h4 className="font-semibold text-slate-800 leading-tight mb-1">{pub.publication_title}</h4>
-                    <p className="text-sm text-slate-600 mb-2">{pub.journal_name} {pub.quartile && <span className="bg-amber-100 text-amber-800 text-[10px] px-1.5 py-0.5 rounded font-bold ml-2">{pub.quartile}</span>}</p>
+                    <p className="text-sm text-slate-600 mb-2">
+                      {pub.journal_name} 
+                      {pub.quartile && <span className="bg-amber-100 text-amber-800 text-[10px] px-1.5 py-0.5 rounded font-bold ml-2">{pub.quartile}</span>}
+                      {pub.database_source === "Scopus" && <span className="bg-blue-100 text-blue-700 text-[10px] px-1.5 py-0.5 rounded font-bold ml-2">Scopus</span>}
+                    </p>
                     <div className="flex items-center gap-4 text-xs text-slate-400">
                       <span className="flex items-center gap-1"><Calendar size={12} /> {pub.publication_date || pub.year}</span>
                       <span>Weight: {pub.weight}%</span>

@@ -20,6 +20,7 @@ export interface GraduateStudent {
   email?: string;
   phone?: string;
   line_id?: string;
+  scopus_id?: string; // รหัสอ้างอิงฐานข้อมูล Scopus
 
   // Academic Info
   degree_level: "ปริญญาโท" | "ปริญญาเอก" | string;

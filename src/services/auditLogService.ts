@@ -1,5 +1,5 @@
 import { db } from "@/lib/firebase";
-import { collection, addDoc, Timestamp } from "firebase/firestore";
+import { collection, addDoc, Timestamp, query, orderBy, limit, getDocs } from "firebase/firestore";
 
 export interface AuditLog {
   action: 'CREATE' | 'UPDATE' | 'DELETE' | 'LOGIN' | 'IMPORT' | 'EXPORT' | 'DELETE_ALL';
@@ -24,8 +24,27 @@ export const AuditLogService = {
       console.log(`[Audit] ${entry.action} on ${entry.collection}/${entry.doc_id}`);
     } catch (error) {
       console.error("Failed to write audit log:", error);
-      // In a real strict environment, we might want to throw here, 
-      // but for now we don't want to block the main action if logging fails.
+    }
+  },
+
+  getLogs: async (limitCount: number = 100): Promise<AuditLog[]> => {
+    try {
+      const q = query(
+        collection(db, COLLECTION_NAME),
+        orderBy("timestamp", "desc"),
+        limit(limitCount)
+      );
+      const snap = await getDocs(q);
+      return snap.docs.map(doc => {
+        const data = doc.data();
+        return {
+          ...data,
+          timestamp: data.timestamp // Keep as Timestamp for now, convert in UI if needed
+        } as AuditLog;
+      });
+    } catch (error) {
+      console.error("Failed to get audit logs:", error);
+      return [];
     }
   }
 };

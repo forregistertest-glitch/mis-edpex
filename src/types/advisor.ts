@@ -9,6 +9,7 @@ export interface Advisor {
   faculty?: string; // คณะ
   email?: string;
   phone?: string;
+  scopus_id?: string; // รหัส Scopus ID
 
   // Cached counts (computed)
   student_count?: number; // จำนวนนิสิตในที่ปรึกษา

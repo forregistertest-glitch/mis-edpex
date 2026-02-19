@@ -4,6 +4,9 @@ import { useState, useEffect } from "react";
 import { Personnel } from "@/types/personnel";
 import { Save, Loader2, Hash } from "lucide-react";
 import { DateTime } from "luxon";
+import { useAuth } from "@/contexts/AuthContext";
+import StudentPublications from "@/components/student/StudentPublications"; // Reuse component
+import { FileText, User } from "lucide-react";
 
 interface PersonnelFormProps {
   initialData?: Partial<Personnel>;
@@ -20,6 +23,9 @@ export default function PersonnelForm({
   loading = false,
   isEdit = false 
 }: PersonnelFormProps) {
+  const { user } = useAuth();
+  const [activeTab, setActiveTab] = useState("profile");
+
   const [formData, setFormData] = useState<Partial<Personnel>>({
     title_th: "",
     first_name_th: "",
@@ -69,7 +75,38 @@ export default function PersonnelForm({
   };
 
   return (
-    <form onSubmit={handleFormSubmit} className="space-y-6">
+    <div className="space-y-6">
+      {/* Tabs */}
+      {isEdit && (
+        <div className="flex gap-2 border-b border-slate-200 mb-4">
+          <button
+            type="button"
+            onClick={() => setActiveTab("profile")}
+            className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors flex items-center gap-2 ${activeTab === "profile"
+                ? "border-blue-600 text-blue-600"
+                : "border-transparent text-slate-500 hover:text-slate-700"
+              }`}
+          >
+            <User size={16} />
+            ข้อมูลส่วนตัว (Profile)
+          </button>
+          <button
+            type="button"
+            onClick={() => setActiveTab("publications")}
+            className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors flex items-center gap-2 ${activeTab === "publications"
+                ? "border-blue-600 text-blue-600"
+                : "border-transparent text-slate-500 hover:text-slate-700"
+              }`}
+          >
+            <FileText size={16} />
+            ผลงานตีพิมพ์ (Publications)
+          </button>
+        </div>
+      )}
+
+      {/* Profile Tab */}
+      <div className={activeTab === "profile" ? "block" : "hidden"}>
+        <form onSubmit={handleFormSubmit} className="space-y-6">
       {/* Read-only ID Alert for Edit Mode */}
       {isEdit && (
         <div className="bg-blue-50 text-blue-800 p-3 rounded-xl text-sm border border-blue-200 flex gap-2 items-center">
@@ -312,6 +349,28 @@ export default function PersonnelForm({
           {isEdit ? "บันทึกการแก้ไข" : "บันทึกข้อมูล"}
         </button>
       </div>
-    </form>
+        </form>
+      </div>
+
+      {/* Publications Tab */}
+      {activeTab === "publications" && isEdit && initialData.id && (
+        <div className="animate-in fade-in slide-in-from-left-2">
+           <div className="bg-blue-50 border border-blue-100 p-4 rounded-xl mb-6">
+              <h3 className="font-bold text-blue-800 flex items-center gap-2">
+                 <FileText size={18} />
+                 ผลงานตีพิมพ์ (Sync จาก Scopus)
+              </h3>
+              <p className="text-sm text-blue-600 mt-1">
+                 รายการผลงานที่ดึงมาจาก Scopus โดยอัตโนมัติ (และสามารถเพิ่มเองได้)
+              </p>
+           </div>
+           
+           <StudentPublications 
+              studentId={initialData.id} 
+              userEmail={user?.email || ""} 
+           />
+        </div>
+      )}
+    </div>
   );
 }
