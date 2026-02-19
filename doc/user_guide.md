@@ -1,12 +1,12 @@
 # คู่มือการใช้งาน KUVMIS
-# User Guide — KUVMIS v1.4
+# User Guide — KUVMIS v1.2
 
 | Field | Value |
 |:------|:------|
 | **Doc ID** | KUVMIS-DOC-002 |
-| **Version** | 1.02d |
+| **Version** | 1.2 |
 | **Standard** | ISO 27001 / EdPEx Compliance |
-| **Last Updated** | 2026-02-16T19:25:00+07:00 |
+| **Last Updated** | 2026-02-20T10:00:00+07:00 |
 | **Author** | KUVMIS Development Team |
 | **Status** | Released |
 
@@ -159,11 +159,11 @@
 ## 9. ข้อมูลติดต่อ
 
 - **Admin:** nipon.w@ku.th
-- **ระบบ:** KUVMIS v1.4 — คณะสัตวแพทยศาสตร์ มหาวิทยาลัยเกษตรศาสตร์
+- **ระบบ:** KUVMIS v1.2 — คณะสัตวแพทยศาสตร์ มหาวิทยาลัยเกษตรศาสตร์
 - **ปีการศึกษา:** 2568
 
 ---
 
 - **เอกสารอ้างอิง:** แผนการรักษาความถูกต้องของข้อมูล (Data Integrity Assurance Plan) - ดูได้ที่เมนู "เอกสารประกอบ"
 
-*เอกสารนี้ปรับปรุงล่าสุดเมื่อ 12 ก.พ. 2569 — KUVMIS v1.5*
+*เอกสารนี้ปรับปรุงล่าสุดเมื่อ 20 ก.พ. 2569 — KUVMIS v1.2*
