@@ -191,5 +191,49 @@ export const AcademicService = {
       console.error("Error fetching all progress:", error);
       return [];
     }
+  },
+
+  // --- Bulk Delete (Purge) ---
+
+  deleteAllPublications: async (userEmail: string) => {
+    try {
+      const snapshot = await getDocs(collection(db, PUBLICATIONS_COLLECTION));
+      const batchSize = 500;
+      for (let i = 0; i < snapshot.docs.length; i += batchSize) {
+        const batch = writeBatch(db);
+        snapshot.docs.slice(i, i + batchSize).forEach(d => batch.delete(d.ref));
+        await batch.commit();
+      }
+      await AuditLogService.log({
+        action: 'DELETE', collection: PUBLICATIONS_COLLECTION,
+        doc_id: 'ALL', user: userEmail, status: 'SUCCESS',
+        details: { count: snapshot.docs.length, type: 'PURGE_ALL' }
+      });
+      return snapshot.docs.length;
+    } catch (error) {
+      console.error("Failed to delete all publications:", error);
+      throw error;
+    }
+  },
+
+  deleteAllProgress: async (userEmail: string) => {
+    try {
+      const snapshot = await getDocs(collection(db, PROGRESS_COLLECTION));
+      const batchSize = 500;
+      for (let i = 0; i < snapshot.docs.length; i += batchSize) {
+        const batch = writeBatch(db);
+        snapshot.docs.slice(i, i + batchSize).forEach(d => batch.delete(d.ref));
+        await batch.commit();
+      }
+      await AuditLogService.log({
+        action: 'DELETE', collection: PROGRESS_COLLECTION,
+        doc_id: 'ALL', user: userEmail, status: 'SUCCESS',
+        details: { count: snapshot.docs.length, type: 'PURGE_ALL' }
+      });
+      return snapshot.docs.length;
+    } catch (error) {
+      console.error("Failed to delete all progress:", error);
+      throw error;
+    }
   }
 };

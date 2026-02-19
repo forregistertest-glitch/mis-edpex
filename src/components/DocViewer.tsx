@@ -219,6 +219,8 @@ export default function DocViewer({ onClose, t, userEmail }: { onClose: () => vo
     "qa": "✅",
     "kpi_master_data": "📊",
     "performance_seed_data": "🧪",
+    "import_export_manual": "📥",
+    "convert_script_guide": "🐍",
   };
 
   const getIcon = (name: string) => {

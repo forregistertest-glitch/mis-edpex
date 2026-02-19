@@ -1,6 +1,7 @@
 import * as XLSX from 'xlsx';
 import { GraduateStudent } from '@/types/student';
 import { StudentPublication, StudentProgress } from '@/types/academic';
+import { Advisor } from '@/types/advisor';
 import { parseThaiDate, parseThaiName } from '@/utils/formatters';
 
 const HEADER_MAP: { [key: string]: keyof GraduateStudent } = {
@@ -161,14 +162,29 @@ const PUB_HEADER_MAP: Record<string, string> = {
   "Student ID": "student_id",
   "ชื่อบทความ": "publication_title",
   "Title": "publication_title",
+  "ชื่อวารสาร": "journal_name",
   "วารสาร": "journal_name",
   "Journal": "journal_name",
+  "เผยแพร่ระหว่างวันที่": "publish_period",
+  "ปีที่ (Volume)": "volume",
+  "Volume": "volume",
+  "ฉบับที่ (Issue)": "issue",
+  "ฉบับที่": "issue",
+  "Issue": "issue",
+  "เลขหน้า": "pages",
+  "Pages": "pages",
+  "วันที่ตอบรับให้ตีพิมพ์": "acceptance_date",
   "วันที่ตีพิมพ์": "publication_date",
   "Date": "publication_date",
+  "ปีที่ตีพิมพ์": "year",
   "ปี": "year",
   "Year": "year",
+  "ระดับการเผยแพร่": "publication_level",
+  "วันที่อนุมัติปริญญา": "degree_approval_date",
+  "ฐานข้อมูล": "database_source",
   "Quartile": "quartile",
   "Q": "quartile",
+  "น้ำหนัก (%)": "weight",
   "น้ำหนัก": "weight",
   "Weight": "weight"
 };
@@ -358,6 +374,7 @@ export const parseMultiSheetExcel = async (
   students?: GraduateStudent[]; 
   publications?: StudentPublication[]; 
   progress?: StudentProgress[];
+  advisors?: Advisor[];
   errors: string[] 
 }> => {
   const errors: string[] = [];
@@ -366,6 +383,7 @@ export const parseMultiSheetExcel = async (
     students: [] as GraduateStudent[],
     publications: [] as StudentPublication[],
     progress: [] as StudentProgress[],
+    advisors: [] as Advisor[],
     errors
   };
 
@@ -380,7 +398,6 @@ export const parseMultiSheetExcel = async (
        const ws = workbook.Sheets[studentSheet];
        const data = XLSX.utils.sheet_to_json(ws, { header: 1 });
        if (data.length > 1) {
-          // Reuse header mapping logic (Simplified duplication for now)
           const headers = (data[0] as string[]).map(h => String(h || "").trim());
           const rows = data.slice(1);
           
@@ -452,7 +469,6 @@ export const parseMultiSheetExcel = async (
                  created_by: userEmail
              };
              
-             // Manual Map relying on keywords
              const idxID = headers.findIndex(h => h.includes("รหัสนิสิต") || h.includes("Student ID"));
              const idxTitle = headers.findIndex(h => h.includes("ชื่อบทความ") || h.includes("Title") || h.includes("publication_title"));
              const idxJournal = headers.findIndex(h => h.includes("วารสาร") || h.includes("Journal"));
@@ -510,12 +526,48 @@ export const parseMultiSheetExcel = async (
              }
           });
        }
-    } 
+    }
 
-    if (result.students?.length || result.publications?.length || result.progress?.length) {
+    // 4. Process Advisors
+    const advisorSheet = sheetNames.find(s => s.toLowerCase().includes("advisor") || s.includes("อาจารย์"));
+    if (advisorSheet) {
+       const ws = workbook.Sheets[advisorSheet];
+       const data = XLSX.utils.sheet_to_json(ws, { header: 1 });
+       if (data.length > 1) {
+          const headers = (data[0] as string[]).map(h => String(h || "").trim());
+          const rows = data.slice(1);
+          
+          rows.forEach((row: any) => {
+             if (!row || row.length === 0) return;
+             const advisor: Partial<Advisor> = {
+                is_deleted: false,
+                created_at: new Date().toISOString(),
+                created_by: userEmail
+             };
+
+             headers.forEach((header, index) => {
+                if (!header) return;
+                const field = ADVISOR_HEADER_MAP[header];
+                if (field) {
+                   let value = row[index];
+                   if (value === undefined || value === null) return;
+                   if (typeof value === 'string') value = value.trim();
+                   if (value === "-" || value === "") return;
+                   (advisor as any)[field] = value;
+                }
+             });
+
+             if (advisor.full_name) {
+                result.advisors?.push(advisor as Advisor);
+             }
+          });
+       }
+    }
+
+    if (result.students?.length || result.publications?.length || result.progress?.length || result.advisors?.length) {
        result.success = true;
     } else {
-       errors.push("ไม่พบข้อมูลใน Sheet ที่กำหนด (Students, Publications, Progress) - กรุณาตรวจสอบชื่อ Sheet");
+       errors.push("ไม่พบข้อมูลใน Sheet ที่กำหนด (Students, Publications, Progress, Advisors) - กรุณาตรวจสอบชื่อ Sheet");
     }
 
   } catch (error) {
@@ -524,3 +576,264 @@ export const parseMultiSheetExcel = async (
 
   return result;
 };
+
+// =====================================================================
+// ADVISOR IMPORT
+// =====================================================================
+
+const ADVISOR_HEADER_MAP: Record<string, keyof Advisor> = {
+  "รหัสอาจารย์": "advisor_id",
+  "Advisor ID": "advisor_id",
+  "ID": "advisor_id",
+  "คำนำหน้า": "prefix",
+  "Prefix": "prefix",
+  "ตำแหน่งทางวิชาการ": "prefix",
+  "ชื่อ-นามสกุล": "full_name",
+  "Full Name": "full_name",
+  "ชื่อ-สกุล": "full_name",
+  "ชื่อ": "first_name",
+  "First Name": "first_name",
+  "นามสกุล": "last_name",
+  "Last Name": "last_name",
+  "ภาควิชา": "department",
+  "Department": "department",
+  "คณะ": "faculty",
+  "Faculty": "faculty",
+  "อีเมล": "email",
+  "Email": "email",
+  "โทรศัพท์": "phone",
+  "Phone": "phone",
+};
+
+export const parseAdvisorsExcel = async (
+  file: File,
+  userEmail: string
+): Promise<{ success: boolean; data: Advisor[]; errors: string[] }> => {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = async (e) => {
+      try {
+        const data = e.target?.result;
+        const workbook = XLSX.read(data, { type: 'array' });
+        const allAdvisors: Advisor[] = [];
+        const errors: string[] = [];
+
+        for (const name of workbook.SheetNames) {
+          const sheet = workbook.Sheets[name];
+          const json = XLSX.utils.sheet_to_json<any[]>(sheet, { header: 1 });
+          if (json.length === 0) continue;
+
+          let headerRowIndex = -1;
+          for (let r = 0; r < Math.min(json.length, 10); r++) {
+            const row = json[r] as string[];
+            if (row && row.some(cell => {
+              const s = String(cell).trim();
+              return s.includes("ชื่อ") || s.includes("Full Name") || s.includes("Advisor");
+            })) {
+              headerRowIndex = r;
+              break;
+            }
+          }
+          if (headerRowIndex === -1) continue;
+
+          const targetHeaders = (json[headerRowIndex] as any[]).map(h => String(h || "").trim());
+          const targetRows = json.slice(headerRowIndex + 1);
+
+          targetRows.forEach((row) => {
+            if (!row || row.length === 0) return;
+            const advisor: Partial<Advisor> = {
+              is_deleted: false,
+              created_at: new Date().toISOString(),
+              created_by: userEmail
+            };
+
+            targetHeaders.forEach((header, index) => {
+              if (!header) return;
+              const field = ADVISOR_HEADER_MAP[header];
+              if (field) {
+                let value = (row as any)[index];
+                if (value === undefined || value === null) return;
+                if (typeof value === 'string') value = value.trim();
+                if (value === "-" || value === "") return;
+                (advisor as any)[field] = value;
+              }
+            });
+
+            // Build full_name from parts if not present
+            if (!advisor.full_name && advisor.first_name && advisor.last_name) {
+              advisor.full_name = `${advisor.prefix || ''} ${advisor.first_name} ${advisor.last_name}`.trim();
+            }
+
+            if (advisor.full_name) {
+              allAdvisors.push(advisor as Advisor);
+            }
+          });
+        }
+
+        resolve({ success: true, data: allAdvisors, errors });
+      } catch (error: any) {
+        reject(error);
+      }
+    };
+    reader.onerror = (error) => reject(error);
+    reader.readAsArrayBuffer(file);
+  });
+};
+
+// =====================================================================
+// DEDUPLICATION ENGINE
+// =====================================================================
+
+export interface DeduplicateResult<T> {
+  inserts: T[];
+  updates: { existing: T; incoming: T; merged: T }[];
+  skipped: { incoming: T; reason: string }[];
+  summary: { newCount: number; updateCount: number; skipCount: number };
+}
+
+/**
+ * Deduplicate students by student_id. Upsert strategy.
+ */
+export function deduplicateStudents(
+  incoming: GraduateStudent[],
+  existing: GraduateStudent[]
+): DeduplicateResult<GraduateStudent> {
+  const existingMap = new Map<string, GraduateStudent>();
+  existing.forEach(s => { if (s.student_id) existingMap.set(s.student_id, s); });
+
+  const inserts: GraduateStudent[] = [];
+  const updates: { existing: GraduateStudent; incoming: GraduateStudent; merged: GraduateStudent }[] = [];
+
+  incoming.forEach(s => {
+    if (!s.student_id) return;
+    const match = existingMap.get(s.student_id);
+    if (match) {
+      // Merge: incoming overwrites non-empty fields
+      const merged = { ...match };
+      Object.entries(s).forEach(([key, value]) => {
+        if (value !== undefined && value !== null && value !== '' && value !== '-' && key !== 'id') {
+          (merged as any)[key] = value;
+        }
+      });
+      merged.updated_at = new Date().toISOString();
+      updates.push({ existing: match, incoming: s, merged });
+    } else {
+      inserts.push(s);
+    }
+  });
+
+  return {
+    inserts, updates, skipped: [],
+    summary: { newCount: inserts.length, updateCount: updates.length, skipCount: 0 }
+  };
+}
+
+/**
+ * Deduplicate publications by student_id + publication_title. Skip strategy.
+ */
+export function deduplicatePublications(
+  incoming: StudentPublication[],
+  existing: StudentPublication[]
+): DeduplicateResult<StudentPublication> {
+  const existingKeys = new Set<string>();
+  existing.forEach(p => {
+    const key = `${p.student_id}|||${(p.publication_title || '').toLowerCase().trim()}`;
+    existingKeys.add(key);
+  });
+
+  const inserts: StudentPublication[] = [];
+  const skipped: { incoming: StudentPublication; reason: string }[] = [];
+
+  incoming.forEach(p => {
+    const key = `${p.student_id}|||${(p.publication_title || '').toLowerCase().trim()}`;
+    if (existingKeys.has(key)) {
+      skipped.push({ incoming: p, reason: `ซ้ำ: ${p.student_id} - ${p.publication_title}` });
+    } else {
+      inserts.push(p);
+      existingKeys.add(key); // Prevent intra-batch duplicates
+    }
+  });
+
+  return {
+    inserts, updates: [], skipped,
+    summary: { newCount: inserts.length, updateCount: 0, skipCount: skipped.length }
+  };
+}
+
+/**
+ * Deduplicate progress by student_id + milestone_type. Upsert strategy.
+ */
+export function deduplicateProgress(
+  incoming: StudentProgress[],
+  existing: StudentProgress[]
+): DeduplicateResult<StudentProgress> {
+  const existingMap = new Map<string, StudentProgress>();
+  existing.forEach(p => {
+    const key = `${p.student_id}|||${p.milestone_type}`;
+    existingMap.set(key, p);
+  });
+
+  const inserts: StudentProgress[] = [];
+  const updates: { existing: StudentProgress; incoming: StudentProgress; merged: StudentProgress }[] = [];
+
+  incoming.forEach(p => {
+    const key = `${p.student_id}|||${p.milestone_type}`;
+    const match = existingMap.get(key);
+    if (match) {
+      const merged = { ...match };
+      Object.entries(p).forEach(([k, v]) => {
+        if (v !== undefined && v !== null && v !== '' && k !== 'id') {
+          (merged as any)[k] = v;
+        }
+      });
+      updates.push({ existing: match, incoming: p, merged });
+    } else {
+      inserts.push(p);
+    }
+  });
+
+  return {
+    inserts, updates, skipped: [],
+    summary: { newCount: inserts.length, updateCount: updates.length, skipCount: 0 }
+  };
+}
+
+/**
+ * Deduplicate advisors by advisor_id or full_name. Upsert strategy.
+ */
+export function deduplicateAdvisors(
+  incoming: Advisor[],
+  existing: Advisor[]
+): DeduplicateResult<Advisor> {
+  const existingByID = new Map<string, Advisor>();
+  const existingByName = new Map<string, Advisor>();
+  existing.forEach(a => {
+    if (a.advisor_id) existingByID.set(a.advisor_id, a);
+    if (a.full_name) existingByName.set(a.full_name.trim().toLowerCase(), a);
+  });
+
+  const inserts: Advisor[] = [];
+  const updates: { existing: Advisor; incoming: Advisor; merged: Advisor }[] = [];
+
+  incoming.forEach(a => {
+    const match = (a.advisor_id && existingByID.get(a.advisor_id))
+                || (a.full_name && existingByName.get(a.full_name.trim().toLowerCase()))
+                || null;
+    if (match) {
+      const merged = { ...match };
+      Object.entries(a).forEach(([k, v]) => {
+        if (v !== undefined && v !== null && v !== '' && k !== 'id') {
+          (merged as any)[k] = v;
+        }
+      });
+      updates.push({ existing: match, incoming: a, merged });
+    } else {
+      inserts.push(a);
+    }
+  });
+
+  return {
+    inserts, updates, skipped: [],
+    summary: { newCount: inserts.length, updateCount: updates.length, skipCount: 0 }
+  };
+}

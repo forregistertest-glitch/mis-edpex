@@ -4,8 +4,9 @@ import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { GraduateStudent } from "@/types/student";
 import { StudentService } from "@/services/studentService";
-import { Plus, Search, Edit, Trash2, Download, Upload, ArrowLeft, GraduationCap, BarChart3, ArrowUpAZ, ArrowDownAZ, Calendar, Hash, FileSpreadsheet, RefreshCw, Grid2X2Check, ChevronUp, Users } from "lucide-react";
-import { exportStudentsToExcel } from "@/utils/studentExport";
+import { Plus, Search, Edit, Trash2, Download, Upload, ArrowLeft, GraduationCap, BarChart3, ArrowUpAZ, ArrowDownAZ, Calendar, Hash, FileSpreadsheet, RefreshCw, ChevronUp, Users, ChevronDown, FileDown, LayoutDashboard, Archive } from "lucide-react";
+import { exportStudentsToExcel, exportFullReport } from "@/utils/studentExport";
+import { downloadImportTemplate } from "@/utils/templateGenerator";
 import { parseStudentExcel } from "@/utils/studentImport";
 import { useAuth } from "@/contexts/AuthContext";
 import StudentForm from "@/components/student/StudentForm";
@@ -17,6 +18,9 @@ export default function StudentPage() {
   const [importProgress, setImportProgress] = useState<{ current: number; total: number } | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [showImportMenu, setShowImportMenu] = useState(false);
+  const importMenuRef = useRef<HTMLDivElement>(null);
+  const isSuperAdmin = user?.email === "nipon.w@ku.th";
 
   useEffect(() => {
     fetchStudents();
@@ -50,6 +54,17 @@ export default function StudentPage() {
   const [sortBy, setSortBy] = useState<'student_id' | 'updated_at'>('updated_at');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
   const [viewTab, setViewTab] = useState<'active' | 'disabled' | 'all'>('active');
+
+  // Close dropdown on outside click
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (importMenuRef.current && !importMenuRef.current.contains(e.target as Node)) {
+        setShowImportMenu(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   // Pagination State
   const [currentPage, setCurrentPage] = useState(1);
@@ -127,11 +142,34 @@ export default function StudentPage() {
     }
   };
 
+  const handleFullExport = async () => {
+    try {
+      setLoading(true);
+      const { AcademicService } = await import("@/services/academicService");
+      const [pubs, progs] = await Promise.all([
+        AcademicService.getAllPublications(),
+        AcademicService.getAllProgress()
+      ]);
+      exportFullReport(students, pubs, progs);
+    } catch (error) {
+      console.error("Full export failed:", error);
+      alert("การส่งออกข้อมูลฉบับสมบูรณ์ล้มเหลว");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleImportClick = () => {
     fileInputRef.current?.click();
   };
 
-  const [importType, setImportType] = useState<'student' | 'publication' | 'progress'>('student');
+  const [importType, setImportType] = useState<'student' | 'publication' | 'progress' | 'smart'>('smart');
+
+  const handleImportMenuSelect = (type: typeof importType) => {
+    setImportType(type);
+    setShowImportMenu(false);
+    fileInputRef.current?.click();
+  };
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!user?.email) { alert("กรุณาเข้าสู่ระบบเพื่อดำเนินการ"); return; }
@@ -180,12 +218,65 @@ export default function StudentPage() {
          errorMsgs = result.errors || [];
       }
       else if (importType === 'smart') {
+         const { deduplicateStudents, deduplicatePublications, deduplicateProgress, deduplicateAdvisors } = await import("@/utils/studentImport");
+         const { AdvisorService } = await import("@/services/advisorService");
          const result = await parseMultiSheetExcel(file, user.email);
          if (result.success) {
-            if (result.students?.length) await StudentService.addStudentBatch(result.students, user.email);
-            if (result.publications?.length) await AcademicService.addPublicationBatch(result.publications, user.email);
-            if (result.progress?.length) await AcademicService.addProgressBatch(result.progress, user.email);
-            successCount = (result.students?.length || 0) + (result.publications?.length || 0) + (result.progress?.length || 0);
+            // Fetch existing data for dedup
+            const [existS, existP, existPR, existA] = await Promise.all([
+              StudentService.getAllStudents(),
+              AcademicService.getAllPublications(),
+              AcademicService.getAllProgress(),
+              (async () => { try { return await AdvisorService.getAllAdvisors(); } catch { return []; } })(),
+            ]);
+
+            const summaryLines: string[] = [];
+
+            // Students: upsert via batch (addStudentBatch uses merge:true)
+            if (result.students?.length) {
+              const dedup = deduplicateStudents(result.students, existS);
+              const allUpserts = [...dedup.inserts, ...dedup.updates.map(u => u.merged)];
+              if (allUpserts.length) await StudentService.addStudentBatch(allUpserts, user.email);
+              summaryLines.push(`📋 นิสิต: เพิ่ม ${dedup.summary.newCount}, อัปเดต ${dedup.summary.updateCount}`);
+              successCount += dedup.summary.newCount + dedup.summary.updateCount;
+            }
+
+            // Publications: skip duplicates
+            if (result.publications?.length) {
+              const dedup = deduplicatePublications(result.publications, existP);
+              if (dedup.inserts.length) await AcademicService.addPublicationBatch(dedup.inserts, user.email);
+              summaryLines.push(`📄 ผลงาน: เพิ่ม ${dedup.summary.newCount}, ข้าม ${dedup.summary.skipCount}`);
+              successCount += dedup.summary.newCount;
+            }
+
+            // Progress: upsert
+            if (result.progress?.length) {
+              const dedup = deduplicateProgress(result.progress, existPR);
+              if (dedup.inserts.length) await AcademicService.addProgressBatch(dedup.inserts, user.email);
+              summaryLines.push(`📊 ความก้าวหน้า: เพิ่ม ${dedup.summary.newCount}, อัปเดต ${dedup.summary.updateCount}`);
+              successCount += dedup.summary.newCount + dedup.summary.updateCount;
+            }
+
+            // Advisors: upsert via batch
+            if (result.advisors?.length) {
+              const dedup = deduplicateAdvisors(result.advisors, existA);
+              const allAdvisors = [...dedup.inserts, ...dedup.updates.map(u => u.merged)];
+              if (allAdvisors.length) await AdvisorService.addAdvisorBatch(allAdvisors, user.email);
+              summaryLines.push(`👤 อาจารย์: เพิ่ม ${dedup.summary.newCount}, อัปเดต ${dedup.summary.updateCount}`);
+              successCount += dedup.summary.newCount + dedup.summary.updateCount;
+            }
+
+            // Build detailed message
+            if (summaryLines.length > 0) {
+              errorMsgs = result.errors;
+              let msg = `✅ นำเข้าสำเร็จ — ${successCount} รายการ\n\n${summaryLines.join('\n')}`;
+              if (errorMsgs.length > 0) {
+                msg += `\n\n⚠️ ข้อผิดพลาด ${errorMsgs.length} รายการ:\n${errorMsgs.slice(0, 5).join('\n')}`;
+              }
+              alert(msg);
+              fetchStudents();
+              return;
+            }
          }
          errorMsgs = result.errors;
       }
@@ -206,19 +297,7 @@ export default function StudentPage() {
     }
   };
 
-  const handleFixData = async () => {
-    if (!confirm("Fix data visibility for existing records?")) return;
-    setLoading(true);
-    try {
-      const count = await StudentService.migrateData();
-      alert(`Successfully fixed visibility and backfilled ${count} records.`);
-      fetchStudents();
-    } catch (error) {
-      console.error("Fix failed:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
+  // handleFixData removed — no longer needed
 
   const handleDeleteAll = async () => {
     if (!user?.email) { alert("กรุณาเข้าสู่ระบบเพื่อดำเนินการ"); return; }
@@ -293,95 +372,109 @@ export default function StudentPage() {
 
   return (
     <div className="container mx-auto p-6 font-sarabun">
-      <div className="flex justify-between items-center mb-6">
-        <div className="flex items-center gap-4">
-          <Link href="/?tab=Input" className="p-2 hover:bg-gray-100 rounded-full transition-colors text-gray-500 hover:text-gray-700">
-             <ArrowLeft size={24} />
-          </Link>
-          <h1 className="text-2xl font-bold flex items-center gap-3">
-             <div className="bg-green-600 p-2 rounded-lg shadow-sm">
-                <GraduationCap size={24} className="text-white" />
-             </div>
-             ระบบข้อมูลนิสิต (Academic)
-          </h1>
-        </div>
-        <div className="flex gap-2">
-          {importProgress && (
-             <span className="text-sm text-blue-600 flex items-center bg-blue-50 px-3 rounded-lg animate-pulse">
-                กำลังนำเข้า... {importProgress.current} / {importProgress.total} รายการ
-             </span>
-          )}
-          {userRole === 'admin' && (
-            <div className="flex items-center gap-2 mr-2">
-               <button onClick={handleFixData} className="text-slate-300 hover:text-[#236c96] transition-colors p-1 hover:bg-slate-100 rounded" title="Fix visibility (Experimental)">
-                 <Grid2X2Check size={16} />
-               </button>
-               <button onClick={handleDeleteAll} className="text-slate-300 hover:text-red-500 transition-colors p-1 hover:bg-slate-100 rounded" title="ลบข้อมูลทั้งหมด">
-                 <Trash2 size={16} />
-               </button>
-            </div>
-          )}
-          {/* Original file input removed as new UI has it embedded */}
-          {/* <input type="file" ref={fileInputRef} onChange={handleFileChange} className="hidden" accept=".xlsx, .xls, .csv" /> */}
-          
-          <div className="flex gap-2">
-            <select 
-              value={importType} 
-              onChange={(e) => setImportType(e.target.value as any)}
-              className="px-3 py-2 border rounded-lg text-sm bg-white"
+      {/* === ACTION BAR (แถบคำสั่ง) === */}
+      <div className="flex flex-col gap-3 mb-6">
+        {/* Row 1: Header + Primary Actions */}
+        <div className="flex justify-between items-center">
+          <div className="flex items-center gap-4">
+            <Link href="/?tab=Input" className="p-2 hover:bg-gray-100 rounded-full transition-colors text-gray-500 hover:text-gray-700">
+               <ArrowLeft size={24} />
+            </Link>
+            <h1 className="text-2xl font-bold flex items-center gap-3">
+               <div className="bg-green-600 p-2 rounded-lg shadow-sm">
+                  <GraduationCap size={24} className="text-white" />
+               </div>
+               ระบบข้อมูลนิสิต (Academic)
+            </h1>
+          </div>
+          <div className="flex items-center gap-2">
+            {importProgress && (
+               <span className="text-sm text-blue-600 flex items-center bg-blue-50 px-3 py-2 rounded-lg animate-pulse">
+                  กำลังนำเข้า... {importProgress.current} / {importProgress.total} รายการ
+               </span>
+            )}
+
+            {/* Template Download */}
+            <button
+              onClick={() => downloadImportTemplate()}
+              className="flex items-center gap-2 bg-white border border-gray-300 hover:border-blue-400 hover:bg-blue-50 text-gray-700 px-3 py-2 rounded-lg transition-all shadow-sm text-sm"
+              title="ดาวน์โหลดแบบฟอร์มนำเข้าข้อมูล (Excel ว่างมี Header)"
             >
-              <option value="student">นำเข้า: ข้อมูลนิสิต (Profile)</option>
-              <option value="publication">นำเข้า: ผลงานตีพิมพ์ (Publications)</option>
-              <option value="progress">นำเข้า: ความก้าวหน้า (Progress)</option>
-              <option value="smart">Smart Import (รวมหลาย Sheet)</option>
-            </select>
-            <label className="flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg cursor-pointer transition-colors shadow-sm">
-              <Upload size={18} />
-              <span className="font-medium text-sm">นำเข้า Excel</span>
+              <FileDown size={16} className="text-blue-600" />
+              <span className="font-medium">Template</span>
+              <span className="text-[10px] bg-blue-100 text-blue-700 px-1.5 py-0.5 rounded font-bold">v1.1b</span>
+            </button>
+
+            {/* Import Dropdown */}
+            <div className="relative" ref={importMenuRef}>
+              <button
+                onClick={() => setShowImportMenu(!showImportMenu)}
+                className="flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg transition-colors shadow-sm text-sm font-medium"
+              >
+                <Upload size={16} />
+                นำเข้า
+                <ChevronDown size={14} className={`transition-transform ${showImportMenu ? 'rotate-180' : ''}`} />
+              </button>
+              {showImportMenu && (
+                <div className="absolute right-0 mt-1 w-64 bg-white rounded-lg shadow-lg border border-gray-200 py-1 z-50">
+                  <button onClick={() => handleImportMenuSelect('smart')} className="w-full text-left px-4 py-2.5 hover:bg-blue-50 text-sm flex items-center gap-3 transition-colors">
+                    <FileSpreadsheet size={16} className="text-blue-600" />
+                    <div><div className="font-medium text-gray-800">Smart Import</div><div className="text-xs text-gray-500">รวมทุก Sheet อัตโนมัติ</div></div>
+                  </button>
+                  <div className="border-t border-gray-100 my-1" />
+                  <button onClick={() => handleImportMenuSelect('student')} className="w-full text-left px-4 py-2.5 hover:bg-gray-50 text-sm flex items-center gap-3 transition-colors">
+                    <GraduationCap size={16} className="text-gray-500" />
+                    <div><div className="font-medium text-gray-700">ข้อมูลนิสิต</div><div className="text-xs text-gray-500">Profile — ชื่อ, สาขา, อาจารย์</div></div>
+                  </button>
+                  <button onClick={() => handleImportMenuSelect('publication')} className="w-full text-left px-4 py-2.5 hover:bg-gray-50 text-sm flex items-center gap-3 transition-colors">
+                    <FileSpreadsheet size={16} className="text-gray-500" />
+                    <div><div className="font-medium text-gray-700">ผลงานตีพิมพ์</div><div className="text-xs text-gray-500">Publications — วารสาร, บทความ</div></div>
+                  </button>
+                  <button onClick={() => handleImportMenuSelect('progress')} className="w-full text-left px-4 py-2.5 hover:bg-gray-50 text-sm flex items-center gap-3 transition-colors">
+                    <BarChart3 size={16} className="text-gray-500" />
+                    <div><div className="font-medium text-gray-700">ความก้าวหน้า</div><div className="text-xs text-gray-500">Progress — Milestones, สถานะ</div></div>
+                  </button>
+                </div>
+              )}
               <input
+                ref={fileInputRef}
                 type="file"
                 accept=".xlsx, .xls"
                 onChange={handleFileChange}
                 className="hidden"
-                disabled={loading} // Using 'loading' state for 'isImporting'
+                disabled={loading}
               />
-            </label>
-            <button
-               onClick={() => handleExport(false)}
-               className="flex items-center gap-2 bg-slate-600 hover:bg-slate-700 text-white px-4 py-2 rounded-lg transition-colors shadow-sm"
+            </div>
+
+            <div className="w-px h-8 bg-gray-200" />
+
+            {/* Navigation Links */}
+            <Link href="/advisor" className="flex items-center gap-1.5 bg-white border border-gray-300 hover:border-teal-400 hover:bg-teal-50 text-gray-700 px-3 py-2 rounded-lg transition-all text-sm">
+               <Users size={16} className="text-teal-600" />
+               <span className="font-medium">อาจารย์</span>
+            </Link>
+            <Link href="/student/report" className="flex items-center gap-1.5 bg-white border border-gray-300 hover:border-purple-400 hover:bg-purple-50 text-gray-700 px-3 py-2 rounded-lg transition-all text-sm">
+               <LayoutDashboard size={16} className="text-purple-600" />
+               <span className="font-medium">Dashboard</span>
+            </Link>
+            <Link href="/student/backup" className="flex items-center gap-1.5 bg-white border border-gray-300 hover:border-amber-400 hover:bg-amber-50 text-gray-700 px-3 py-2 rounded-lg transition-all text-sm">
+               <Archive size={16} className="text-amber-600" />
+               <span className="font-medium">Backup</span>
+            </Link>
+            <Link 
+              href="/student/new"
+              className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg flex items-center gap-2 shadow-sm transition-colors text-sm font-medium"
             >
-              <Download size={18} />
-              <span className="font-medium text-sm">ส่งออก (แสดงผล)</span>
-            </button>
-            <button
-               onClick={() => handleExport(true)}
-               className="flex items-center gap-2 bg-slate-800 hover:bg-slate-900 text-white px-4 py-2 rounded-lg transition-colors shadow-sm"
-            >
-              <Download size={18} />
-              <span className="font-medium text-sm">ส่งออก (ทั้งหมด)</span>
-            </button>
+               <Plus size={16} />
+               เพิ่มนิสิต
+            </Link>
           </div>
-          <Link href="/advisor" className="bg-teal-600 hover:bg-teal-700 text-white px-4 py-2 rounded-lg flex items-center gap-2 shadow-sm transition-colors text-sm">
-             <Users size={18} />
-             อาจารย์
-          </Link>
-          <Link href="/student/report" className="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg flex items-center gap-2 shadow-sm transition-colors text-sm">
-             <BarChart3 size={18} />
-             รายงาน
-          </Link>
-           <Link 
-             href="/student/new"
-             className="bg-green-600 hover:bg-green-700 text-white px-5 py-2.5 rounded-lg flex items-center gap-2 shadow-sm transition-colors text-sm font-medium"
-           >
-              <Plus size={18} />
-              เพิ่มนิสิตใหม่
-           </Link>
         </div>
       </div>
 
       <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
         <div className="p-4 border-b border-gray-100 flex flex-col md:flex-row gap-4 justify-between items-center">
-          <div className="flex flex-1 gap-2 max-w-md w-full">
+          <div className="flex flex-1 gap-2 max-w-lg w-full">
             <div className="relative flex-1">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
               <input
@@ -399,6 +492,15 @@ export default function StudentPage() {
               title="รีเฟรชข้อมูล"
             >
               <RefreshCw className={loading ? "animate-spin" : ""} size={16} /> 
+            </button>
+            <button 
+              onClick={() => handleExport(false)}
+              disabled={loading || filteredStudents.length === 0}
+              className="flex items-center gap-1.5 px-3 py-2 bg-slate-50 text-slate-500 hover:bg-slate-100 hover:text-green-600 border border-slate-200 rounded-lg text-sm font-medium transition-all disabled:opacity-40"
+              title={`ส่งออกตารางที่กำลังแสดง (${filteredStudents.length} รายการ)`}
+            >
+              <Download size={14} />
+              <span className="hidden lg:inline text-xs">Export ตาราง</span>
             </button>
           </div>
           

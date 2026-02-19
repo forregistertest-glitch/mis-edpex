@@ -40,7 +40,9 @@ export async function GET(request: Request) {
       "kpi_master_data": { th: "KPI Master Data", en: "61 KPIs Definition" },
       "performance_seed_data": { th: "ข้อมูลจำลองผลการดำเนินงาน", en: "Performance Seed Data" },
       "data_integrity_plan": { th: "แผนการรักษาความถูกต้องของข้อมูล", en: "Data Integrity Plan" },
-      "user_hr_manual": { th: "📄 คู่มือการจัดการผู้ใช้ & HR (v.1.02d)", en: "User & HR Manual" }
+      "user_hr_manual": { th: "📄 คู่มือการจัดการผู้ใช้ & HR (v.1.02d)", en: "User & HR Manual" },
+      "import_export_manual": { th: "📥 คู่มือ Import / Export / Backup (v1.1b)", en: "Import, Export & Backup Manual" },
+      "convert_script_guide": { th: "🐍 คู่มือ Script แปลงไฟล์ Excel", en: "Excel Conversion Script Guide" }
     };
 
     const files = fs.readdirSync(DOC_DIR).filter((f) => f.endsWith(".md"));
@@ -56,7 +58,8 @@ export async function GET(request: Request) {
         modified: stat.mtime.toISOString(),
         isGuide: baseName === "user_guide",
         isHrManual: baseName === "user_hr_manual",
-        isManual: baseName === "input_manual"
+        isManual: baseName === "input_manual",
+        isImportManual: baseName === "import_export_manual"
       };
     }).sort((a, b) => {
       if (a.isGuide) return -1;
@@ -65,6 +68,8 @@ export async function GET(request: Request) {
       if (b.isHrManual) return 1;
       if (a.isManual) return -1;
       if (b.isManual) return 1;
+      if (a.isImportManual) return -1;
+      if (b.isImportManual) return 1;
       return a.title.localeCompare(b.title);
     });
     return NextResponse.json({ docs });
