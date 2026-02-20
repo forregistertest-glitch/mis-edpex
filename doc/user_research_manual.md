@@ -2,11 +2,11 @@
 ## ระบบสืบค้นและจัดการงานวิจัย (Research Module & Scopus Integration)
 
 | Field | Value |
-|:------|:------|
+| :--- | :--- |
 | **Doc ID** | KUVMIS-DOC-020 |
 | **Version** | 1.3 |
 | **Standard** | ISO 27001 / EdPEx Compliance |
-| **Last Updated** | 2026-02-20T20:30:00+07:00 |
+| **Last Updated** | 2026-02-21T03:26:00+07:00 |
 | **Author** | KUVMIS Development Team |
 | **Status** | Released |
 

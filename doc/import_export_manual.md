@@ -1,11 +1,11 @@
 # คู่มือนักปฏิบัติงาน — Import / Export / Backup
 
 | Field | Value |
-|:---|:---|
+| :--- | :--- |
 | **Doc ID** | KUVMIS-DOC-010 |
-| **Version** | 1.1b |
+| **Version** | 1.2 |
 | **Standard** | ISO 27001 / EdPEx Compliance |
-| **Last Updated** | 2026-02-19T09:42:00+07:00 |
+| **Last Updated** | 2026-02-21T03:26:00+07:00 |
 | **Author** | KUVMIS Development Team |
 | **Status** | Released |
 

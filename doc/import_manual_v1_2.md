@@ -1,12 +1,13 @@
+# คู่มือการนำเข้าข้อมูลและการเชื่อมต่อ Scopus (Data Import & Scopus Sync Manual)
+
 | Field | Value |
 | :--- | :--- |
-| **Standard** | ISO 27001 / EdPEx Compliance (v.1.02d) |
-| **Document ID** | MAN-IMP-002 |
+| **Doc ID** | KUVMIS-DOC-011 |
 | **Version** | 1.2 |
-| **Last Updated** | 20 Feb 2569 |
-| **Status** | Approved |
-
-# คู่มือการนำเข้าข้อมูลและการเชื่อมต่อ Scopus (Data Import & Scopus Sync Manual)
+| **Standard** | ISO 27001 / EdPEx Compliance |
+| **Last Updated** | 2026-02-21T03:26:00+07:00 |
+| **Author** | KUVMIS Development Team |
+| **Status** | Released |
 
 > [!NOTE]
 > เอกสารฉบับนี้อธิบายฟีเจอร์ใหม่ในเวอร์ชัน 1.2 เกี่ยวกับการนำเข้าข้อมูลนิสิต, ผลงานตีพิมพ์, และการเชื่อมต่อฐานข้อมูล Scopus

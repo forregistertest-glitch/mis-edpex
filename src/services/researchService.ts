@@ -1,15 +1,15 @@
 import { ResearchRecord } from "@/types/research";
 import { AuditLogService } from "./auditLogService";
 import { db } from "@/lib/firebase";
-import { 
-  collection, 
-  doc, 
-  setDoc, 
-  addDoc, 
-  getDocs, 
-  query, 
-  where, 
-  orderBy, 
+import {
+  collection,
+  doc,
+  setDoc,
+  addDoc,
+  getDocs,
+  query,
+  where,
+  orderBy,
   writeBatch,
   Timestamp,
   QueryDocumentSnapshot,
@@ -17,6 +17,19 @@ import {
 } from "firebase/firestore";
 
 const COLLECTION_NAME = "research_records";
+
+// Helper เพื่อกำจัด undefined ก่อนยิงเข้า Firebase (ป้องกัน Error)
+const removeUndefined = (obj: any): any => {
+  if (Array.isArray(obj)) return obj.map(removeUndefined);
+  if (obj && typeof obj === 'object') {
+    return Object.fromEntries(
+      Object.entries(obj)
+        .filter(([_, v]) => v !== undefined)
+        .map(([k, v]) => [k, removeUndefined(v)])
+    );
+  }
+  return obj;
+};
 
 export const ResearchService = {
   // Read All (Filtered by is_deleted)
@@ -27,7 +40,7 @@ export const ResearchService = {
         where("is_deleted", "==", false)
       );
       const snap = await getDocs(q);
-      
+
       return snap.docs.map((d: QueryDocumentSnapshot<DocumentData>) => {
         const data = d.data();
         if (data.created_at && typeof data.created_at.toDate === "function") {
@@ -54,8 +67,9 @@ export const ResearchService = {
   addResearch: async (data: Omit<ResearchRecord, "id">, userEmail: string): Promise<string> => {
     try {
       const timestamp = new Date().toISOString();
+      const safeData = removeUndefined(data);
       const docRef = await addDoc(collection(db, COLLECTION_NAME), {
-        ...data,
+        ...safeData,
         is_deleted: false,
         created_at: timestamp,
         updated_at: timestamp,
@@ -69,7 +83,7 @@ export const ResearchService = {
         doc_id: docRef.id,
         user: userEmail,
         status: 'SUCCESS',
-        details: { title: data.title, scopus_id: data.scopus_id }
+        details: { title: data.title, scopus_id: data.scopus_eid || "-" }
       });
 
       return docRef.id;
@@ -81,7 +95,7 @@ export const ResearchService = {
         user: userEmail,
         status: 'FAILURE',
         error_message: error.message,
-        details: { data }
+        details: { data: removeUndefined(data) }
       });
       throw error;
     }
@@ -91,8 +105,9 @@ export const ResearchService = {
   updateResearch: async (id: string, data: Partial<ResearchRecord>, userEmail: string): Promise<void> => {
     try {
       const docRef = doc(db, COLLECTION_NAME, id);
+      const safeData = removeUndefined(data);
       await setDoc(docRef, {
-        ...data,
+        ...safeData,
         updated_at: new Date().toISOString(),
         updated_by: userEmail
       }, { merge: true });
@@ -103,7 +118,7 @@ export const ResearchService = {
         doc_id: id,
         user: userEmail,
         status: 'SUCCESS',
-        details: { changes: data }
+        details: { changes: safeData }
       });
     } catch (error: any) {
       console.error("Error updating research record:", error);
@@ -114,7 +129,7 @@ export const ResearchService = {
         user: userEmail,
         status: 'FAILURE',
         error_message: error.message,
-        details: { requested_changes: data }
+        details: { requested_changes: removeUndefined(data) }
       });
       throw error;
     }
@@ -162,23 +177,26 @@ export const ResearchService = {
       const timestamp = new Date().toISOString();
 
       for (const data of records) {
-        if (data.id) {
+        const safeData = removeUndefined(data);
+        if (safeData.id) {
           // Update existing
-          const docRef = doc(collectionRef, data.id);
-          const updateData = { ...data };
+          const docRef = doc(collectionRef, safeData.id);
+          const updateData = { ...safeData };
           delete updateData.id; // remove id from fields
-          
+
           batch.set(docRef, {
             ...updateData,
             updated_at: timestamp,
             updated_by: userEmail
           }, { merge: true });
         } else {
-          // Create new (Note: Batch operations generally use set() with a generated ID if we want to batch create)
-          // In Firestore, addDoc() with batch is done by creating a new doc ref first
+          // Create new
           const docRef = doc(collectionRef);
+          const newData = { ...safeData };
+          delete newData.id;
+
           batch.set(docRef, {
-            ...data,
+            ...newData,
             is_deleted: false,
             created_at: timestamp,
             updated_at: timestamp,

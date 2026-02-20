@@ -2,11 +2,11 @@
 ## ระบบจัดการข้อมูลนิสิตบัณฑิตศึกษา (Student Module)
 
 | Field | Value |
-|:------|:------|
+| :--- | :--- |
 | **Doc ID** | KUVMIS-DOC-013 |
-| **Version** | 1.03 |
+| **Version** | 1.2 |
 | **Standard** | ISO 27001 / EdPEx Compliance |
-| **Last Updated** | 2026-02-17T20:30:00+07:00 |
+| **Last Updated** | 2026-02-21T03:26:00+07:00 |
 | **Author** | KUVMIS Development Team |
 | **Status** | Released |
 

@@ -2,11 +2,11 @@
 # KUVMIS Data Entry System
 
 | Field | Value |
-|:------|:------|
+| :--- | :--- |
 | **Doc ID** | KUVMIS-DOC-006 |
-| **Version** | 1.02d |
+| **Version** | 1.2 |
 | **Standard** | ISO 27001 / EdPEx Compliance |
-| **Last Updated** | 2026-02-16T19:25:00+07:00 |
+| **Last Updated** | 2026-02-21T03:26:00+07:00 |
 | **Author** | KUVMIS Development Team |
 | **Status** | Released |
 

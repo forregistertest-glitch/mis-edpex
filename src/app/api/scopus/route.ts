@@ -13,8 +13,8 @@ export async function GET(request: Request) {
 
   // Check API Key configuration
   if (!process.env.SCOPUS_API_KEY) {
-    return NextResponse.json({ 
-      error: 'SCOPUS_API_KEY is not configured in environment variables' 
+    return NextResponse.json({
+      error: 'SCOPUS_API_KEY is not configured in environment variables'
     }, { status: 500 });
   }
 
@@ -30,26 +30,26 @@ export async function GET(request: Request) {
     }
 
     if (affiliation) {
-        let affilQuery = '';
-        if (affiliation === 'vet') {
-            affilQuery = `AF-ID(60021944) AND AFFILORG("Veterinary Medicine")`;
-        } else {
-            affilQuery = `AF-ID(${affiliation})`;
-        }
+      let affilQuery = '';
+      if (affiliation === 'vet') {
+        affilQuery = `AF-ID(60021944) AND AFFILORG("Veterinary Medicine")`;
+      } else {
+        affilQuery = `AF-ID(${affiliation})`;
+      }
 
-        if (scopusQuery) {
-            scopusQuery = `${affilQuery} AND (${scopusQuery})`;
-        } else {
-            scopusQuery = affilQuery;
-        }
+      if (scopusQuery) {
+        scopusQuery = `${affilQuery} AND (${scopusQuery})`;
+      } else {
+        scopusQuery = affilQuery;
+      }
     }
 
     if (year && year !== 'all') {
-        if (scopusQuery) {
-            scopusQuery = `(${scopusQuery}) AND PUBYEAR IS ${year}`;
-        } else {
-            scopusQuery = `PUBYEAR IS ${year}`;
-        }
+      if (scopusQuery) {
+        scopusQuery = `(${scopusQuery}) AND PUBYEAR IS ${year}`;
+      } else {
+        scopusQuery = `PUBYEAR IS ${year}`;
+      }
     }
 
     if (!scopusQuery) {
@@ -58,22 +58,28 @@ export async function GET(request: Request) {
 
     console.log(`Fetching Scopus (start=${start}): ${scopusQuery}`);
 
-    const response = await fetch(`${SCOPUS_API_URL}?query=${encodeURIComponent(scopusQuery)}&count=25&start=${start}&sort=-coverDate&view=COMPLETE`, {
-      headers: {
-        'X-ELS-APIKey': process.env.SCOPUS_API_KEY!,
-        'Accept': 'application/json'
-      }
+    const headers: Record<string, string> = {
+      'X-ELS-APIKey': process.env.SCOPUS_API_KEY!,
+      'Accept': 'application/json'
+    };
+
+    if (process.env.SCOPUS_INST_TOKEN) {
+      headers['X-ELS-Insttoken'] = process.env.SCOPUS_INST_TOKEN;
+    }
+
+    const response = await fetch(`${SCOPUS_API_URL}?query=${encodeURIComponent(scopusQuery)}&count=25&start=${start}&sort=-coverDate&view=STANDARD`, {
+      headers
     });
 
     if (!response.ok) {
-        const errText = await response.text();
-        console.error("Scopus API Error:", response.status, errText);
-        return NextResponse.json({ error: `Scopus API Error: ${response.statusText}` }, { status: response.status });
+      const errText = await response.text();
+      console.error("Scopus API Error:", response.status, errText);
+      return NextResponse.json({ error: `Scopus API Error: ${response.statusText}` }, { status: response.status });
     }
 
     const data = await response.json();
     return NextResponse.json(data);
-    
+
   } catch (error) {
     console.error("Scopus Service Error:", error);
     return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });

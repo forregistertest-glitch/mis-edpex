@@ -2,11 +2,11 @@
 # User Guide — KUVMIS v1.2
 
 | Field | Value |
-|:------|:------|
-| **Doc ID** | KUVMIS-DOC-002 |
+| :--- | :--- |
+| **Doc ID** | KUVMIS-DOC-001 |
 | **Version** | 1.2 |
 | **Standard** | ISO 27001 / EdPEx Compliance |
-| **Last Updated** | 2026-02-20T10:00:00+07:00 |
+| **Last Updated** | 2026-02-21T03:26:00+07:00 |
 | **Author** | KUVMIS Development Team |
 | **Status** | Released |
 
