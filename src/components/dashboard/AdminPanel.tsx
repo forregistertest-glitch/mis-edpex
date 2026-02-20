@@ -24,7 +24,6 @@ import {
     BookOpen, // Added from diff
 } from "lucide-react";
 import SystemDocs from "./SystemDocs";
-import ScopusSearch from "./ScopusSearch";
 import { AuditLog, AuditLogService } from "@/services/auditLogService"; // Added for system logs
 import {
     getAuthorizedUsers,
@@ -58,7 +57,7 @@ export default function AdminPanel({ lang }: Props) {
     const [loginLogs, setLoginLogs] = useState<any[]>([]);
     const [systemLogs, setSystemLogs] = useState<AuditLog[]>([]); // Added for system logs
     const [totalLogsCount, setTotalLogsCount] = useState(0);
-    const [activeTab, setActiveTab] = useState<'users' | 'logs' | 'docs' | 'scopus' | 'system'>('users'); // Updated type
+    const [activeTab, setActiveTab] = useState<'users' | 'logs' | 'docs' | 'system'>('users'); // Updated type
     const [loading, setLoading] = useState(true);
     const [actionLoading, setActionLoading] = useState(false);
 
@@ -236,14 +235,6 @@ export default function AdminPanel({ lang }: Props) {
                         {lang === 'th' ? 'เอกสารระบบ (Superadmin)' : 'System Docs'}
                     </button>
                 )}
-
-                <button
-                    onClick={() => setActiveTab('scopus')}
-                    className={`pb-3 text-sm font-bold transition-all px-2 border-b-2 flex items-center gap-2 ${activeTab === 'scopus' ? 'text-[#133045] border-[#71C5E8]' : 'text-slate-400 border-transparent hover:text-slate-600'}`}
-                >
-                    <Search size={16} />
-                    {lang === 'th' ? 'สืบค้นงานวิจัย (Scopus)' : 'Research Search'}
-                </button>
 
                 {isSuperAdmin && (
                     <button
@@ -446,11 +437,6 @@ export default function AdminPanel({ lang }: Props) {
                 <div className="animate-in fade-in">
                     <SystemDocs lang={lang} />
                 </div>
-            )}
-
-            {/* Scopus Tab Content */}
-            {activeTab === 'scopus' && (
-                <ScopusSearch lang={lang} />
             )}
 
             {/* System Logs Tab Content */}

@@ -79,6 +79,10 @@ export default function LoginPage({ onSignIn, loading, error }: LoginPageProps) 
                     <div className="mt-8 space-y-3 pt-6 border-t border-slate-100">
                          <div className="flex items-center gap-2 text-xs font-medium text-slate-400">
                             <ShieldCheck size={14} className="text-green-400" />
+                            <span>Scopus Intelligence: เชื่อมต่อ API เพื่อสืบค้นและวิเคราะห์งานวิจัยครอบคลุมทั่วโลก</span>
+                         </div>
+                         <div className="flex items-center gap-2 text-xs font-medium text-slate-400">
+                            <ShieldCheck size={14} className="text-green-400" />
                             <span>Audit Logging (ALCOA+): ระบบบันทึกการเปลี่ยนแปลงข้อมูล</span>
                          </div>
                          <div className="flex items-center gap-2 text-xs font-medium text-slate-400">
@@ -105,7 +109,7 @@ export default function LoginPage({ onSignIn, loading, error }: LoginPageProps) 
 
                 {/* Footer */}
                 <p className="text-center text-[11px] mt-6" style={{ color: '#133045', opacity: 0.6 }}>
-                    KUVMIS v.1.2 · Last update: 20 Feb 2569 10:00 TH
+                    KUVMIS v.1.3 · Last update: 20 Feb 2026 20:30 TH
                 </p>
             </div>
         </div>

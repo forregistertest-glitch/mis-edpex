@@ -7,6 +7,9 @@ export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const authorId = searchParams.get('authorId');
   const query = searchParams.get('query');
+  const affiliation = searchParams.get('affiliation');
+  const year = searchParams.get('year');
+  const start = searchParams.get('start') || '0';
 
   // Check API Key configuration
   if (!process.env.SCOPUS_API_KEY) {
@@ -24,13 +27,38 @@ export async function GET(request: Request) {
     } else if (query) {
       // General search (Name, Title, etc.)
       scopusQuery = query;
-    } else {
+    }
+
+    if (affiliation) {
+        let affilQuery = '';
+        if (affiliation === 'vet') {
+            affilQuery = `AF-ID(60021944) AND AFFILORG("Veterinary Medicine")`;
+        } else {
+            affilQuery = `AF-ID(${affiliation})`;
+        }
+
+        if (scopusQuery) {
+            scopusQuery = `${affilQuery} AND (${scopusQuery})`;
+        } else {
+            scopusQuery = affilQuery;
+        }
+    }
+
+    if (year && year !== 'all') {
+        if (scopusQuery) {
+            scopusQuery = `(${scopusQuery}) AND PUBYEAR IS ${year}`;
+        } else {
+            scopusQuery = `PUBYEAR IS ${year}`;
+        }
+    }
+
+    if (!scopusQuery) {
       return NextResponse.json({ error: 'Missing search parameters' }, { status: 400 });
     }
 
-    console.log(`Fetching Scopus: ${scopusQuery}`);
+    console.log(`Fetching Scopus (start=${start}): ${scopusQuery}`);
 
-    const response = await fetch(`${SCOPUS_API_URL}?query=${encodeURIComponent(scopusQuery)}&count=25&sort=-coverDate`, {
+    const response = await fetch(`${SCOPUS_API_URL}?query=${encodeURIComponent(scopusQuery)}&count=25&start=${start}&sort=-coverDate&view=COMPLETE`, {
       headers: {
         'X-ELS-APIKey': process.env.SCOPUS_API_KEY!,
         'Accept': 'application/json'

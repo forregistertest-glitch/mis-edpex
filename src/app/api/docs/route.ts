@@ -43,6 +43,7 @@ export async function GET(request: Request) {
       "user_hr_manual": { th: "คู่มือการจัดการผู้ใช้ & HR (v.1.1b)", en: "User & HR Manual" },
       "import_export_manual": { th: "คู่มือ Import / Export / Backup (v1.1b)", en: "Import, Export & Backup Manual" },
       "import_manual_v1_2": { th: "คู่มือการนำเข้าข้อมูลและการเชื่อมต่อ Scopus (v1.2)", en: "Data Import & Scopus Sync Manual (v1.2)" },
+      "user_research_manual": { th: "🔬 คู่มือโมดูลวิจัย & Scopus Integration (v1.3)", en: "Research & Scopus Manual (v1.3)" },
       "convert_script_guide": { th: "คู่มือ Script แปลงไฟล์ Excel", en: "Excel Conversion Script Guide" }
     };
 

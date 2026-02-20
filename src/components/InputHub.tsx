@@ -13,7 +13,18 @@ interface InputHubProps {
 export default function InputHub({ lang }: InputHubProps) {
   const [selectedModule, setSelectedModule] = useState<string | null>(null);
 
-  const modules = [
+  const modules: Array<{
+    id: string;
+    title: string;
+    description: string;
+    icon: any;
+    color: string;
+    bg: string;
+    href?: string;
+    isExternal?: boolean;
+    disabled?: boolean;
+    action?: () => void;
+  }> = [
     {
       id: "personnel",
       title: lang === "th" ? "ข้อมูลบุคลากร (HR)" : "Personnel Data (HR)",
@@ -36,13 +47,13 @@ export default function InputHub({ lang }: InputHubProps) {
     },
     {
       id: "research",
-      title: lang === "th" ? "ข้อมูลวิจัย (Research)" : "Research Data",
-      description: lang === "th" ? "จัดการข้อมูลผลงานตีพิมพ์และทุนวิจัย (กำลังพัฒนา)" : "Manage publications and research grants (Coming Soon).",
+      title: lang === "th" ? "ข้อมูลงานวิจัย (Research)" : "Research Data",
+      description: lang === "th" ? "จัดการข้อมูลผลงานตีพิมพ์, Scopus, และการนำเข้า Excel" : "Manage publications, Scopus search, and data import.",
       icon: FlaskConical,
       color: "text-emerald-600",
       bg: "bg-emerald-50",
-      href: "#",
-      disabled: true
+      href: "/research",
+      isExternal: true
     },
     {
       id: "kpi",
@@ -92,7 +103,7 @@ export default function InputHub({ lang }: InputHubProps) {
              }}
           >
              {/* Wrap content in Link if external and enabled */}
-             {m.isExternal && !m.disabled ? (
+             {m.isExternal && !m.disabled && m.href ? (
                <Link href={m.href} className="absolute inset-0 z-10" />
              ) : null}
 
