@@ -33,7 +33,7 @@ export default function SystemDocs({ lang }: Props) {
           <div>
             <h3 className="text-xl font-bold text-slate-800">1. System Architecture</h3>
             <p className="text-sm text-slate-500">
-                {isThai ? "สถาปัตยกรรมระบบและเทคโนโลยีที่ใช้" : "System Architecture & Tech Stack"}
+              {isThai ? "สถาปัตยกรรมระบบและเทคโนโลยีที่ใช้" : "System Architecture & Tech Stack"}
             </p>
           </div>
         </div>
@@ -70,7 +70,7 @@ export default function SystemDocs({ lang }: Props) {
           <div>
             <h3 className="text-xl font-bold text-slate-800">2. Database Design</h3>
             <p className="text-sm text-slate-500">
-                {isThai ? "โครงสร้างฐานข้อมูล (Firestore Collections)" : "Firestore Collection Schema"}
+              {isThai ? "โครงสร้างฐานข้อมูล (Firestore Collections)" : "Firestore Collection Schema"}
             </p>
           </div>
         </div>
@@ -81,7 +81,7 @@ export default function SystemDocs({ lang }: Props) {
             <div className="bg-slate-50 px-6 py-3 border-b border-slate-200 flex justify-between items-center">
               <div className="flex items-center gap-2">
                 <Layers size={16} className="text-indigo-500" />
-                <span className="font-mono font-bold text-indigo-700">collection: 'personnel'</span>
+                <span className="font-mono font-bold text-indigo-700">collection: &apos;personnel&apos;</span>
               </div>
               <span className="text-xs bg-white px-2 py-1 rounded border border-slate-200 text-slate-500">
                 {isThai ? "ข้อมูลบุคลากร" : "Personnel Data"}
@@ -116,7 +116,7 @@ export default function SystemDocs({ lang }: Props) {
             <div className="bg-slate-50 px-6 py-3 border-b border-slate-200 flex justify-between items-center">
               <div className="flex items-center gap-2">
                 <Layers size={16} className="text-green-500" />
-                <span className="font-mono font-bold text-green-700">collection: 'authorized_users'</span>
+                <span className="font-mono font-bold text-green-700">collection: &apos;authorized_users&apos;</span>
               </div>
               <span className="text-xs bg-white px-2 py-1 rounded border border-slate-200 text-slate-500">
                 {isThai ? "สิทธิ์ผู้ใช้งาน" : "User Permissions"}
@@ -125,11 +125,11 @@ export default function SystemDocs({ lang }: Props) {
             <div className="p-6 overflow-x-auto">
               <table className="w-full text-sm">
                 <thead>
-                    <tr className="text-left text-slate-500 border-b border-slate-100">
-                        <th className="pb-2 w-1/4">Document ID</th>
-                        <th className="pb-2 w-1/6">Type</th>
-                        <th className="pb-2">Description {isThai ? "(คำอธิบาย)" : ""}</th>
-                    </tr>
+                  <tr className="text-left text-slate-500 border-b border-slate-100">
+                    <th className="pb-2 w-1/4">Document ID</th>
+                    <th className="pb-2 w-1/6">Type</th>
+                    <th className="pb-2">Description {isThai ? "(คำอธิบาย)" : ""}</th>
+                  </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-50">
                   <tr><td className="py-2 font-mono text-slate-700">email</td><td className="text-amber-600 font-mono text-xs">String</td><td>{isThai ? "ใช้อีเมลเป็น Key หลัก" : "Email as Document Key"}</td></tr>
@@ -152,7 +152,7 @@ export default function SystemDocs({ lang }: Props) {
           <div>
             <h3 className="text-xl font-bold text-slate-800">3. Data Dictionary</h3>
             <p className="text-sm text-slate-500">
-                {isThai ? "พจนานุกรมข้อมูลและค่าตัวเลือก (Enums)" : "Standard Values & Enums"}
+              {isThai ? "พจนานุกรมข้อมูลและค่าตัวเลือก (Enums)" : "Standard Values & Enums"}
             </p>
           </div>
         </div>

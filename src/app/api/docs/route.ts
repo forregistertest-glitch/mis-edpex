@@ -45,7 +45,8 @@ export async function GET(request: Request) {
       "import_manual_v1_2": { th: "คู่มือการนำเข้าข้อมูลและการเชื่อมต่อ Scopus (v1.2)", en: "Data Import & Scopus Sync Manual (v1.2)" },
       "user_research_manual": { th: "🔬 คู่มือโมดูลวิจัย & Scopus Integration (v1.3)", en: "Research & Scopus Manual (v1.3)" },
       "convert_script_guide": { th: "คู่มือ Script แปลงไฟล์ Excel", en: "Excel Conversion Script Guide" },
-      "scopus_api_comparison": { th: "📊 เปรียบเทียบ Scopus API (Standard vs Complete)", en: "Scopus API Data Comparison" }
+      "research_api_comparison": { th: "📊 เปรียบเทียบ Research APIs (Scopus vs NCBI)", en: "Research API Data Comparison" },
+      "deployment_guide": { th: "🚀 คู่มือการ Deployment (GitHub & Vercel)", en: "Deployment Guide" }
     };
 
     const files = fs.readdirSync(DOC_DIR).filter((f) => f.endsWith(".md"));

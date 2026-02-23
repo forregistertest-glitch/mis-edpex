@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { ArrowLeft, BookOpen, Search, Edit, Trash2, Download, Upload, ArrowUpAZ, ArrowDownAZ, Calendar, Hash, RefreshCw, ChevronUp, FileDown, Globe } from "lucide-react";
+import { ArrowLeft, BookOpen, Search, Edit, Trash2, Download, Upload, ArrowUpAZ, ArrowDownAZ, Calendar, Hash, RefreshCw, ChevronUp, ChevronDown, FileDown, Globe, FlaskConical, Plus } from "lucide-react";
 import * as XLSX from "xlsx";
 import { useAuth } from "@/contexts/AuthContext";
 import { ResearchService } from "@/services/researchService";
@@ -24,6 +24,14 @@ export default function ResearchPage() {
   const [sortBy, setSortBy] = useState<'id' | 'updated'>('updated');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
 
+  // -- Scroll State --
+  const [showFloatingTop, setShowFloatingTop] = useState(false);
+  useEffect(() => {
+    const handleScroll = () => setShowFloatingTop(window.scrollY > 300);
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
   // -- Import State --
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -41,7 +49,7 @@ export default function ResearchPage() {
       const data = await ResearchService.getAllResearch();
       const formatted = data.map(item => ({
         ...item,
-        authors: item.authors_raw || "Unknown",
+        authors: item.authors || item.authors_raw || "Unknown",
         class: item.publish_class || "-"
       }));
       setResearchData(formatted);
@@ -85,13 +93,15 @@ export default function ResearchPage() {
       return {
         "ลำดับ (No.)": index + 1,
         "รหัสอ้างอิง (ID)": r.id,
-        "แหล่งข้อมูล (Data Source)": r.imported_from === 'scopus_api' ? 'Scopus' : (r.imported_from === 'excel' ? 'Excel Import' : 'Manual Entry'),
+        "Scopus EID": r.scopus_eid || "-",
+        "แหล่งข้อมูล (Data Source)": r.imported_from === 'scopus_api' ? 'Scopus' : (r.imported_from === 'ncbi_api' ? 'NCBI' : (r.imported_from === 'excel' ? 'Excel Import' : 'Manual Entry')),
         "ปีที่พิมพ์ (Year)": r.year,
         "ชื่อบทความวิจัย (Title)": r.title,
         "DOI": r.doi || "-",
+        "ผู้แต่ง (Authors)": r.authors || "-",
         "ผู้แต่งหลัก (First Author)": firstAuthor,
         "ผู้แต่งร่วม (Co-authors)": coAuthors || "-",
-        "รวมจำนวนผู้แต่ง (Total Authors)": r.authors ? r.authors.split(',').length : 0,
+        "รวมจำนวนผู้แต่ง (Total Authors)": r.authors ? (r.authors.includes(',') ? r.authors.split(',').length : 1) : 0,
         "ชื่อวารสาร/แหล่งตีพิมพ์ (Journal)": r.journal || "-",
         "ระดับ (Class)": r.class || "-",
         "จำนวนการอ้างอิง (Citation Count)": r.citation_count || 0,
@@ -150,9 +160,14 @@ export default function ResearchPage() {
 
     if (!searchTerm) return true;
     const term = searchTerm.toLowerCase();
+    const sourceLabel = r.imported_from === 'scopus_api' ? 'scopus' :
+      r.imported_from === 'ncbi_api' ? 'ncbi' :
+        r.imported_from === 'excel' ? 'excel' : 'manual';
+
     return (r.title && r.title.toLowerCase().includes(term)) ||
       (r.doi && r.doi.toLowerCase().includes(term)) ||
-      (r.authors && r.authors.toLowerCase().includes(term));
+      (r.authors && r.authors.toLowerCase().includes(term)) ||
+      sourceLabel.includes(term);
   }).sort((a, b) => {
     if (sortBy === 'id') {
       const valA = String(a.id || "");
@@ -225,40 +240,85 @@ export default function ResearchPage() {
             </Link>
             <h1 className="text-2xl font-bold flex items-center gap-3">
               <div className="bg-indigo-600 p-2 rounded-lg shadow-sm">
-                <BookOpen size={24} className="text-white" />
+                <FlaskConical size={24} className="text-white" />
               </div>
               ระบบข้อมูลงานวิจัย (Research)
             </h1>
           </div>
           <div className="flex items-center gap-2">
 
+            {/* SCOPUS API */}
             <button
               onClick={handleScopusAction}
-              className={`flex items-center gap-2 bg-white border border-gray-300 hover:border-blue-400 hover:bg-blue-50 px-3 py-1.5 rounded-lg transition-all shadow-sm text-left group`}
+              className={`flex items-center gap-2 bg-white border border-gray-300 hover:border-blue-400 hover:bg-blue-50 text-gray-700 px-3 py-2 rounded-lg transition-all shadow-sm text-sm group`}
             >
-              <Globe size={20} className="text-blue-500 group-hover:text-blue-600" />
-              <div className="flex flex-col leading-tight">
-                <span className="text-[10px] font-bold text-gray-500">SCOPUS API</span>
-                <span className="text-sm font-medium text-gray-800">ค้นหา / นำเข้า</span>
-              </div>
+              <Globe size={16} className="text-blue-500 group-hover:text-blue-600 transition-colors" />
+              <span className="font-medium hidden lg:inline">SCOPUS API</span>
+            </button>
+
+            {/* NCBI API */}
+            <button
+              onClick={() => {
+                if (userRole !== 'admin') {
+                  alert("สิทธิ์ของคุณไม่เพียงพอสำหรับการเชื่อมต่อ API ของ NCBI (เฉพาะผู้ดูแลระบบเท่านั้น)");
+                  return;
+                }
+                router.push('/research/ncbi');
+              }}
+              className={`flex items-center gap-2 bg-white border border-gray-300 hover:border-orange-400 hover:bg-orange-50 text-gray-700 px-3 py-2 rounded-lg transition-all shadow-sm text-sm group`}
+            >
+              <Globe size={16} className="text-orange-500 group-hover:text-orange-600 transition-colors" />
+              <span className="font-medium hidden lg:inline">NCBI API</span>
+            </button>
+
+            {/* ORCiD API (Placeholder) */}
+            <button
+              onClick={() => {
+                alert("ระบบเชื่อมต่อ ORCiD กำลังอยู่ในช่วงพัฒนา (Coming Soon)");
+              }}
+              className={`flex items-center gap-2 bg-white border border-gray-300 hover:border-purple-400 hover:bg-purple-50 text-gray-700 px-3 py-2 rounded-lg transition-all shadow-sm text-sm group`}
+            >
+              <Globe size={16} className="text-purple-500 group-hover:text-purple-600 transition-colors" />
+              <span className="font-medium hidden lg:inline">ORCiD API</span>
             </button>
 
             <div className="w-px h-8 bg-gray-200 mx-1" />
 
+            {/* Template Button */}
             <button
-              onClick={() => alert("ดาวน์โหลด Template (กำลังพัฒนา)")}
-              className="flex items-center gap-2 bg-white border border-gray-300 hover:border-indigo-400 hover:bg-indigo-50 text-gray-700 px-3 py-2 rounded-lg transition-all shadow-sm text-sm"
+              onClick={() => alert("ระบบดาวน์โหลด Template กำลังสร้าง...")}
+              className="flex items-center gap-2 bg-white border border-gray-300 hover:border-slate-400 hover:bg-slate-50 text-gray-700 px-3 py-2 rounded-lg transition-all shadow-sm text-sm"
             >
-              <FileDown size={16} className="text-indigo-600" />
-              <span className="font-medium hidden lg:inline">Template</span>
+              <FileDown size={16} className="text-slate-500" />
+              <span className="font-medium">Template</span>
             </button>
 
-            <button
-              onClick={handleImportClick}
-              className="flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg transition-colors shadow-sm text-sm font-medium"
-            >
-              <Upload size={16} /> <span className="hidden lg:inline">นำเข้า Excel</span>
-            </button>
+            {/* Import Dropdown */}
+            <div className="relative group/import">
+              <button
+                className="flex items-center gap-2 bg-white border border-gray-300 hover:border-emerald-400 hover:bg-emerald-50 text-gray-700 px-3 py-2 rounded-lg transition-all shadow-sm text-sm"
+              >
+                <Upload size={16} className="text-emerald-500" />
+                <span className="font-medium">นำเข้า (Import)</span>
+                <ChevronDown size={14} className="text-gray-400" />
+              </button>
+
+              <div className="absolute top-full right-0 mt-2 w-48 bg-white border border-gray-200 rounded-xl shadow-xl py-2 opacity-0 invisible group-hover/import:opacity-100 group-hover/import:visible transition-all z-50">
+                <button onClick={() => alert("ระบบนำเข้า ThaiJO กำลังสร้าง...")} className="w-full text-left px-4 py-2 text-sm hover:bg-slate-50 flex items-center gap-2">
+                  <div className="w-2 h-2 rounded-full bg-emerald-500" /> ThaiJO (XML)
+                </button>
+                <button onClick={() => alert("ระบบนำเข้า OAI-PMH กำลังสร้าง...")} className="w-full text-left px-4 py-2 text-sm hover:bg-slate-50 flex items-center gap-2">
+                  <div className="w-2 h-2 rounded-full bg-blue-500" /> OAI-PMH
+                </button>
+                <button onClick={() => alert("ระบบนำเข้า Excel กำลังสร้าง...")} className="w-full text-left px-4 py-2 text-sm hover:bg-slate-50 flex items-center gap-2">
+                  <div className="w-2 h-2 rounded-full bg-amber-500" /> Excel (.xlsx)
+                </button>
+                <div className="h-px bg-gray-100 my-1" />
+                <button onClick={() => alert("ระบบนำเข้าอื่นๆ กำลังสร้าง...")} className="w-full text-left px-4 py-2 text-sm italic text-gray-400 hover:bg-slate-50">
+                  Coming soon...
+                </button>
+              </div>
+            </div>
             <input
               ref={fileInputRef}
               type="file"
@@ -271,7 +331,7 @@ export default function ResearchPage() {
               href="/research/new"
               className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg flex items-center gap-2 shadow-sm transition-colors text-sm font-medium"
             >
-              <BookOpen size={16} /> <span className="hidden lg:inline">เพิ่มงานวิจัย</span>
+              <Plus size={16} /> <span className="hidden lg:inline">เพิ่มงานวิจัย</span>
             </Link>
           </div>
         </div>
@@ -391,6 +451,8 @@ export default function ResearchPage() {
                     <td className="p-4">
                       {s.imported_from === 'scopus_api' ? (
                         <span className="text-[10px] font-bold bg-blue-100 text-blue-700 px-2 py-1 rounded w-max flex items-center gap-1 border border-blue-200"><Globe size={12} /> Scopus</span>
+                      ) : s.imported_from === 'ncbi_api' ? (
+                        <span className="text-[10px] font-bold bg-orange-100 text-orange-700 px-2 py-1 rounded w-max flex items-center gap-1 border border-orange-200"><Globe size={12} /> NCBI</span>
                       ) : s.imported_from === 'excel' ? (
                         <span className="text-[10px] font-bold bg-emerald-100 text-emerald-700 px-2 py-1 rounded w-max flex items-center gap-1 border border-emerald-200"><FileDown size={12} /> Excel</span>
                       ) : (
@@ -417,9 +479,21 @@ export default function ResearchPage() {
               )}
             </tbody>
           </table>
-          <PaginationControls showBackToTop={false} />
+          <PaginationControls showBackToTop={true} />
         </div>
       </div>
+
+      {showFloatingTop && (
+        <div className="fixed bottom-6 right-6 z-50">
+          <button
+            onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+            className="bg-slate-800 hover:bg-slate-700 text-white p-3 rounded-full shadow-lg transition-transform hover:-translate-y-1 focus:outline-none focus:ring-4 focus:ring-slate-300"
+            aria-label="Back to top"
+          >
+            <ChevronUp size={20} />
+          </button>
+        </div>
+      )}
     </div>
   );
 }

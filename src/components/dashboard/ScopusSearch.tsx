@@ -2,7 +2,7 @@
 "use client";
 
 import { useState } from "react";
-import { Search, Loader2, BookOpen, ExternalLink, AlertCircle, RefreshCw } from "lucide-react";
+import { Search, Loader2, BookOpen, ExternalLink, AlertCircle, RefreshCw, Globe } from "lucide-react";
 import { ScopusService, ScopusPublication } from "@/services/scopusService";
 import ScopusAutoSync from "./ScopusAutoSync";
 
@@ -18,6 +18,7 @@ export default function ScopusSearch({ lang }: Props) {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
     const [searched, setSearched] = useState(false);
+    const [viewMode, setViewMode] = useState<'STANDARD' | 'COMPLETE'>('STANDARD');
 
     const handleSearch = async () => {
         if (!input.trim()) return;
@@ -32,9 +33,9 @@ export default function ScopusSearch({ lang }: Props) {
                 if (!/^\d+$/.test(input.trim())) {
                     throw new Error(lang === 'th' ? "Author ID ต้องเป็นตัวเลขเท่านั้น" : "Author ID must be numeric");
                 }
-                data = await ScopusService.searchByAuthorId(input.trim());
+                data = await ScopusService.searchByAuthorId(input.trim(), viewMode);
             } else {
-                data = await ScopusService.searchByQuery(input.trim());
+                data = await ScopusService.searchByQuery(input.trim(), viewMode);
             }
             setResults(data);
         } catch (err: any) {
@@ -55,8 +56,8 @@ export default function ScopusSearch({ lang }: Props) {
                             Scopus Research Manager
                         </h2>
                         <p className="text-sm text-slate-500">
-                            {lang === 'th' 
-                                ? "จัดการและสืบค้นข้อมูลงานวิจัยจากฐานข้อมูล Scopus" 
+                            {lang === 'th'
+                                ? "จัดการและสืบค้นข้อมูลงานวิจัยจากฐานข้อมูล Scopus"
                                 : "Manage and search research publications from Scopus database"}
                         </p>
                     </div>
@@ -65,24 +66,22 @@ export default function ScopusSearch({ lang }: Props) {
                     <div className="flex border-b border-slate-200">
                         <button
                             onClick={() => setActiveTab('search')}
-                            className={`px-4 py-3 text-sm font-bold border-b-2 transition-all ${
-                                activeTab === 'search' ? 'border-blue-500 text-blue-600' : 'border-transparent text-slate-500 hover:text-slate-700'
-                            }`}
+                            className={`px-4 py-3 text-sm font-bold border-b-2 transition-all ${activeTab === 'search' ? 'border-blue-500 text-blue-600' : 'border-transparent text-slate-500 hover:text-slate-700'
+                                }`}
                         >
                             {lang === 'th' ? 'สืบค้น (Manual Search)' : 'Manual Search'}
                         </button>
                         <button
                             onClick={() => setActiveTab('autosync')}
-                            className={`px-4 py-3 text-sm font-bold border-b-2 transition-all flex items-center gap-2 ${
-                                activeTab === 'autosync' ? 'border-blue-500 text-blue-600' : 'border-transparent text-slate-500 hover:text-slate-700'
-                            }`}
+                            className={`px-4 py-3 text-sm font-bold border-b-2 transition-all flex items-center gap-2 ${activeTab === 'autosync' ? 'border-blue-500 text-blue-600' : 'border-transparent text-slate-500 hover:text-slate-700'
+                                }`}
                         >
                             <RefreshCw size={14} />
                             {lang === 'th' ? 'ดึงข้อมูลอัตโนมัติ (Auto-Sync)' : 'Auto Sync'}
                         </button>
                     </div>
                 </div>
-                
+
                 {/* Search Inputs (Only in Search Tab) */}
                 {activeTab === 'search' && (
                     <div className="p-6 pt-6 space-y-4">
@@ -90,17 +89,15 @@ export default function ScopusSearch({ lang }: Props) {
                             <div className="flex rounded-xl bg-slate-100 p-1 shrink-0">
                                 <button
                                     onClick={() => setMode('author')}
-                                    className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
-                                        mode === 'author' ? 'bg-white text-blue-700 shadow-sm' : 'text-slate-500 hover:text-slate-700'
-                                    }`}
+                                    className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${mode === 'author' ? 'bg-white text-blue-700 shadow-sm' : 'text-slate-500 hover:text-slate-700'
+                                        }`}
                                 >
                                     Author ID
                                 </button>
                                 <button
                                     onClick={() => setMode('query')}
-                                    className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
-                                        mode === 'query' ? 'bg-white text-blue-700 shadow-sm' : 'text-slate-500 hover:text-slate-700'
-                                    }`}
+                                    className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${mode === 'query' ? 'bg-white text-blue-700 shadow-sm' : 'text-slate-500 hover:text-slate-700'
+                                        }`}
                                 >
                                     Advanced Query
                                 </button>
@@ -112,12 +109,12 @@ export default function ScopusSearch({ lang }: Props) {
                                     value={input}
                                     onChange={(e) => setInput(e.target.value)}
                                     onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
-                                    placeholder={mode === 'author' 
-                                        ? "e.g., 57200508544" 
+                                    placeholder={mode === 'author'
+                                        ? "e.g., 57200508544"
                                         : "e.g., AUTHOR-NAME(Wongkasemjit) AND AFFIL(Kasetsart)"}
                                     className="w-full pl-4 pr-12 py-2.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-100 focus:border-blue-300 outline-none"
                                 />
-                                <button 
+                                <button
                                     onClick={handleSearch}
                                     disabled={loading || !input.trim()}
                                     className="absolute right-2 top-1/2 -translate-y-1/2 p-1.5 text-blue-600 hover:bg-blue-50 rounded-lg disabled:opacity-50 transition-colors"
@@ -137,6 +134,33 @@ export default function ScopusSearch({ lang }: Props) {
                             )}
                         </div>
 
+                        {/* View Mode Toggle */}
+                        <div className="flex items-center gap-3 pt-2">
+                            <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">View Mode:</span>
+                            <div className="flex bg-slate-100 p-1 rounded-lg">
+                                <button
+                                    onClick={() => setViewMode('STANDARD')}
+                                    className={`px-3 py-1 text-[10px] font-bold rounded-md transition-all ${viewMode === 'STANDARD' ? 'bg-white text-blue-600 shadow-sm' : 'text-slate-400 hover:text-slate-600'
+                                        }`}
+                                >
+                                    STANDARD
+                                </button>
+                                <button
+                                    onClick={() => setViewMode('COMPLETE')}
+                                    className={`px-3 py-1 text-[10px] font-bold rounded-md transition-all flex items-center gap-1 ${viewMode === 'COMPLETE' ? 'bg-blue-600 text-white shadow-sm' : 'text-slate-400 hover:text-slate-600'
+                                        }`}
+                                >
+                                    <Globe size={10} />
+                                    COMPLETE
+                                </button>
+                            </div>
+                            {viewMode === 'COMPLETE' && (
+                                <span className="text-[10px] text-amber-600 font-medium animate-pulse">
+                                    {lang === 'th' ? '✨ โหมดข้อมูลครบถ้วน (ต้องใช้งานในเครือข่าย มก.)' : '✨ Detailed mode (Requires KU Institute Network)'}
+                                </span>
+                            )}
+                        </div>
+
                         {error && (
                             <div className="flex items-center gap-2 text-red-600 bg-red-50 border border-red-200 rounded-xl px-4 py-3 text-sm">
                                 <AlertCircle size={16} />
@@ -148,9 +172,9 @@ export default function ScopusSearch({ lang }: Props) {
 
                 {/* AutoSync Content */}
                 {activeTab === 'autosync' && (
-                     <div className="p-6 pt-6">
+                    <div className="p-6 pt-6">
                         <ScopusAutoSync lang={lang} />
-                     </div>
+                    </div>
                 )}
             </div>
 
@@ -193,9 +217,9 @@ export default function ScopusSearch({ lang }: Props) {
                                                 </p>
                                             )}
                                         </div>
-                                        <a 
-                                            href={item.url} 
-                                            target="_blank" 
+                                        <a
+                                            href={item.url}
+                                            target="_blank"
                                             rel="noreferrer"
                                             className="p-2 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
                                             title="View in Scopus"

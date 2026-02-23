@@ -1,0 +1,424 @@
+
+> mis_app@1.3.0 lint
+> eslint
+
+(node:4574) ESLintIgnoreWarning: The ".eslintignore" file is no longer supported. Switch to using the "ignores" property in "eslint.config.js": https://eslint.org/docs/latest/use/configure/migration-guide#ignoring-files
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+/Users/nipon_w/Desktop/gitHub/MIS/22Feb/mis-edpex/next.config.ts
+  1:15  warning  'NextConfig' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+  3:19  warning  Unexpected any. Specify a different type                                      @typescript-eslint/no-explicit-any
+
+/Users/nipon_w/Desktop/gitHub/MIS/22Feb/mis-edpex/src/app/advisor/page.tsx
+   20:58  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  419:58  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/nipon_w/Desktop/gitHub/MIS/22Feb/mis-edpex/src/app/api/ncbi/route.ts
+  71:53  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  72:52  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  85:21  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/nipon_w/Desktop/gitHub/MIS/22Feb/mis-edpex/src/app/global-error.tsx
+  4:5  warning  'error' is defined but never used. Allowed unused args must match /^_/u  @typescript-eslint/no-unused-vars
+
+/Users/nipon_w/Desktop/gitHub/MIS/22Feb/mis-edpex/src/app/page.tsx
+   68:52  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  158:26  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/nipon_w/Desktop/gitHub/MIS/22Feb/mis-edpex/src/app/personnel/[id]/edit/page.tsx
+   9:30  warning  'Edit' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+  55:19  warning  Unexpected any. Specify a different type                                @typescript-eslint/no-explicit-any
+
+/Users/nipon_w/Desktop/gitHub/MIS/22Feb/mis-edpex/src/app/personnel/new/page.tsx
+  42:19  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/nipon_w/Desktop/gitHub/MIS/22Feb/mis-edpex/src/app/personnel/page.tsx
+  12:8   warning  'PersonnelForm' is defined but never used. Allowed unused vars must match /^_/u                            @typescript-eslint/no-unused-vars
+  33:6   warning  React Hook useEffect has a missing dependency: 'router'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+  61:10  warning  'editingPersonnel' is assigned a value but never used. Allowed unused vars must match /^_/u                @typescript-eslint/no-unused-vars
+  61:28  warning  'setEditingPersonnel' is assigned a value but never used. Allowed unused vars must match /^_/u             @typescript-eslint/no-unused-vars
+
+/Users/nipon_w/Desktop/gitHub/MIS/22Feb/mis-edpex/src/app/research/[id]/edit/page.tsx
+  10:13  warning  'user' is assigned a value but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+  30:22  warning  'err' is defined but never used                                                  @typescript-eslint/no-unused-vars
+  30:27  warning  Unexpected any. Specify a different type                                         @typescript-eslint/no-explicit-any
+  48:18  warning  'err' is defined but never used                                                  @typescript-eslint/no-unused-vars
+
+/Users/nipon_w/Desktop/gitHub/MIS/22Feb/mis-edpex/src/app/research/ncbi/page.tsx
+    6:105  warning  'FileDown' is defined but never used. Allowed unused vars must match /^_/u                 @typescript-eslint/no-unused-vars
+   32:52   warning  Unexpected any. Specify a different type                                                   @typescript-eslint/no-explicit-any
+   40:12   warning  'progressAction' is assigned a value but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+   78:25   warning  Unexpected any. Specify a different type                                                   @typescript-eslint/no-explicit-any
+  126:54   warning  Unexpected any. Specify a different type                                                   @typescript-eslint/no-explicit-any
+  130:73   warning  Unexpected any. Specify a different type                                                   @typescript-eslint/no-explicit-any
+  166:25   warning  Unexpected any. Specify a different type                                                   @typescript-eslint/no-explicit-any
+  178:45   warning  Unexpected any. Specify a different type                                                   @typescript-eslint/no-explicit-any
+  199:37   error    Expected a `const` instead of a literal type assertion                                     @typescript-eslint/prefer-as-const
+  245:25   warning  Unexpected any. Specify a different type                                                   @typescript-eslint/no-explicit-any
+  252:125  warning  Unexpected any. Specify a different type                                                   @typescript-eslint/no-explicit-any
+  262:27   warning  Unexpected any. Specify a different type                                                   @typescript-eslint/no-explicit-any
+  314:75   warning  Unexpected any. Specify a different type                                                   @typescript-eslint/no-explicit-any
+  334:25   warning  Unexpected any. Specify a different type                                                   @typescript-eslint/no-explicit-any
+  341:11   warning  'handleExportA4' is assigned a value but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+  549:42   warning  'error' is defined but never used                                                          @typescript-eslint/no-unused-vars
+  604:92   error    `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`                            react/no-unescaped-entities
+  604:119  error    `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`                            react/no-unescaped-entities
+
+/Users/nipon_w/Desktop/gitHub/MIS/22Feb/mis-edpex/src/app/research/new/page.tsx
+  10:13  warning  'user' is assigned a value but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+/Users/nipon_w/Desktop/gitHub/MIS/22Feb/mis-edpex/src/app/research/page.tsx
+    6:21  warning  'BookOpen' is defined but never used. Allowed unused vars must match /^_/u                    @typescript-eslint/no-unused-vars
+   16:52  warning  Unexpected any. Specify a different type                                                      @typescript-eslint/no-explicit-any
+  130:9   warning  'handleImportClick' is assigned a value but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+/Users/nipon_w/Desktop/gitHub/MIS/22Feb/mis-edpex/src/app/research/scopus/page.tsx
+    6:105  warning  'FileDown' is defined but never used. Allowed unused vars must match /^_/u                 @typescript-eslint/no-unused-vars
+   32:56   warning  Unexpected any. Specify a different type                                                   @typescript-eslint/no-explicit-any
+   41:12   warning  'progressAction' is assigned a value but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+   79:25   warning  Unexpected any. Specify a different type                                                   @typescript-eslint/no-explicit-any
+  133:54   warning  Unexpected any. Specify a different type                                                   @typescript-eslint/no-explicit-any
+  139:73   warning  Unexpected any. Specify a different type                                                   @typescript-eslint/no-explicit-any
+  180:25   warning  Unexpected any. Specify a different type                                                   @typescript-eslint/no-explicit-any
+  192:45   warning  Unexpected any. Specify a different type                                                   @typescript-eslint/no-explicit-any
+  213:37   error    Expected a `const` instead of a literal type assertion                                     @typescript-eslint/prefer-as-const
+  264:25   warning  Unexpected any. Specify a different type                                                   @typescript-eslint/no-explicit-any
+  271:125  warning  Unexpected any. Specify a different type                                                   @typescript-eslint/no-explicit-any
+  281:27   warning  Unexpected any. Specify a different type                                                   @typescript-eslint/no-explicit-any
+  338:75   warning  Unexpected any. Specify a different type                                                   @typescript-eslint/no-explicit-any
+  358:25   warning  Unexpected any. Specify a different type                                                   @typescript-eslint/no-explicit-any
+  365:11   warning  'handleExportA4' is assigned a value but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+  590:42   warning  'error' is defined but never used                                                          @typescript-eslint/no-unused-vars
+  645:92   error    `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`                            react/no-unescaped-entities
+  645:109  error    `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`                            react/no-unescaped-entities
+
+/Users/nipon_w/Desktop/gitHub/MIS/22Feb/mis-edpex/src/app/seed/page.tsx
+  169:21  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/nipon_w/Desktop/gitHub/MIS/22Feb/mis-edpex/src/app/student/[id]/edit/page.tsx
+   6:21  warning  'Edit' is defined but never used. Allowed unused vars must match /^_/u                                           @typescript-eslint/no-unused-vars
+  27:6   warning  React Hook useEffect has a missing dependency: 'fetchStudent'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+  59:19  warning  Unexpected any. Specify a different type                                                                         @typescript-eslint/no-explicit-any
+
+/Users/nipon_w/Desktop/gitHub/MIS/22Feb/mis-edpex/src/app/student/backup/page.tsx
+    3:31  warning  'useRef' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+  504:47  warning  Unexpected any. Specify a different type                                  @typescript-eslint/no-explicit-any
+
+/Users/nipon_w/Desktop/gitHub/MIS/22Feb/mis-edpex/src/app/student/new/page.tsx
+   6:21  warning  'Plus' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+  31:19  warning  Unexpected any. Specify a different type                                @typescript-eslint/no-explicit-any
+
+/Users/nipon_w/Desktop/gitHub/MIS/22Feb/mis-edpex/src/app/student/page.tsx
+   10:10  warning  'parseStudentExcel' is defined but never used. Allowed unused vars must match /^_/u           @typescript-eslint/no-unused-vars
+   12:8   warning  'StudentForm' is defined but never used. Allowed unused vars must match /^_/u                 @typescript-eslint/no-unused-vars
+   15:17  warning  'userRole' is assigned a value but never used. Allowed unused vars must match /^_/u           @typescript-eslint/no-unused-vars
+   23:9   warning  'isSuperAdmin' is assigned a value but never used. Allowed unused vars must match /^_/u       @typescript-eslint/no-unused-vars
+  123:17  warning  Unexpected any. Specify a different type                                                      @typescript-eslint/no-explicit-any
+  124:18  warning  Unexpected any. Specify a different type                                                      @typescript-eslint/no-explicit-any
+  139:57  warning  Unexpected any. Specify a different type                                                      @typescript-eslint/no-explicit-any
+  140:40  warning  Unexpected any. Specify a different type                                                      @typescript-eslint/no-explicit-any
+  141:42  warning  Unexpected any. Specify a different type                                                      @typescript-eslint/no-explicit-any
+  153:9   warning  'handleFullExport' is assigned a value but never used. Allowed unused vars must match /^_/u   @typescript-eslint/no-unused-vars
+  170:9   warning  'handleImportClick' is assigned a value but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+  310:9   warning  'handleDeleteAll' is assigned a value but never used. Allowed unused vars must match /^_/u    @typescript-eslint/no-unused-vars
+
+/Users/nipon_w/Desktop/gitHub/MIS/22Feb/mis-edpex/src/app/student/report/page.tsx
+  106:6   warning  React Hook useMemo has missing dependencies: 'CHART_COLORS.blue' and 'CHART_COLORS.purple'. Either include them or remove the dependency array                                                                                                                                                                               react-hooks/exhaustive-deps
+  126:6   warning  React Hook useMemo has missing dependencies: 'CHART_COLORS.blue' and 'CHART_COLORS.green'. Either include them or remove the dependency array                                                                                                                                                                                react-hooks/exhaustive-deps
+  154:6   warning  React Hook useMemo has missing dependencies: 'CHART_COLORS.green' and 'CHART_COLORS.slate'. Either include them or remove the dependency array                                                                                                                                                                               react-hooks/exhaustive-deps
+  173:6   warning  React Hook useMemo has missing dependencies: 'CHART_COLORS.amber', 'CHART_COLORS.blue', 'CHART_COLORS.cyan', 'CHART_COLORS.green', 'CHART_COLORS.indigo', 'CHART_COLORS.pink', 'CHART_COLORS.purple', 'CHART_COLORS.red', 'CHART_COLORS.slate', and 'CHART_COLORS.teal'. Either include them or remove the dependency array  react-hooks/exhaustive-deps
+  179:25  warning  Unexpected any. Specify a different type                                                                                                                                                                                                                                                                                     @typescript-eslint/no-explicit-any
+  179:57  warning  Unexpected any. Specify a different type                                                                                                                                                                                                                                                                                     @typescript-eslint/no-explicit-any
+  190:6   warning  React Hook useMemo has missing dependencies: 'CHART_COLORS.amber', 'CHART_COLORS.green', 'CHART_COLORS.indigo', 'CHART_COLORS.pink', 'CHART_COLORS.slate', and 'CHART_COLORS.teal'. Either include them or remove the dependency array                                                                                       react-hooks/exhaustive-deps
+  196:29  warning  Unexpected any. Specify a different type                                                                                                                                                                                                                                                                                     @typescript-eslint/no-explicit-any
+  339:15  error    'lastUpdate' is never reassigned. Use 'const' instead                                                                                                                                                                                                                                                                        prefer-const
+  339:15  warning  'lastUpdate' is assigned a value but never used. Allowed unused vars must match /^_/u                                                                                                                                                                                                                                        @typescript-eslint/no-unused-vars
+  340:15  error    'lastUser' is never reassigned. Use 'const' instead                                                                                                                                                                                                                                                                          prefer-const
+  340:15  warning  'lastUser' is assigned a value but never used. Allowed unused vars must match /^_/u                                                                                                                                                                                                                                          @typescript-eslint/no-unused-vars
+  427:6   warning  React Hook useMemo has a missing dependency: 'MILESTONES'. Either include it or remove the dependency array                                                                                                                                                                                                                  react-hooks/exhaustive-deps
+
+/Users/nipon_w/Desktop/gitHub/MIS/22Feb/mis-edpex/src/components/DataExplorer.tsx
+  15:9  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/nipon_w/Desktop/gitHub/MIS/22Feb/mis-edpex/src/components/DocViewer.tsx
+  108:89  warning  Unexpected any. Specify a different type                                                                             @typescript-eslint/no-explicit-any
+  124:9   error    Use "@ts-expect-error" instead of "@ts-ignore", as "@ts-ignore" will do nothing if the following line is error-free  @typescript-eslint/ban-ts-comment
+  139:9   error    Use "@ts-expect-error" instead of "@ts-ignore", as "@ts-ignore" will do nothing if the following line is error-free  @typescript-eslint/ban-ts-comment
+  152:6   warning  React Hook useEffect has a missing dependency: 'fetchDocs'. Either include it or remove the dependency array         react-hooks/exhaustive-deps
+  198:9   warning  'downloadDoc' is assigned a value but never used. Allowed unused vars must match /^_/u                               @typescript-eslint/no-unused-vars
+  208:9   warning  'handlePrint' is assigned a value but never used. Allowed unused vars must match /^_/u                               @typescript-eslint/no-unused-vars
+
+/Users/nipon_w/Desktop/gitHub/MIS/22Feb/mis-edpex/src/components/InputHub.tsx
+  20:11  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/nipon_w/Desktop/gitHub/MIS/22Feb/mis-edpex/src/components/KpiInputForm.tsx
+  115:6   warning  React Hook useEffect has a missing dependency: 'loadData'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+  176:39  warning  Unexpected any. Specify a different type                                                                     @typescript-eslint/no-explicit-any
+  207:21  warning  Unexpected any. Specify a different type                                                                     @typescript-eslint/no-explicit-any
+  222:14  warning  'err' is defined but never used                                                                              @typescript-eslint/no-unused-vars
+  227:23  warning  'entry' is defined but never used. Allowed unused args must match /^_/u                                      @typescript-eslint/no-unused-vars
+
+/Users/nipon_w/Desktop/gitHub/MIS/22Feb/mis-edpex/src/components/dashboard/AcademicDashboard.tsx
+  65:54  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/nipon_w/Desktop/gitHub/MIS/22Feb/mis-edpex/src/components/dashboard/AdminPanel.tsx
+    7:5   warning  'Shield' is defined but never used. Allowed unused vars must match /^_/u                     @typescript-eslint/no-unused-vars
+   21:5   warning  'Plus' is defined but never used. Allowed unused vars must match /^_/u                       @typescript-eslint/no-unused-vars
+   22:5   warning  'X' is defined but never used. Allowed unused vars must match /^_/u                          @typescript-eslint/no-unused-vars
+   23:5   warning  'Check' is defined but never used. Allowed unused vars must match /^_/u                      @typescript-eslint/no-unused-vars
+   24:5   warning  'BookOpen' is defined but never used. Allowed unused vars must match /^_/u                   @typescript-eslint/no-unused-vars
+   57:48  warning  Unexpected any. Specify a different type                                                     @typescript-eslint/no-explicit-any
+  102:11  warning  'loadLogs' is assigned a value but never used. Allowed unused vars must match /^_/u          @typescript-eslint/no-unused-vars
+  142:23  warning  Unexpected any. Specify a different type                                                     @typescript-eslint/no-explicit-any
+  167:11  warning  'handleRoleChange' is assigned a value but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+  607:60  warning  Unexpected any. Specify a different type                                                     @typescript-eslint/no-explicit-any
+  624:11  warning  'activeMonth' is assigned a value but never used. Allowed unused vars must match /^_/u       @typescript-eslint/no-unused-vars
+
+/Users/nipon_w/Desktop/gitHub/MIS/22Feb/mis-edpex/src/components/dashboard/AnnualReportDashboard.tsx
+   5:16  warning  'TrendingUp' is defined but never used. Allowed unused vars must match /^_/u          @typescript-eslint/no-unused-vars
+   5:28  warning  'Target' is defined but never used. Allowed unused vars must match /^_/u              @typescript-eslint/no-unused-vars
+  10:42  warning  'getAggregatedValue' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+/Users/nipon_w/Desktop/gitHub/MIS/22Feb/mis-edpex/src/components/dashboard/CategorySection.tsx
+  16:19   warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  50:100  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  54:100  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  93:57   warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/nipon_w/Desktop/gitHub/MIS/22Feb/mis-edpex/src/components/dashboard/DashboardCard.tsx
+  9:12  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/nipon_w/Desktop/gitHub/MIS/22Feb/mis-edpex/src/components/dashboard/Header.tsx
+  134:25  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+/Users/nipon_w/Desktop/gitHub/MIS/22Feb/mis-edpex/src/components/dashboard/HospitalDashboard.tsx
+    8:21  warning  'Radar' is defined but never used. Allowed unused vars must match /^_/u                  @typescript-eslint/no-unused-vars
+   42:12  warning  'patientTrend' is assigned a value but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+   46:54  warning  Unexpected any. Specify a different type                                                 @typescript-eslint/no-explicit-any
+  252:53  warning  Unexpected any. Specify a different type                                                 @typescript-eslint/no-explicit-any
+
+/Users/nipon_w/Desktop/gitHub/MIS/22Feb/mis-edpex/src/components/dashboard/ReviewerDashboard.tsx
+   13:5   warning  'AlertCircle' is defined but never used. Allowed unused vars must match /^_/u                                @typescript-eslint/no-unused-vars
+   16:5   warning  'getPendingEntries' is defined but never used. Allowed unused vars must match /^_/u                          @typescript-eslint/no-unused-vars
+   55:8   warning  React Hook useEffect has a missing dependency: 'loadData'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+  127:11  warning  'pendingCount' is assigned a value but never used. Allowed unused vars must match /^_/u                      @typescript-eslint/no-unused-vars
+
+/Users/nipon_w/Desktop/gitHub/MIS/22Feb/mis-edpex/src/components/dashboard/ScopusAutoSync.tsx
+    5:25  warning  'CheckCircle' is defined but never used. Allowed unused vars must match /^_/u    @typescript-eslint/no-unused-vars
+    5:38  warning  'XCircle' is defined but never used. Allowed unused vars must match /^_/u        @typescript-eslint/no-unused-vars
+    5:47  warning  'AlertTriangle' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+    5:72  warning  'User' is defined but never used. Allowed unused vars must match /^_/u           @typescript-eslint/no-unused-vars
+   46:24  warning  Unexpected any. Specify a different type                                         @typescript-eslint/no-explicit-any
+   61:19  warning  'dbId' is assigned a value but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+   67:20  error    'scopusId' is never reassigned. Use 'const' instead                              prefer-const
+  176:27  warning  Unexpected any. Specify a different type                                         @typescript-eslint/no-explicit-any
+  182:23  warning  Unexpected any. Specify a different type                                         @typescript-eslint/no-explicit-any
+  207:66  warning  Unexpected any. Specify a different type                                         @typescript-eslint/no-explicit-any
+
+/Users/nipon_w/Desktop/gitHub/MIS/22Feb/mis-edpex/src/components/dashboard/ScopusSearch.tsx
+  41:23  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/nipon_w/Desktop/gitHub/MIS/22Feb/mis-edpex/src/components/dashboard/Sidebar.tsx
+  64:21  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+/Users/nipon_w/Desktop/gitHub/MIS/22Feb/mis-edpex/src/components/dashboard/StaffDashboard.tsx
+    4:8   warning  'Link' is defined but never used. Allowed unused vars must match /^_/u       @typescript-eslint/no-unused-vars
+    9:10  warning  'Line' is defined but never used. Allowed unused vars must match /^_/u       @typescript-eslint/no-unused-vars
+   10:64  warning  'UserCheck' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+   10:75  warning  'Database' is defined but never used. Allowed unused vars must match /^_/u   @typescript-eslint/no-unused-vars
+   49:54  warning  Unexpected any. Specify a different type                                     @typescript-eslint/no-explicit-any
+  273:53  warning  Unexpected any. Specify a different type                                     @typescript-eslint/no-explicit-any
+
+/Users/nipon_w/Desktop/gitHub/MIS/22Feb/mis-edpex/src/components/dashboard/StrategicDashboard.tsx
+    8:10   warning  'Line' is defined but never used. Allowed unused vars must match /^_/u                                                       @typescript-eslint/no-unused-vars
+    9:42   warning  'Award' is defined but never used. Allowed unused vars must match /^_/u                                                      @typescript-eslint/no-unused-vars
+    9:49   warning  'Globe' is defined but never used. Allowed unused vars must match /^_/u                                                      @typescript-eslint/no-unused-vars
+   45:12   warning  'isoTrend' is assigned a value but never used. Allowed unused vars must match /^_/u                                          @typescript-eslint/no-unused-vars
+   47:54   warning  Unexpected any. Specify a different type                                                                                     @typescript-eslint/no-explicit-any
+   75:8    warning  React Hook useCallback has an unnecessary dependency: 'selectedDimension'. Either exclude it or remove the dependency array  react-hooks/exhaustive-deps
+  161:141  warning  Unexpected any. Specify a different type                                                                                     @typescript-eslint/no-explicit-any
+  258:53   warning  Unexpected any. Specify a different type                                                                                     @typescript-eslint/no-explicit-any
+
+/Users/nipon_w/Desktop/gitHub/MIS/22Feb/mis-edpex/src/components/dashboard/SystemDocs.tsx
+   84:83  error  `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
+   84:93  error  `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
+  119:82  error  `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
+  119:99  error  `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
+
+/Users/nipon_w/Desktop/gitHub/MIS/22Feb/mis-edpex/src/components/kpi-input/EntryHistory.tsx
+  51:11  warning  'getDisplayValue' is assigned a value but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+/Users/nipon_w/Desktop/gitHub/MIS/22Feb/mis-edpex/src/components/kpi-input/FormSelector.tsx
+  62:14  warning  Unexpected any. Specify a different type                                   @typescript-eslint/no-explicit-any
+  63:18  warning  Unexpected any. Specify a different type                                   @typescript-eslint/no-explicit-any
+  64:31  warning  Unexpected any. Specify a different type                                   @typescript-eslint/no-explicit-any
+  65:27  warning  Unexpected any. Specify a different type                                   @typescript-eslint/no-explicit-any
+  71:32  warning  'filters' is defined but never used. Allowed unused args must match /^_/u  @typescript-eslint/no-unused-vars
+
+/Users/nipon_w/Desktop/gitHub/MIS/22Feb/mis-edpex/src/components/personnel/PersonnelForm.tsx
+  58:9  error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+/Users/nipon_w/Desktop/gitHub/MIS/22Feb/mis-edpex/src/components/personnel/PersonnelForm.tsx:58:9
+  56 |         else gen = "Baby Boomer";
+  57 |
+> 58 |         setFormData(prev => ({
+     |         ^^^^^^^^^^^ Avoid calling setState() directly within an effect
+  59 |           ...prev,
+  60 |           retirement_year: retirementYear,
+  61 |           generation: gen  react-hooks/set-state-in-effect
+
+/Users/nipon_w/Desktop/gitHub/MIS/22Feb/mis-edpex/src/components/student/StudentProgress.tsx
+    6:24  warning  'CheckCircle' is defined but never used. Allowed unused vars must match /^_/u                                  @typescript-eslint/no-unused-vars
+   29:6   warning  React Hook useEffect has a missing dependency: 'fetchItems'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+   64:14  warning  'error' is defined but never used                                                                              @typescript-eslint/no-unused-vars
+   76:14  warning  'error' is defined but never used                                                                              @typescript-eslint/no-unused-vars
+  103:91  warning  Unexpected any. Specify a different type                                                                       @typescript-eslint/no-explicit-any
+  118:83  warning  Unexpected any. Specify a different type                                                                       @typescript-eslint/no-explicit-any
+
+/Users/nipon_w/Desktop/gitHub/MIS/22Feb/mis-edpex/src/components/student/StudentPublications.tsx
+   6:44  warning  'ExternalLink' is defined but never used. Allowed unused vars must match /^_/u                                        @typescript-eslint/no-unused-vars
+  30:6   warning  React Hook useEffect has a missing dependency: 'fetchPublications'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+  67:14  warning  'error' is defined but never used                                                                                     @typescript-eslint/no-unused-vars
+  79:14  warning  'error' is defined but never used                                                                                     @typescript-eslint/no-unused-vars
+
+/Users/nipon_w/Desktop/gitHub/MIS/22Feb/mis-edpex/src/contexts/AuthContext.tsx
+  119:23  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/nipon_w/Desktop/gitHub/MIS/22Feb/mis-edpex/src/lib/data-service.ts
+   59:31  warning  Unexpected any. Specify a different type                                           @typescript-eslint/no-explicit-any
+   80:22  warning  Unexpected any. Specify a different type                                           @typescript-eslint/no-explicit-any
+  221:36  warning  Unexpected any. Specify a different type                                           @typescript-eslint/no-explicit-any
+  345:22  warning  Unexpected any. Specify a different type                                           @typescript-eslint/no-explicit-any
+  599:26  warning  Unexpected any. Specify a different type                                           @typescript-eslint/no-explicit-any
+  724:11  warning  'docRef' is assigned a value but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+  814:11  warning  'id' is assigned a value but never used. Allowed unused vars must match /^_/u      @typescript-eslint/no-unused-vars
+
+/Users/nipon_w/Desktop/gitHub/MIS/22Feb/mis-edpex/src/lib/migrate-personnel.ts
+  16:20  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/nipon_w/Desktop/gitHub/MIS/22Feb/mis-edpex/src/services/academicService.ts
+   56:21  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  132:21  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/nipon_w/Desktop/gitHub/MIS/22Feb/mis-edpex/src/services/advisorService.ts
+    6:3   warning  'deleteDoc' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+   10:3   warning  'query' is defined but never used. Allowed unused vars must match /^_/u      @typescript-eslint/no-unused-vars
+   11:3   warning  'where' is defined but never used. Allowed unused vars must match /^_/u      @typescript-eslint/no-unused-vars
+   42:21  warning  Unexpected any. Specify a different type                                     @typescript-eslint/no-explicit-any
+   94:21  warning  Unexpected any. Specify a different type                                     @typescript-eslint/no-explicit-any
+  117:21  warning  Unexpected any. Specify a different type                                     @typescript-eslint/no-explicit-any
+  159:21  warning  Unexpected any. Specify a different type                                     @typescript-eslint/no-explicit-any
+
+/Users/nipon_w/Desktop/gitHub/MIS/22Feb/mis-edpex/src/services/auditLogService.ts
+  9:13  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/nipon_w/Desktop/gitHub/MIS/22Feb/mis-edpex/src/services/ncbiService.ts
+  12:10  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  39:22  warning  'e' is defined but never used             @typescript-eslint/no-unused-vars
+
+/Users/nipon_w/Desktop/gitHub/MIS/22Feb/mis-edpex/src/services/personnelService.ts
+    8:3   warning  'checkPersonnelIdExists' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+   10:39  warning  'Timestamp' is defined but never used. Allowed unused vars must match /^_/u               @typescript-eslint/no-unused-vars
+   55:21  warning  Unexpected any. Specify a different type                                                  @typescript-eslint/no-explicit-any
+   84:21  warning  Unexpected any. Specify a different type                                                  @typescript-eslint/no-explicit-any
+  124:21  warning  Unexpected any. Specify a different type                                                  @typescript-eslint/no-explicit-any
+  153:21  warning  Unexpected any. Specify a different type                                                  @typescript-eslint/no-explicit-any
+  191:21  warning  Unexpected any. Specify a different type                                                  @typescript-eslint/no-explicit-any
+
+/Users/nipon_w/Desktop/gitHub/MIS/22Feb/mis-edpex/src/services/researchService.ts
+   12:3   warning  'orderBy' is defined but never used. Allowed unused vars must match /^_/u    @typescript-eslint/no-unused-vars
+   14:3   warning  'Timestamp' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+   22:31  warning  Unexpected any. Specify a different type                                     @typescript-eslint/no-explicit-any
+   22:37  warning  Unexpected any. Specify a different type                                     @typescript-eslint/no-explicit-any
+   90:21  warning  Unexpected any. Specify a different type                                     @typescript-eslint/no-explicit-any
+  123:21  warning  Unexpected any. Specify a different type                                     @typescript-eslint/no-explicit-any
+  157:21  warning  Unexpected any. Specify a different type                                     @typescript-eslint/no-explicit-any
+  218:21  warning  Unexpected any. Specify a different type                                     @typescript-eslint/no-explicit-any
+
+/Users/nipon_w/Desktop/gitHub/MIS/22Feb/mis-edpex/src/services/scopusService.ts
+   20:9   warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   39:31  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   44:35  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   65:31  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   70:35  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   94:16  warning  'e' is defined but never used             @typescript-eslint/no-unused-vars
+  103:40  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  106:48  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  115:53  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  123:37  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/nipon_w/Desktop/gitHub/MIS/22Feb/mis-edpex/src/services/studentService.ts
+    4:3   warning  'addDoc' is defined but never used. Allowed unused vars must match /^_/u     @typescript-eslint/no-unused-vars
+    6:3   warning  'deleteDoc' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+   10:3   warning  'query' is defined but never used. Allowed unused vars must match /^_/u      @typescript-eslint/no-unused-vars
+   11:3   warning  'where' is defined but never used. Allowed unused vars must match /^_/u      @typescript-eslint/no-unused-vars
+   48:21  warning  Unexpected any. Specify a different type                                     @typescript-eslint/no-explicit-any
+   87:21  warning  Unexpected any. Specify a different type                                     @typescript-eslint/no-explicit-any
+  155:21  warning  Unexpected any. Specify a different type                                     @typescript-eslint/no-explicit-any
+  192:21  warning  Unexpected any. Specify a different type                                     @typescript-eslint/no-explicit-any
+  227:21  warning  Unexpected any. Specify a different type                                     @typescript-eslint/no-explicit-any
+
+/Users/nipon_w/Desktop/gitHub/MIS/22Feb/mis-edpex/src/types/academic.ts
+  23:16  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  25:16  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  45:16  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  47:16  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/nipon_w/Desktop/gitHub/MIS/22Feb/mis-edpex/src/types/advisor.ts
+  18:16  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  20:16  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/nipon_w/Desktop/gitHub/MIS/22Feb/mis-edpex/src/types/personnel.ts
+  19:16  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  21:16  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/nipon_w/Desktop/gitHub/MIS/22Feb/mis-edpex/src/types/research.ts
+  37:14  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/nipon_w/Desktop/gitHub/MIS/22Feb/mis-edpex/src/types/student.ts
+  71:16  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  73:16  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/nipon_w/Desktop/gitHub/MIS/22Feb/mis-edpex/src/utils/personnelExport.ts
+  34:22  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/nipon_w/Desktop/gitHub/MIS/22Feb/mis-edpex/src/utils/personnelImport.ts
+  64:36  warning  'rowIndex' is defined but never used. Allowed unused args must match /^_/u  @typescript-eslint/no-unused-vars
+
+/Users/nipon_w/Desktop/gitHub/MIS/22Feb/mis-edpex/src/utils/studentImport.ts
+   53:3   warning  'onProgress' is defined but never used. Allowed unused args must match /^_/u  @typescript-eslint/no-unused-vars
+  100:61  warning  Unexpected any. Specify a different type                                      @typescript-eslint/no-explicit-any
+  103:39  warning  'rowIndex' is defined but never used. Allowed unused args must match /^_/u    @typescript-eslint/no-unused-vars
+  166:23  warning  Unexpected any. Specify a different type                                      @typescript-eslint/no-explicit-any
+  236:75  warning  Unexpected any. Specify a different type                                      @typescript-eslint/no-explicit-any
+  303:28  warning  Unexpected any. Specify a different type                                      @typescript-eslint/no-explicit-any
+  319:50  warning  Unexpected any. Specify a different type                                      @typescript-eslint/no-explicit-any
+  389:75  warning  Unexpected any. Specify a different type                                      @typescript-eslint/no-explicit-any
+  450:28  warning  Unexpected any. Specify a different type                                      @typescript-eslint/no-explicit-any
+  462:51  warning  Unexpected any. Specify a different type                                      @typescript-eslint/no-explicit-any
+  528:30  warning  Unexpected any. Specify a different type                                      @typescript-eslint/no-explicit-any
+  557:40  warning  Unexpected any. Specify a different type                                      @typescript-eslint/no-explicit-any
+  585:30  warning  Unexpected any. Specify a different type                                      @typescript-eslint/no-explicit-any
+  587:25  warning  Unexpected any. Specify a different type                                      @typescript-eslint/no-explicit-any
+  637:30  warning  Unexpected any. Specify a different type                                      @typescript-eslint/no-explicit-any
+  639:26  warning  Unexpected any. Specify a different type                                      @typescript-eslint/no-explicit-any
+  675:30  warning  Unexpected any. Specify a different type                                      @typescript-eslint/no-explicit-any
+  691:32  warning  Unexpected any. Specify a different type                                      @typescript-eslint/no-explicit-any
+  758:49  warning  Unexpected any. Specify a different type                                      @typescript-eslint/no-explicit-any
+  774:58  warning  Unexpected any. Specify a different type                                      @typescript-eslint/no-explicit-any
+  789:37  warning  Unexpected any. Specify a different type                                      @typescript-eslint/no-explicit-any
+  793:29  warning  Unexpected any. Specify a different type                                      @typescript-eslint/no-explicit-any
+  809:23  warning  Unexpected any. Specify a different type                                      @typescript-eslint/no-explicit-any
+  850:22  warning  Unexpected any. Specify a different type                                      @typescript-eslint/no-explicit-any
+  921:22  warning  Unexpected any. Specify a different type                                      @typescript-eslint/no-explicit-any
+  961:22  warning  Unexpected any. Specify a different type                                      @typescript-eslint/no-explicit-any
+
+✖ 277 problems (16 errors, 261 warnings)
+  5 errors and 0 warnings potentially fixable with the `--fix` option.
+

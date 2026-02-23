@@ -10,6 +10,7 @@ export async function GET(request: Request) {
   const affiliation = searchParams.get('affiliation');
   const year = searchParams.get('year');
   const start = searchParams.get('start') || '0';
+  const view = searchParams.get('view') || 'STANDARD';
 
   // Check API Key configuration
   if (!process.env.SCOPUS_API_KEY) {
@@ -67,7 +68,7 @@ export async function GET(request: Request) {
       headers['X-ELS-Insttoken'] = process.env.SCOPUS_INST_TOKEN;
     }
 
-    const response = await fetch(`${SCOPUS_API_URL}?query=${encodeURIComponent(scopusQuery)}&count=25&start=${start}&sort=-coverDate&view=STANDARD`, {
+    const response = await fetch(`${SCOPUS_API_URL}?query=${encodeURIComponent(scopusQuery)}&count=25&start=${start}&sort=-coverDate&view=${view}`, {
       headers
     });
 

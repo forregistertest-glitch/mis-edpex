@@ -243,7 +243,7 @@ function DashboardContent() {
       title: lang === 'th' ? 'ทุนวิจัยรวม' : 'Research Funding',
       value: fmtVal(dashboardData?.researchFunding ?? null, "บาท", "sum"),
       trend: dashboardData?.researchFunding ? '✓ Active' : '→ Tracking',
-      icon: LineChart, color: "text-teal-600", bg: "bg-teal-100",
+      icon: LineChart, color: "text-indigo-600", bg: "bg-indigo-100",
       logic: lang === 'th' ? "จำนวนเงินทุนวิจัยภายนอกและภายในรวมกัน" : "Total external and internal research funding",
       source: "KPI-7.1.17, 7.1.19"
     },
@@ -251,7 +251,7 @@ function DashboardContent() {
       title: lang === 'th' ? 'ความผูกพันบุคลากร' : 'Staff Engagement',
       value: fmtVal(dashboardData?.workforceEngagement ?? null, "คะแนน", "avg"),
       trend: dashboardData?.workforceEngagement && dashboardData.workforceEngagement >= 4.0 ? '✓ ≥ 4.0' : '→ Tracking',
-      icon: Users, color: "text-amber-600", bg: "bg-amber-100",
+      icon: Users, color: "text-green-600", bg: "bg-green-100",
       logic: lang === 'th' ? "ค่าเฉลี่ยความผูกพันของบุคลากร" : "Average workforce engagement score",
       source: "KPI-7.3.10"
     },
@@ -337,7 +337,7 @@ function DashboardContent() {
                 {[
                   { tab: 'Academic', id: '7.1', label: lang === 'th' ? '🎓 วิชาการ' : '🎓 Academic', sub: lang === 'th' ? 'สอบใบประกอบ, OSCE, ทุนวิจัย' : 'Licensure, OSCE, Research', color: 'from-blue-500 to-blue-600' },
                   { tab: 'Hospital', id: '7.2', label: lang === 'th' ? '🏥 โรงพยาบาล' : '🏥 Hospital', sub: lang === 'th' ? 'ความพึงพอใจ, บริจาค, ผู้สมัคร' : 'Satisfaction, Donations, Applicants', color: 'from-emerald-500 to-emerald-600' },
-                  { tab: 'Staff/HR', id: '7.3', label: lang === 'th' ? '👥 บุคลากร' : '👥 Staff/HR', sub: lang === 'th' ? 'ความผูกพัน, ลาป่วย, Talent' : 'Engagement, Leave, Talent', color: 'from-amber-500 to-amber-600' },
+                  { tab: 'Staff/HR', id: '7.3', label: lang === 'th' ? '👥 บุคลากร' : '👥 Staff/HR', sub: lang === 'th' ? 'ความผูกพัน, ลาป่วย, Talent' : 'Engagement, Leave, Talent', color: 'from-green-500 to-green-600' },
                   { tab: 'Strategic', id: '7.4', label: lang === 'th' ? '📈 ยุทธศาสตร์' : '📈 Strategic', sub: lang === 'th' ? 'SO Progress, รายได้, ธรรมาภิบาล' : 'SO Progress, Revenue, Governance', color: 'from-purple-500 to-purple-600' },
                 ].map(c => (
                   <div key={c.tab} className="bg-white p-6 rounded-2xl border border-slate-200/60 shadow-sm hover:shadow-lg transition-all group hover:-translate-y-1 transform flex flex-col justify-between">

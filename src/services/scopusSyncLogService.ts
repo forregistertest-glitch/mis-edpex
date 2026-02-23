@@ -1,5 +1,5 @@
 import { db } from "@/lib/firebase";
-import { collection, addDoc, Timestamp, query, orderBy, limit, getDocs } from "firebase/firestore";
+import { collection, addDoc, Timestamp, query, orderBy, limit, getDocs, where } from "firebase/firestore";
 
 export interface ScopusSyncLog {
   id?: string;
@@ -47,6 +47,34 @@ export const ScopusSyncLogService = {
       });
     } catch (error) {
       console.error("Failed to get sync logs:", error);
+      return [];
+    }
+  },
+
+  getLogsByMonth: async (year: number, month: number): Promise<ScopusSyncLog[]> => {
+    try {
+      // Create start and end dates for the month
+      // month is 0-indexed for Date constructor (0-11)
+      const startDate = new Date(year, month, 1, 0, 0, 0);
+      const endDate = new Date(year, month + 1, 1, 0, 0, 0);
+
+      const q = query(
+        collection(db, COLLECTION_NAME),
+        orderBy("created_at", "desc"),
+        where("created_at", ">=", Timestamp.fromDate(startDate)),
+        where("created_at", "<", Timestamp.fromDate(endDate))
+      );
+
+      const snap = await getDocs(q);
+      return snap.docs.map(doc => {
+        const data = doc.data();
+        return {
+          id: doc.id,
+          ...data,
+        } as ScopusSyncLog;
+      });
+    } catch (error) {
+      console.error("Failed to get monthly sync logs:", error);
       return [];
     }
   }

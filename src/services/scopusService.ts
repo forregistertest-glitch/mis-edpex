@@ -26,8 +26,8 @@ export interface ScopusSearchResponse {
 }
 
 export const ScopusService = {
-  searchByAuthorId: async (authorId: string): Promise<ScopusPublication[]> => {
-    const res = await fetch(`/api/scopus?authorId=${authorId}`);
+  searchByAuthorId: async (authorId: string, view: string = 'STANDARD'): Promise<ScopusPublication[]> => {
+    const res = await fetch(`/api/scopus?authorId=${authorId}&view=${view}`);
     if (!res.ok) {
       const err = await res.json();
       throw new Error(err.error || 'Failed to fetch from Scopus');
@@ -52,8 +52,8 @@ export const ScopusService = {
     }));
   },
 
-  searchByQuery: async (query: string): Promise<ScopusPublication[]> => {
-    const res = await fetch(`/api/scopus?query=${encodeURIComponent(query)}`);
+  searchByQuery: async (query: string, view: string = 'STANDARD'): Promise<ScopusPublication[]> => {
+    const res = await fetch(`/api/scopus?query=${encodeURIComponent(query)}&view=${view}`);
     if (!res.ok) {
       const err = await res.json();
       throw new Error(err.error || 'Failed to fetch from Scopus');
@@ -77,12 +77,13 @@ export const ScopusService = {
     }));
   },
 
-  searchWithAffiliation: async (query: string, affiliation: string, year?: string, start: number = 0): Promise<ScopusSearchResponse> => {
+  searchWithAffiliation: async (query: string, affiliation: string, year?: string, start: number = 0, view: string = 'STANDARD'): Promise<ScopusSearchResponse> => {
     const params = new URLSearchParams();
     if (query) params.append('query', query);
     if (affiliation) params.append('affiliation', affiliation);
     if (year && year !== 'all') params.append('year', year);
     if (start > 0) params.append('start', start.toString());
+    if (view) params.append('view', view);
 
     const res = await fetch(`/api/scopus?${params.toString()}`);
     if (!res.ok) {

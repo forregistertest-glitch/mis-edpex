@@ -25,7 +25,7 @@ export default function LoginPage({ onSignIn, loading, error }: LoginPageProps) 
                 <div className="bg-white/90 backdrop-blur-xl rounded-3xl p-8 border border-white/50 shadow-2xl">
                     <div className="text-center mb-6">
                         <div className="w-20 h-20 rounded-2xl flex items-center justify-center mx-auto mb-4 p-2 bg-white/80 shadow-sm border border-slate-100">
-                             <Image
+                            <Image
                                 src="https://vet.ku.ac.th/vv2018/download/KU/KU_logo.png"
                                 alt="KU Logo"
                                 width={96}
@@ -35,7 +35,7 @@ export default function LoginPage({ onSignIn, loading, error }: LoginPageProps) 
                             />
                         </div>
                         <h2 className="text-xl font-bold mb-1 text-slate-800">
-                            ระบบสารสนเทศเพื่อการจัดการ (MIS)<br/>
+                            ระบบสารสนเทศเพื่อการจัดการ (MIS)<br />
                             และการวิเคราะห์ KPI (EdPEx)
                         </h2>
                         <p className="text-sm font-medium text-slate-600 mt-2">
@@ -77,26 +77,26 @@ export default function LoginPage({ onSignIn, loading, error }: LoginPageProps) 
 
                     {/* Features Checklist */}
                     <div className="mt-8 space-y-3 pt-6 border-t border-slate-100">
-                         <div className="flex items-center gap-2 text-xs font-medium text-slate-400">
-                            <ShieldCheck size={14} className="text-green-400" />
+                        <div className="flex items-start gap-2 text-xs font-medium text-slate-400 leading-relaxed">
+                            <ShieldCheck size={14} className="text-green-400 flex-shrink-0 mt-0.5" />
                             <span>Scopus Intelligence: เชื่อมต่อ API เพื่อสืบค้นและวิเคราะห์งานวิจัยครอบคลุมทั่วโลก</span>
-                         </div>
-                         <div className="flex items-center gap-2 text-xs font-medium text-slate-400">
-                            <ShieldCheck size={14} className="text-green-400" />
+                        </div>
+                        <div className="flex items-start gap-2 text-xs font-medium text-slate-400 leading-relaxed">
+                            <ShieldCheck size={14} className="text-green-400 flex-shrink-0 mt-0.5" />
                             <span>Audit Logging (ALCOA+): ระบบบันทึกการเปลี่ยนแปลงข้อมูล</span>
-                         </div>
-                         <div className="flex items-center gap-2 text-xs font-medium text-slate-400">
-                            <ShieldCheck size={14} className="text-green-400" />
+                        </div>
+                        <div className="flex items-start gap-2 text-xs font-medium text-slate-400 leading-relaxed">
+                            <ShieldCheck size={14} className="text-green-400 flex-shrink-0 mt-0.5" />
                             <span>Google Authorization</span>
-                         </div>
-                         <div className="flex items-center gap-2 text-xs font-medium text-slate-400">
-                            <ShieldCheck size={14} className="text-green-400" />
+                        </div>
+                        <div className="flex items-start gap-2 text-xs font-medium text-slate-400 leading-relaxed">
+                            <ShieldCheck size={14} className="text-green-400 flex-shrink-0 mt-0.5" />
                             <span>Permission and User management</span>
-                         </div>
-                         <div className="flex items-center gap-2 text-xs font-medium text-slate-400">
-                            <ShieldCheck size={14} className="text-green-400" />
+                        </div>
+                        <div className="flex items-start gap-2 text-xs font-medium text-slate-400 leading-relaxed">
+                            <ShieldCheck size={14} className="text-green-400 flex-shrink-0 mt-0.5" />
                             <span>Login record: log</span>
-                         </div>
+                        </div>
                     </div>
 
                     {/* Quote */}

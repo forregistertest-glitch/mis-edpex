@@ -23,7 +23,7 @@ export interface ResearchRecord {
   authors_list?: ResearchAuthor[]; // ข้อมูลผู้จัดทำที่รองรับระบบ Link
   status: 'active' | 'disabled';
   is_deleted: boolean;
-  imported_from?: 'scopus_api' | 'excel' | 'manual';
+  imported_from?: 'scopus_api' | 'ncbi_api' | 'excel' | 'manual';
 
   // -- New Fields from Scopus COMPLETE View --
   abstract?: string; // บทคัดย่อ

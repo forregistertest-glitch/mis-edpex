@@ -16,6 +16,9 @@ const eslintConfig = defineConfig([
     "inspect_excel.js",
     "inspect_excel_to_json.js",
     "source/**",
+    "utils/**",
+    "src/utils/miniSeed.js",
+    "src/utils/seedData.js",
     // Backend ingestion scripts (Node.js, not part of the app):
     "src/lib/ingestion/**",
   ]),

@@ -30,14 +30,14 @@ function mdToHtml(md: string): string {
   html = html.replace(/```(\w*)\n([\s\S]*?)```/g, (_, lang, code) => {
     const idx = codeBlocks.length;
     if (lang === "mermaid") {
-        codeBlocks.push(`<div class="mermaid">${code.trim()}</div>`);
+      codeBlocks.push(`<div class="mermaid">${code.trim()}</div>`);
     } else {
-        codeBlocks.push(
-          `<pre class="md-code-block"><code class="language-${lang || "text"}">${code
-            .replace(/&/g, "&amp;")
-            .replace(/</g, "&lt;")
-            .replace(/>/g, "&gt;")}</code></pre>`
-        );
+      codeBlocks.push(
+        `<pre class="md-code-block"><code class="language-${lang || "text"}">${code
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")}</code></pre>`
+      );
     }
     return `%%CODEBLOCK_${idx}%%`;
   });
@@ -57,7 +57,7 @@ function mdToHtml(md: string): string {
   html = html.replace(/\*(.+?)\*/g, "<em>$1</em>");
 
   // Blockquotes (including alerts)
-  html = html.replace(/^> \[!(NOTE|TIP|IMPORTANT|WARNING|CAUTION)\]\n> (.+)$/gm, 
+  html = html.replace(/^> \[!(NOTE|TIP|IMPORTANT|WARNING|CAUTION)\]\n> (.+)$/gm,
     '<div class="md-alert md-alert-$1"><strong>$1:</strong> $2</div>');
   html = html.replace(/^> (.+)$/gm, '<blockquote class="md-blockquote">$1</blockquote>');
 
@@ -121,9 +121,9 @@ export default function DocViewer({ onClose, t, userEmail }: { onClose: () => vo
       script.src = "https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js";
       script.async = true;
       script.onload = () => {
-        // @ts-ignore
-        window.mermaid.initialize({ 
-          startOnLoad: false, 
+        // @ts-expect-error - mermaid is loaded from CDN
+        window.mermaid.initialize({
+          startOnLoad: false,
           theme: isSolarized ? 'base' : 'neutral',
           themeVariables: isSolarized ? {
             primaryColor: '#eee8d5',
@@ -136,13 +136,13 @@ export default function DocViewer({ onClose, t, userEmail }: { onClose: () => vo
           securityLevel: 'loose',
           fontFamily: 'Sarabun, sans-serif'
         });
-        // @ts-ignore
+        // @ts-expect-error - mermaid is loaded from CDN
         window.mermaid.init(undefined, document.querySelectorAll('.mermaid'));
       };
       document.body.appendChild(script);
-      
+
       return () => {
-         // Cleanup if needed, but script can stay
+        // Cleanup if needed, but script can stay
       };
     }
   }, [selectedDoc, docLoading, docContent, isSolarized]);
@@ -155,19 +155,19 @@ export default function DocViewer({ onClose, t, userEmail }: { onClose: () => vo
     try {
       const res = await fetch("/api/docs");
       const data = await res.json();
-      
+
       // Filter out system docs for non-superadmin
       const restrictedDocs = [
         "database_design.md",
-        "app_architecture.md", 
+        "app_architecture.md",
         "data_dictionary.md",
         "firebase_capacity.md",
         "data_integrity_plan.md"
       ];
 
       const isSuperAdmin = userEmail === "nipon.w@ku.th";
-      const filteredDocs = isSuperAdmin 
-        ? data.docs 
+      const filteredDocs = isSuperAdmin
+        ? data.docs
         : data.docs?.filter((d: { name: string }) => !restrictedDocs.includes(d.name));
 
       setDocs(filteredDocs || []);
@@ -223,15 +223,14 @@ export default function DocViewer({ onClose, t, userEmail }: { onClose: () => vo
       <div className="absolute inset-0 bg-black/50 backdrop-blur-sm print:hidden" onClick={onClose} />
 
       {/* Panel */}
-      <div 
-        className={`relative z-10 bg-white shadow-2xl overflow-hidden border border-slate-200 transition-all duration-300 flex print:hidden ${
-          isMaximized 
-            ? "inset-0 m-0 rounded-none w-screen h-screen" 
+      <div
+        className={`relative z-10 bg-white shadow-2xl overflow-hidden border border-slate-200 transition-all duration-300 flex print:hidden ${isMaximized
+            ? "inset-0 m-0 rounded-none w-screen h-screen"
             : "mx-auto my-6 w-full max-w-6xl rounded-3xl"
-        }`} 
+          }`}
         style={{ maxHeight: isMaximized ? "100vh" : "calc(100vh - 48px)" }}
       >
-        
+
         {/* Sidebar — File List */}
         <div className="w-80 bg-slate-50 border-r border-slate-200 flex flex-col shrink-0">
           <div className="p-5 border-b border-slate-200">
@@ -257,11 +256,10 @@ export default function DocViewer({ onClose, t, userEmail }: { onClose: () => vo
                 <button
                   key={doc.name}
                   onClick={() => openDoc(doc.name)}
-                  className={`w-full text-left p-3.5 rounded-2xl transition-all duration-200 group ${
-                    selectedDoc === doc.name
+                  className={`w-full text-left p-3.5 rounded-2xl transition-all duration-200 group ${selectedDoc === doc.name
                       ? "bg-blue-600 text-white shadow-lg shadow-blue-600/20"
                       : "hover:bg-white hover:shadow-md text-slate-700"
-                  }`}
+                    }`}
                 >
                   <div className="flex items-start gap-3">
                     <FileText size={18} className={`mt-0.5 shrink-0 ${selectedDoc === doc.name ? "text-white/80" : "text-blue-500"}`} />
@@ -303,7 +301,7 @@ export default function DocViewer({ onClose, t, userEmail }: { onClose: () => vo
             <div className="flex items-center gap-1">
               {selectedDoc && (
                 <>
-                  <button 
+                  <button
                     onClick={() => {
                       const printWin = window.open('', '_blank');
                       if (printWin) {
@@ -358,13 +356,13 @@ export default function DocViewer({ onClose, t, userEmail }: { onClose: () => vo
                                     startOnLoad: true, 
                                     theme: '${isSolarized ? 'base' : 'neutral'}',
                                     themeVariables: ${isSolarized ? JSON.stringify({
-                                      primaryColor: '#eee8d5',
-                                      primaryTextColor: '#586e75',
-                                      primaryBorderColor: '#93a1a1',
-                                      lineColor: '#93a1a1',
-                                      secondaryColor: '#fdf6e3',
-                                      tertiaryColor: '#eee8d5'
-                                    }) : '{}'}
+                          primaryColor: '#eee8d5',
+                          primaryTextColor: '#586e75',
+                          primaryBorderColor: '#93a1a1',
+                          lineColor: '#93a1a1',
+                          secondaryColor: '#fdf6e3',
+                          tertiaryColor: '#eee8d5'
+                        }) : '{}'}
                                   });
                                   setTimeout(() => {
                                     window.print();
@@ -387,14 +385,14 @@ export default function DocViewer({ onClose, t, userEmail }: { onClose: () => vo
                   <div className="w-px h-6 bg-slate-200 mx-2 hidden sm:block" />
                 </>
               )}
-              <button 
+              <button
                 onClick={() => setIsMaximized(!isMaximized)}
                 className="p-2.5 hover:bg-slate-100 rounded-xl transition-colors text-slate-500 hover:text-slate-800"
                 title={isMaximized ? "ย่อหน้าต่าง" : "ขยายเต็มจอ"}
               >
                 <ExternalLink size={18} />
               </button>
-              <button 
+              <button
                 onClick={onClose}
                 className="p-2.5 hover:bg-red-50 rounded-xl transition-colors text-slate-500 hover:text-red-500 ml-1"
                 title="ปิด"

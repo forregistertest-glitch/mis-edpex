@@ -131,7 +131,7 @@ export default function DashboardPage() {
     const passed: Record<string, number> = {};
     const pending: Record<string, number> = {};
     types.forEach(t => { passed[t] = 0; pending[t] = 0; });
-    
+
     const activeStudents = students.filter(s => !s.is_deleted && s.current_status !== 'สำเร็จ');
     activeStudents.forEach(s => {
       const sProgress = progressItems.filter(p => p.student_id === s.student_id);
@@ -190,7 +190,6 @@ export default function DashboardPage() {
   }, [publications]);
 
   // ==================== 6-SHEET PREVIEW ====================
-  // ==================== 6-SHEET PREVIEW ====================
   const MILESTONES = ['Proposal', 'English', 'QE', 'Defense'];
 
   const formatDate = (date: any) => {
@@ -204,7 +203,7 @@ export default function DashboardPage() {
       name: '1. ผลงานตีพิมพ์ (Publications)',
       color: 'bg-blue-500',
       headers: [
-        'ลำดับ', 'รหัสนิสิต', 'ชื่อ-สกุล', 'ระดับ', 'สาขา', 'อาจารย์', 
+        'ลำดับ', 'รหัสนิสิต', 'ชื่อ-สกุล', 'ระดับ', 'สาขา', 'อาจารย์',
         'ชื่อบทความ', 'วารสาร', 'เผยแพร่', 'ปีที่ (Vol)', 'ฉบับที่ (Issue)', 'เลขหน้า',
         'วันตอบรับ', 'ปีที่พิมพ์', 'ระดับ (Q)', 'วันอนุมัติปริญญา', 'ฐานข้อมูล',
         'แผนการเรียน', 'แก้ไขล่าสุด', 'ผู้แก้ไข'
@@ -214,20 +213,20 @@ export default function DashboardPage() {
           const s = sts.find(st => st.student_id === p.student_id);
           return [
             String(idx + 1),
-            p.student_id, 
-            s?.full_name_th || '-', 
-            s?.degree_level || '-', 
-            s?.major_name || '-', 
-            s?.advisor_name || '-', 
-            p.publication_title || '-', 
-            p.journal_name || '-', 
+            p.student_id,
+            s?.full_name_th || '-',
+            s?.degree_level || '-',
+            s?.major_name || '-',
+            s?.advisor_name || '-',
+            p.publication_title || '-',
+            p.journal_name || '-',
             p.publish_period || '-',
             p.volume || '-',
             p.issue || '-',
             p.pages || '-',
             p.acceptance_date || '-',
-            String(p.year || '-'), 
-            p.quartile || p.publication_level || '-', 
+            String(p.year || '-'),
+            p.quartile || p.publication_level || '-',
             p.degree_approval_date || '-',
             p.database_source || '-',
             s?.study_plan || '-',
@@ -252,26 +251,26 @@ export default function DashboardPage() {
           .map((s, idx) => {
             const sp = prog.filter(p => p.student_id === s.student_id);
             const getMS = (type: string) => { const f = sp.find(p => p.milestone_type === type); return f?.status ? (f.status.includes('ผ่าน') || f.status.includes('แล้ว') ? '✓' : f.status) : '-'; };
-            
+
             // On Plan Logic
             const onPlan = s.graduated_year && s.expected_grad_year ? (s.graduated_year <= s.expected_grad_year ? '✓' : 'Delayed') : '-';
 
             return [
               String(idx + 1),
-              s.student_id, 
-              s.full_name_th, 
-              s.gender || '-', 
+              s.student_id,
+              s.full_name_th,
+              s.gender || '-',
               s.nationality || '-',
-              s.degree_level || '-', 
+              s.degree_level || '-',
               s.program_type || '-',
-              s.major_name || '-', 
-              s.advisor_name || '-', 
+              s.major_name || '-',
+              s.advisor_name || '-',
               s.advisor_department || '-',
               s.admit_semester || '-',
               String(s.admit_year || '-'),
               s.expected_grad_semester || '-',
               String(s.expected_grad_year || '-'),
-              s.current_status || '-', 
+              s.current_status || '-',
               s.study_plan || '-',
               s.thesis_title_th || '-',
               s.proposal_exam_date || '-',
@@ -285,7 +284,7 @@ export default function DashboardPage() {
               (s.updated_at ? formatDate(s.updated_at) : (s.created_at ? formatDate(s.created_at) : '-')),
               s.updated_by || s.created_by || '-'
             ];
-        });
+          });
       },
     },
     {
@@ -300,14 +299,14 @@ export default function DashboardPage() {
         return sts.filter(s => ['สละสิทธิ์', 'ไม่มารายงานตัว', 'ลาออก', 'พ้นสภาพ'].includes(s.current_status || ''))
           .map((s, idx) => [
             String(idx + 1),
-            s.student_id, 
-            s.full_name_th, 
-            s.gender || '-', 
+            s.student_id,
+            s.full_name_th,
+            s.gender || '-',
             s.nationality || '-',
-            s.degree_level || '-', 
-            s.program_type || '-', 
-            s.major_name || '-', 
-            s.advisor_name || '-', 
+            s.degree_level || '-',
+            s.program_type || '-',
+            s.major_name || '-',
+            s.advisor_name || '-',
             s.advisor_department || '-',
             s.admit_semester || '-',
             String(s.admit_year || '-'),
@@ -323,7 +322,7 @@ export default function DashboardPage() {
       name: '4. ความก้าวหน้า (Progress Pivot)',
       color: 'bg-purple-500',
       headers: [
-        'ลำดับ', 'รหัสนิสิต', 'ชื่อ-สกุล', 'ระดับ', 'อาจารย์', 
+        'ลำดับ', 'รหัสนิสิต', 'ชื่อ-สกุล', 'ระดับ', 'อาจารย์',
         ...MILESTONES.flatMap(m => [`${m} สถานะ`, `${m} วันที่`]),
         'แก้ไขล่าสุด', 'ผู้แก้ไข'
       ],
@@ -334,25 +333,19 @@ export default function DashboardPage() {
             const f = sp.find(p => p.milestone_type === m);
             return [f?.status || '-', f?.exam_date || '-'];
           });
-          
+
           // Find latest update among student and their progress
-          let lastUpdate = s.updated_at || s.created_at;
-          let lastUser = s.updated_by || s.created_by;
-          
           if (sp.length > 0) {
-             // Simple check: if progress is newer? (Requires timestamp comparison, but for now just show Student's update or "-" if user prefers)
-             // User asked for "Last Update" in the table.
-             // Since Pivot combines multiple rows, usually we take the latest.
-             // But simpler to just show Student's update info for the row context.
-             // Or I can leave it as Student's update.
+            // Simple check: if progress is newer? (Requires timestamp comparison, but for now just show Student's update or "-" if user prefers)
+            // User asked for "Last Update" in the table.
           }
 
           return [
             String(idx + 1),
-            s.student_id, 
-            s.full_name_th, 
-            s.degree_level || '-', 
-            s.advisor_name || '-', 
+            s.student_id,
+            s.full_name_th,
+            s.degree_level || '-',
+            s.advisor_name || '-',
             ...milestoneData,
             (s.updated_at ? formatDate(s.updated_at) : (s.created_at ? formatDate(s.created_at) : '-')),
             s.updated_by || s.created_by || '-'
@@ -369,31 +362,31 @@ export default function DashboardPage() {
         sts.filter(s => !s.is_deleted).forEach(s => {
           const y = s.admit_year || 0;
           if (!yearMap[y]) yearMap[y] = { total: 0, active: 0, grad: 0, out: 0, dates: [], users: new Set() };
-          
+
           yearMap[y].total++;
           if (s.current_status === 'สำเร็จ') yearMap[y].grad++;
           else if (['สละสิทธิ์', 'ไม่มารายงานตัว', 'ลาออก', 'พ้นสภาพ'].includes(s.current_status || '')) yearMap[y].out++;
           else yearMap[y].active++;
-          
+
           const time = s.updated_at?.seconds * 1000 || s.created_at?.seconds * 1000 || new Date(s.updated_at || s.created_at || 0).getTime();
           if (time) yearMap[y].dates.push(time);
           if (s.updated_by || s.created_by) yearMap[y].users.add(s.updated_by || s.created_by || '');
         });
-        
+
         return Object.entries(yearMap).sort(([a], [b]) => Number(a) - Number(b)).map(([y, d]) => {
           const maxDate = Math.max(...d.dates);
           const latestDate = maxDate > 0 ? new Date(maxDate).toLocaleString('th-TH') : '-';
           const users = Array.from(d.users).filter(Boolean).slice(0, 2).join(', ') + (d.users.size > 2 ? '...' : '');
 
           return [
-             y, 
-             String(d.total), 
-             String(d.active), 
-             String(d.grad), 
-             String(d.out), 
-             d.total > 0 ? `${Math.round(d.grad * 100 / d.total)}%` : '-',
-             latestDate,
-             users
+            y,
+            String(d.total),
+            String(d.active),
+            String(d.grad),
+            String(d.out),
+            d.total > 0 ? `${Math.round(d.grad * 100 / d.total)}%` : '-',
+            latestDate,
+            users
           ];
         });
       },
@@ -414,7 +407,7 @@ export default function DashboardPage() {
           const grad = list.filter(s => s.current_status === 'สำเร็จ').length;
           const out = list.length - active - grad;
           const names = list.slice(0, 3).map(s => s.full_name_th?.split(' ').slice(-1)[0] || '').join(', ') + (list.length > 3 ? ` +${list.length - 3}` : '');
-          
+
           // Latest Update
           const dates = list.map(s => s.updated_at?.seconds * 1000 || s.created_at?.seconds * 1000 || new Date(s.updated_at || s.created_at || 0).getTime()).filter(t => t > 0);
           const maxDate = dates.length > 0 ? Math.max(...dates) : 0;
@@ -560,11 +553,10 @@ export default function DashboardPage() {
             <button
               key={i}
               onClick={() => setActiveSheet(i)}
-              className={`flex items-center gap-2 px-4 py-3 text-sm font-medium whitespace-nowrap border-b-2 transition-all ${
-                activeSheet === i 
-                  ? 'border-indigo-600 text-indigo-700 bg-indigo-50/50' 
-                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:bg-gray-50'
-              }`}
+              className={`flex items-center gap-2 px-4 py-3 text-sm font-medium whitespace-nowrap border-b-2 transition-all ${activeSheet === i
+                ? 'border-indigo-600 text-indigo-700 bg-indigo-50/50'
+                : 'border-transparent text-gray-500 hover:text-gray-700 hover:bg-gray-50'
+                }`}
             >
               <span className={`w-2 h-2 rounded-full ${config.color}`} />
               {config.name}
