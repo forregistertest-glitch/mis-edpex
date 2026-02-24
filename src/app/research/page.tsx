@@ -202,7 +202,7 @@ export default function ResearchPage() {
             >
               ก่อนหน้า
             </button>
-            <button disabled className="relative inline-flex items-center px-4 py-2 border text-sm font-medium z-10 bg-indigo-50 border-indigo-500 text-indigo-600">
+            <button disabled className="relative inline-flex items-center px-4 py-2 border text-sm font-medium z-10 bg-amber-50 border-amber-500 text-amber-600">
               {currentPage}
             </button>
             <button
@@ -218,7 +218,7 @@ export default function ResearchPage() {
           <div>
             <button
               onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-              className="flex items-center gap-1.5 px-3 py-2 bg-slate-50 text-slate-500 hover:bg-slate-100 hover:text-indigo-600 border border-slate-200 rounded-lg text-sm font-medium transition-all group"
+              className="flex items-center gap-1.5 px-3 py-2 bg-slate-50 text-slate-500 hover:bg-slate-100 hover:text-amber-600 border border-slate-200 rounded-lg text-sm font-medium transition-all group"
             >
               <ChevronUp size={16} className="group-hover:-translate-y-0.5 transition-transform" />
               <span className="hidden md:inline">Back to Top</span>
@@ -239,10 +239,10 @@ export default function ResearchPage() {
               <ArrowLeft size={24} />
             </Link>
             <h1 className="text-2xl font-bold flex items-center gap-3">
-              <div className="bg-indigo-600 p-2 rounded-lg shadow-sm">
+              <div className="bg-amber-600 p-2 rounded-lg shadow-sm">
                 <FlaskConical size={24} className="text-white" />
               </div>
-              ระบบข้อมูลงานวิจัย (Research)
+              งานวิจัย
             </h1>
           </div>
           <div className="flex items-center gap-2">
@@ -271,10 +271,14 @@ export default function ResearchPage() {
               <span className="font-medium hidden lg:inline">NCBI API</span>
             </button>
 
-            {/* ORCiD API (Placeholder) */}
+            {/* ORCiD API */}
             <button
               onClick={() => {
-                alert("ระบบเชื่อมต่อ ORCiD กำลังอยู่ในช่วงพัฒนา (Coming Soon)");
+                if (userRole !== 'admin') {
+                  alert("สิทธิ์ของคุณไม่เพียงพอสำหรับการเชื่อมต่อ API ของ ORCiD (เฉพาะผู้ดูแลระบบเท่านั้น)");
+                  return;
+                }
+                router.push('/research/orcid');
               }}
               className={`flex items-center gap-2 bg-white border border-gray-300 hover:border-purple-400 hover:bg-purple-50 text-gray-700 px-3 py-2 rounded-lg transition-all shadow-sm text-sm group`}
             >
@@ -290,7 +294,7 @@ export default function ResearchPage() {
               className="flex items-center gap-2 bg-white border border-gray-300 hover:border-slate-400 hover:bg-slate-50 text-gray-700 px-3 py-2 rounded-lg transition-all shadow-sm text-sm"
             >
               <FileDown size={16} className="text-slate-500" />
-              <span className="font-medium">Template</span>
+              <span className="font-medium">แบบฟอร์ม (Template)</span>
             </button>
 
             {/* Import Dropdown */}
@@ -299,7 +303,7 @@ export default function ResearchPage() {
                 className="flex items-center gap-2 bg-white border border-gray-300 hover:border-emerald-400 hover:bg-emerald-50 text-gray-700 px-3 py-2 rounded-lg transition-all shadow-sm text-sm"
               >
                 <Upload size={16} className="text-emerald-500" />
-                <span className="font-medium">นำเข้า (Import)</span>
+                <span className="font-medium">นำเข้าข้อมูล</span>
                 <ChevronDown size={14} className="text-gray-400" />
               </button>
 
@@ -329,7 +333,7 @@ export default function ResearchPage() {
 
             <Link
               href="/research/new"
-              className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg flex items-center gap-2 shadow-sm transition-colors text-sm font-medium"
+              className="bg-amber-600 hover:bg-amber-700 text-white px-4 py-2 rounded-lg flex items-center gap-2 shadow-sm transition-colors text-sm font-medium"
             >
               <Plus size={16} /> <span className="hidden lg:inline">เพิ่มงานวิจัย</span>
             </Link>
@@ -349,14 +353,14 @@ export default function ResearchPage() {
                 placeholder="[Database] ค้นหา DOI, ชื่องานวิจัย, ชื่อผู้แต่ง..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent"
               />
             </div>
             <button
               onClick={fetchResearchData}
-              className="flex items-center gap-2 px-3 py-2 bg-slate-50 text-slate-500 hover:bg-slate-100 hover:text-indigo-600 border border-slate-200 rounded-lg text-sm font-medium transition-all"
+              className="flex items-center gap-2 px-3 py-2 bg-white text-slate-500 hover:bg-amber-50 hover:text-amber-600 border border-slate-200 rounded-lg text-sm font-medium transition-all shadow-sm group"
             >
-              <RefreshCw className={loadingDB ? "animate-spin" : ""} size={16} />
+              <RefreshCw className={`text-amber-600 ${loadingDB ? 'animate-spin' : ''}`} size={18} />
             </button>
             <button
               onClick={handleExportDB}
@@ -372,7 +376,7 @@ export default function ResearchPage() {
                 if (sortBy === 'id') setSortOrder(prev => prev === 'asc' ? 'desc' : 'asc');
                 else { setSortBy('id'); setSortOrder('asc'); }
               }}
-              className={`flex items-center gap-1 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${sortBy === 'id' ? 'bg-indigo-50 text-indigo-600 border border-indigo-200' : 'bg-white text-gray-600 border border-gray-200 hover:bg-gray-50'}`}
+              className={`flex items-center gap-1 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${sortBy === 'id' ? 'bg-amber-50 text-amber-600 border border-amber-200' : 'bg-white text-gray-600 border border-gray-200 hover:bg-gray-50'}`}
             >
               <Hash size={16} /> ID
               {sortBy === 'id' && (sortOrder === 'asc' ? <ArrowUpAZ size={14} /> : <ArrowDownAZ size={14} />)}
@@ -382,7 +386,7 @@ export default function ResearchPage() {
                 if (sortBy === 'updated') setSortOrder(prev => prev === 'asc' ? 'desc' : 'asc');
                 else { setSortBy('updated'); setSortOrder('desc'); }
               }}
-              className={`flex items-center gap-1 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${sortBy === 'updated' ? 'bg-indigo-50 text-indigo-600 border border-indigo-200' : 'bg-white text-gray-600 border border-gray-200 hover:bg-gray-50'}`}
+              className={`flex items-center gap-1 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${sortBy === 'updated' ? 'bg-amber-50 text-amber-600 border border-amber-200' : 'bg-white text-gray-600 border border-gray-200 hover:bg-gray-50'}`}
             >
               <Calendar size={16} /> Latest
               {sortBy === 'updated' && (sortOrder === 'asc' ? <ArrowUpAZ size={14} /> : <ArrowDownAZ size={14} />)}
@@ -390,7 +394,7 @@ export default function ResearchPage() {
           </div>
 
           <div className="flex border-b border-gray-100 px-2 lg:px-4">
-            <button onClick={() => setViewTab('active')} className={`px-4 py-3 text-sm font-bold transition-all border-b-2 ${viewTab === 'active' ? 'border-indigo-600 text-indigo-700' : 'border-transparent text-gray-400 hover:text-gray-600'}`}>รายการปกติ ({researchData.filter(r => !r.is_deleted).length})</button>
+            <button onClick={() => setViewTab('active')} className={`px-4 py-3 text-sm font-bold transition-all border-b-2 ${viewTab === 'active' ? 'border-amber-600 text-amber-700' : 'border-transparent text-gray-400 hover:text-gray-600'}`}>รายการปกติ ({researchData.filter(r => !r.is_deleted).length})</button>
             <button onClick={() => setViewTab('disabled')} className={`px-4 py-3 text-sm font-bold transition-all border-b-2 ${viewTab === 'disabled' ? 'border-red-600 text-red-700' : 'border-transparent text-gray-400 hover:text-gray-600'}`}>รายการที่ยกเลิก ({researchData.filter(r => r.is_deleted).length})</button>
             <button onClick={() => setViewTab('all')} className={`px-4 py-3 text-sm font-bold transition-all border-b-2 ${viewTab === 'all' ? 'border-blue-600 text-blue-700' : 'border-transparent text-gray-400 hover:text-gray-600'}`}>ทั้งหมด ({researchData.length})</button>
           </div>
@@ -416,8 +420,8 @@ export default function ResearchPage() {
               {loadingDB ? (
                 <tr><td colSpan={7} className="p-16 text-center text-gray-500">
                   <div className="flex flex-col items-center gap-3">
-                    <RefreshCw className="animate-spin text-indigo-600" size={32} />
-                    <span className="font-medium text-lg">กำลังโหลดข้อมูล Database...</span>
+                    <RefreshCw className="animate-spin text-amber-600" size={32} />
+                    <span className="font-medium text-lg text-amber-700">กำลังโหลดข้อมูล Database...</span>
                   </div>
                 </td></tr>
               ) : paginatedData.length === 0 ? (
@@ -455,6 +459,8 @@ export default function ResearchPage() {
                         <span className="text-[10px] font-bold bg-orange-100 text-orange-700 px-2 py-1 rounded w-max flex items-center gap-1 border border-orange-200"><Globe size={12} /> NCBI</span>
                       ) : s.imported_from === 'excel' ? (
                         <span className="text-[10px] font-bold bg-emerald-100 text-emerald-700 px-2 py-1 rounded w-max flex items-center gap-1 border border-emerald-200"><FileDown size={12} /> Excel</span>
+                      ) : s.imported_from === 'orcid_api' ? (
+                        <span className="text-[10px] font-bold bg-purple-100 text-purple-700 px-2 py-1 rounded w-max flex items-center gap-1 border border-purple-200"><Globe size={12} /> ORCiD</span>
                       ) : (
                         <span className="text-[10px] font-bold bg-slate-100 text-slate-600 px-2 py-1 rounded w-max flex items-center gap-1 border border-slate-200"><Edit size={12} /> Manual</span>
                       )}
@@ -468,7 +474,7 @@ export default function ResearchPage() {
 
                     <td className="p-4 text-right">
                       <div className="flex justify-end gap-1 opacity-10 md:opacity-0 group-hover:opacity-100 transition-all">
-                        <Link href={`/research/${s.id}/edit`} title="แก้ไข" className="p-2 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-all"><Edit size={18} /></Link>
+                        <Link href={`/research/${s.id}/edit`} title="แก้ไข" className="p-2 text-slate-400 hover:text-amber-600 hover:bg-amber-50 rounded-lg transition-all"><Edit size={18} /></Link>
                         <button onClick={() => handleDelete(s.id, s.title)} className="p-1.5 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors" title="ลบข้อมูล">
                           <Trash2 size={16} />
                         </button>

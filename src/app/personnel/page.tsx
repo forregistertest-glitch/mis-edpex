@@ -228,10 +228,10 @@ function PersonnelContent() {
              <ArrowLeft size={24} />
           </Link>
           <h1 className="text-2xl font-bold flex items-center gap-3">
-             <div className="bg-green-600 p-2 rounded-lg shadow-sm">
+              <div className="bg-blue-600 p-2 rounded-lg shadow-sm">
                 <Users size={24} className="text-white" />
-             </div>
-             ระบบบุคลากร (HR)
+              </div>
+             งานบุคคล
           </h1>
         </div>
         <div className="flex gap-2">
@@ -245,36 +245,36 @@ function PersonnelContent() {
                 <button onClick={handleFixData} className="text-slate-300 hover:text-green-600 transition-colors p-1 hover:bg-slate-100 rounded" title="Fix visibility (Experimental)">
                   <Grid2X2Check size={16} />
                 </button>
-                <button onClick={handleDeleteAll} className="text-slate-300 hover:text-red-500 transition-colors p-1 hover:bg-slate-100 rounded" title="Delete All Data">
+                <button onClick={handleDeleteAll} className="text-slate-300 hover:text-red-500 transition-colors p-1 hover:bg-slate-100 rounded" title="ล้างข้อมูลทั้งหมด">
                   <Trash2 size={16} />
                 </button>
              </div>
           )}
           <input type="file" ref={fileInputRef} onChange={handleFileChange} className="hidden" accept=".xlsx, .xls, .csv" />
-          <button onClick={() => fileInputRef.current?.click()} disabled={loading} className={`bg-amber-500 hover:bg-amber-600 text-white px-4 py-2 rounded-lg flex items-center gap-2 shadow-sm transition-colors ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}>
-            <Upload size={20} /> Import Excel
+          <button onClick={() => fileInputRef.current?.click()} disabled={loading} className={`bg-white border border-gray-300 hover:border-blue-400 hover:bg-blue-50 text-gray-700 px-4 py-2 rounded-lg flex items-center gap-2 shadow-sm transition-all ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}>
+            <Upload size={20} className="text-blue-600" /> นำเข้าข้อมูล (Excel)
           </button>
           <div className="flex gap-1">
              <button 
                onClick={() => exportPersonnelToExcel(filteredPersonnel)} 
-               className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-l-lg flex items-center gap-2 shadow-sm transition-colors border-r border-blue-500 text-sm"
-               title="Export filtered results"
+               className="bg-white border border-gray-300 hover:border-blue-400 hover:bg-blue-50 text-gray-700 px-4 py-2 rounded-l-lg flex items-center gap-2 shadow-sm transition-all border-r border-gray-200 text-sm group"
+               title="ส่งออกผลที่เลือก"
              >
-               <Download size={18} /> Export Filtered Result
+               <Download size={18} className="text-blue-600" /> ส่งออกผลการค้นหา
              </button>
              <button 
                onClick={() => exportPersonnelToExcel(personnel)} 
-               className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-r-lg shadow-sm transition-colors flex items-center gap-2 text-sm"
-               title="Export all raw data"
+               className="bg-white border border-gray-300 hover:border-blue-400 hover:bg-blue-50 text-gray-700 px-4 py-2 rounded-r-lg shadow-sm transition-all flex items-center gap-2 text-sm group"
+               title="ส่งออกข้อมูลทั้งหมด"
              >
-               <FileSpreadsheet size={18} /> Export Raw Data
+               <FileSpreadsheet size={18} className="text-blue-600" /> ส่งออกข้อมูลดิบ
              </button>
           </div>
-          <Link href="/personnel/report" className="bg-purple-600 hover:bg-purple-700 text-white px-5 py-2.5 rounded-lg flex items-center gap-2 shadow-sm transition-colors text-sm font-medium">
-             <BarChart3 size={18} /> Reports
+          <Link href="/personnel/report" className="bg-white border border-gray-300 hover:border-blue-400 hover:bg-blue-50 text-gray-700 px-5 py-2.5 rounded-lg flex items-center gap-2 shadow-sm transition-all text-sm font-medium">
+             <BarChart3 size={18} className="text-blue-600" /> รายงาน
           </Link>
-          <Link href="/personnel/new" className="bg-green-600 hover:bg-green-700 text-white px-5 py-2.5 rounded-lg flex items-center gap-2 shadow-sm transition-colors text-sm font-medium">
-             <Plus size={18} /> เพิ่มบุคลากรใหม่
+          <Link href="/personnel/new" className="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-lg flex items-center gap-2 shadow-sm transition-all text-sm font-medium">
+             <Plus size={18} /> เพิ่มบุคลากร
           </Link>
         </div>
       </div>
@@ -289,16 +289,16 @@ function PersonnelContent() {
                 placeholder="ค้นหาชื่อ, สกุล, หรือสังกัด..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               />
             </div>
             <button 
               onClick={fetchPersonnel}
               disabled={loading}
-              className="flex items-center gap-2 px-3 py-2 bg-slate-50 text-slate-500 hover:bg-slate-100 hover:text-blue-600 border border-slate-200 rounded-lg text-sm font-medium transition-all"
+              className="flex items-center gap-2 px-3 py-2 bg-white border border-gray-300 hover:border-blue-400 hover:bg-blue-50 text-gray-700 rounded-lg text-sm font-medium transition-all shadow-sm"
               title="รีเฟรชข้อมูล"
             >
-              <RefreshCw className={loading ? "animate-spin" : ""} size={16} /> 
+              <RefreshCw size={18} className={`text-blue-600 ${loading ? 'animate-spin' : ''}`} />
             </button>
           </div>
           
@@ -326,7 +326,7 @@ function PersonnelContent() {
           </div>
 
           <div className="flex border-b border-gray-100 px-4">
-            <button onClick={() => setViewTab('active')} className={`px-4 py-3 text-sm font-bold transition-all border-b-2 ${viewTab === 'active' ? 'border-green-600 text-green-700' : 'border-transparent text-gray-400 hover:text-gray-600'}`}>รายการปกติ ({personnel.filter(p => !p.is_deleted).length})</button>
+            <button onClick={() => setViewTab('active')} className={`px-4 py-3 text-sm font-bold transition-all border-b-2 ${viewTab === 'active' ? 'border-blue-600 text-blue-700' : 'border-transparent text-gray-400 hover:text-gray-600'}`}>รายการปกติ ({personnel.filter(p => !p.is_deleted).length})</button>
             <button onClick={() => setViewTab('disabled')} className={`px-4 py-3 text-sm font-bold transition-all border-b-2 ${viewTab === 'disabled' ? 'border-red-600 text-red-700' : 'border-transparent text-gray-400 hover:text-gray-600'}`}>รายการที่ยกเลิก ({personnel.filter(p => p.is_deleted).length})</button>
             <button onClick={() => setViewTab('all')} className={`px-4 py-3 text-sm font-bold transition-all border-b-2 ${viewTab === 'all' ? 'border-blue-600 text-blue-700' : 'border-transparent text-gray-400 hover:text-gray-600'}`}>ทั้งหมด ({personnel.length})</button>
           </div>

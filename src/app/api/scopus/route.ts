@@ -1,5 +1,5 @@
-
 import { NextResponse } from 'next/server';
+import { getSystemSecrets } from '@/services/configService';
 
 const SCOPUS_API_URL = 'https://api.elsevier.com/content/search/scopus';
 
@@ -12,10 +12,13 @@ export async function GET(request: Request) {
   const start = searchParams.get('start') || '0';
   const view = searchParams.get('view') || 'STANDARD';
 
-  // Check API Key configuration
-  if (!process.env.SCOPUS_API_KEY) {
+  // Check API Key configuration from Firestore Secrets
+  const secrets = await getSystemSecrets();
+  const scopusApiKey = secrets.scopus_api_key;
+
+  if (!scopusApiKey) {
     return NextResponse.json({
-      error: 'SCOPUS_API_KEY is not configured in environment variables'
+      error: 'SCOPUS_API_KEY is not configured in system settings'
     }, { status: 500 });
   }
 
@@ -60,12 +63,12 @@ export async function GET(request: Request) {
     console.log(`Fetching Scopus (start=${start}): ${scopusQuery}`);
 
     const headers: Record<string, string> = {
-      'X-ELS-APIKey': process.env.SCOPUS_API_KEY!,
+      'X-ELS-APIKey': scopusApiKey,
       'Accept': 'application/json'
     };
 
-    if (process.env.SCOPUS_INST_TOKEN) {
-      headers['X-ELS-Insttoken'] = process.env.SCOPUS_INST_TOKEN;
+    if (secrets.scopus_inst_token) {
+      headers['X-ELS-Insttoken'] = secrets.scopus_inst_token;
     }
 
     const response = await fetch(`${SCOPUS_API_URL}?query=${encodeURIComponent(scopusQuery)}&count=25&start=${start}&sort=-coverDate&view=${view}`, {

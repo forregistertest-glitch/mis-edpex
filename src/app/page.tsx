@@ -19,7 +19,7 @@ import ChartGallery from "@/components/dashboard/ChartGallery";
 import AnnualReportDashboard from "@/components/dashboard/AnnualReportDashboard";
 import DashboardCard from "@/components/dashboard/DashboardCard";
 import { useAuth } from "@/contexts/AuthContext";
-import { useSearchParams } from "next/navigation";
+import { useSearchParams, useRouter } from "next/navigation";
 import { translations, Language, TranslationKey } from "@/lib/translations";
 import {
   Users,
@@ -28,6 +28,12 @@ import {
   ShieldAlert,
   TrendingUp,
   Database,
+  LibraryBig,
+  Stethoscope,
+  Landmark,
+  UserStar,
+  CheckSquare,
+  Keyboard
 } from "lucide-react";
 import * as XLSX from 'xlsx';
 import {
@@ -41,6 +47,7 @@ import { formatNumber } from "@/lib/utils";
 function DashboardContent() {
   const { user, userRole, loading: authLoading, error: authError, signInWithGoogle, signOut } = useAuth();
   const searchParams = useSearchParams();
+  const router = useRouter();
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('Dashboard');
   const [lang, setLang] = useState<Language>('th');
@@ -85,7 +92,7 @@ function DashboardContent() {
   }, []);
 
   useEffect(() => {
-    fetchDashboard().then(() => setLoading(false));
+    fetchDashboard();
   }, [fetchDashboard]);
 
   // Handle Tab from Query Param
@@ -100,9 +107,9 @@ function DashboardContent() {
       setDataLoading(true);
       try {
         let catId = '';
-        if (activeTab === 'Academic') catId = '7.1';
-        else if (activeTab === 'Staff/HR') catId = '7.3';
-        else if (activeTab === 'Hospital') catId = '7.2';
+        if (activeTab === 'Postgraduate') catId = '7.1';
+        else if (activeTab === 'Personnel') catId = '7.3';
+        else if (activeTab === 'Undergraduate') catId = '7.2'; // Temporary map to Hospital data or empty
         else if (activeTab === 'Strategic') catId = '7.4';
 
         if (catId) {
@@ -116,7 +123,7 @@ function DashboardContent() {
       }
     };
 
-    if (['Academic', 'Staff/HR', 'Hospital', 'Strategic'].includes(activeTab)) {
+    if (['Postgraduate', 'Personnel', 'Undergraduate', 'Strategic'].includes(activeTab)) {
       fetchCategory();
     }
   }, [activeTab]);
@@ -289,27 +296,16 @@ function DashboardContent() {
     return <LoginPage onSignIn={signInWithGoogle} loading={authLoading} error={authError} />;
   }
 
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center min-h-screen bg-white">
-        <div className="flex flex-col items-center gap-4">
-          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-600"></div>
-          <p className="text-sm text-slate-500">{lang === 'th' ? 'กำลังโหลดข้อมูลจาก Firestore...' : 'Loading from Firestore...'}</p>
-        </div>
-      </div>
-    );
-  }
-
   return (
     <div className="min-h-screen bg-slate-50 flex">
       {/* Sidebar */}
       <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} setShowDocs={setShowDocs} t={t} lang={lang} onSignOut={signOut} userRole={userRole} userName={user?.displayName || user?.email || null} />
 
       {/* Main Content */}
-      <main className="flex-1 overflow-auto">
+      <main className="flex-1 overflow-auto bg-slate-50">
         <Header activeTab={activeTab} lang={lang} setLang={setLang} dashboardData={dashboardData} t={t} user={user} onSignOut={signOut} userRole={userRole} setActiveTab={setActiveTab} />
 
-        <div className="p-8 max-w-7xl mx-auto space-y-8">
+        <div className="p-8 max-w-7xl mx-auto space-y-8 animate-in fade-in duration-500">
           {activeTab === 'Dashboard' ? (
             <>
               <HeroBanner dashboardData={dashboardData} fetchDashboard={fetchDashboard} t={t} lang={lang} />
@@ -332,29 +328,47 @@ function DashboardContent() {
                 ))}
               </div>
 
-              {/* Quick-View Category Cards */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+              {/* Quick-View Category Cards - 7-8 Sections */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-5xl">
                 {[
-                  { tab: 'Academic', id: '7.1', label: lang === 'th' ? '🎓 วิชาการ' : '🎓 Academic', sub: lang === 'th' ? 'สอบใบประกอบ, OSCE, ทุนวิจัย' : 'Licensure, OSCE, Research', color: 'from-blue-500 to-blue-600' },
-                  { tab: 'Hospital', id: '7.2', label: lang === 'th' ? '🏥 โรงพยาบาล' : '🏥 Hospital', sub: lang === 'th' ? 'ความพึงพอใจ, บริจาค, ผู้สมัคร' : 'Satisfaction, Donations, Applicants', color: 'from-emerald-500 to-emerald-600' },
-                  { tab: 'Staff/HR', id: '7.3', label: lang === 'th' ? '👥 บุคลากร' : '👥 Staff/HR', sub: lang === 'th' ? 'ความผูกพัน, ลาป่วย, Talent' : 'Engagement, Leave, Talent', color: 'from-green-500 to-green-600' },
-                  { tab: 'Strategic', id: '7.4', label: lang === 'th' ? '📈 ยุทธศาสตร์' : '📈 Strategic', sub: lang === 'th' ? 'SO Progress, รายได้, ธรรมาภิบาล' : 'SO Progress, Revenue, Governance', color: 'from-purple-500 to-purple-600' },
+                  { id: 'Personnel', label: t('personnel'), sub: lang === 'th' ? 'จัดการฐานข้อมูลบุคคลากรของคณะสัตวแพทยศาสตร์' : 'Manage faculty personnel records database', color: 'from-blue-500 to-blue-600', icon: Users },
+                  { id: 'Instructor', label: t('instructor'), sub: lang === 'th' ? 'จัดการฐานข้อมูลอาจารย์ผู้สอนของคณะสัตวแพทยศาสตร์' : 'Manage instructor database of VetKU', color: 'from-teal-500 to-teal-600', icon: UserStar },
+                  { id: 'Undergraduate', label: t('undergrad'), sub: lang === 'th' ? 'จัดการฐานข้อมูลนิสิตและอื่นๆในระดับปริญญาตรี' : 'Manage undergraduate studies database', color: 'from-sky-500 to-sky-600', icon: Stethoscope },
+                  { id: 'Postgraduate', label: t('postgrad'), sub: lang === 'th' ? 'จัดการฐานข้อมูลบัณฑิตระดับสูงกว่าปริญญาตรี' : 'Manage postgraduate studies database', color: 'from-purple-500 to-purple-600', icon: GraduationCap },
+                  { id: 'Research', id_real: 'research', label: t('research'), sub: lang === 'th' ? 'จัดการฐานข้อมูลงานวิจัยและผลงานตีพิมพ์' : 'Manage research projects and publications database', color: 'from-amber-500 to-amber-600', icon: LibraryBig },
+                  { id: 'Department', label: t('department'), sub: lang === 'th' ? 'จัดการฐานข้อมูลภาควิชาต่างๆของคณะสัตวแพทยศาสตร์' : 'Manage department database projects', color: 'from-slate-500 to-slate-600', icon: Landmark },
+                  { id: 'Strategic', label: t('strategic'), sub: lang === 'th' ? 'จัดการฐานข้อมูลตัวชี้วัด KPI และผลการดำเนินงาน (SAR)' : 'Manage KPI data and strategic outcomes results', color: 'from-emerald-500 to-emerald-600', icon: TrendingUp },
+                  { id: 'Input', label: t('inputHubHeading'), sub: lang === 'th' ? 'จัดการฐานข้อมูลกลางและแบบฟอร์มบันทึกข้อมูล' : 'Central database management and input forms', color: 'from-indigo-500 to-indigo-600', icon: Keyboard },
+                  { id: 'MyTasks', label: t('myTasks'), sub: lang === 'th' ? 'ติดตามงาน, อนุมัติ, ข้อความ' : 'Track tasks, approvals, messages', color: 'from-rose-500 to-rose-600', icon: CheckSquare },
                 ].map(c => (
-                  <div key={c.tab} className="bg-white p-6 rounded-2xl border border-slate-200/60 shadow-sm hover:shadow-lg transition-all group hover:-translate-y-1 transform flex flex-col justify-between">
-                    <button onClick={() => setActiveTab(c.tab)} className="text-left w-full">
-                      <div className={`text-lg font-bold text-transparent bg-clip-text bg-gradient-to-r ${c.color} mb-1`}>{c.label}</div>
-                      <p className="text-xs text-slate-400 mb-3">{c.sub}</p>
-                      <span className="text-xs font-semibold text-blue-600 group-hover:underline mb-4 inline-block">{lang === 'th' ? 'ดู Dashboard →' : 'View Dashboard →'}</span>
+                  <div key={c.id} className="bg-white p-6 rounded-2xl border border-slate-200/60 shadow-sm hover:shadow-lg transition-all group hover:-translate-y-1 transform flex flex-col justify-between">
+                    <button onClick={() => {
+                        if (c.id === 'Research') router.push('/research');
+                        else if (c.id === 'Instructor') router.push('/faculty');
+                        else if (c.id === 'Undergraduate') router.push('/undergraduate');
+                        else if (c.id === 'Department') router.push('/department');
+                        else setActiveTab(c.id);
+                    }} className="text-left w-full">
+                      <div className="flex items-center gap-2 mb-2">
+                        <div className={`p-1.5 rounded-lg bg-gradient-to-br ${c.color} text-white`}>
+                            <c.icon size={16} />
+                        </div>
+                        <div className={`text-lg font-bold text-transparent bg-clip-text bg-gradient-to-r ${c.color}`}>{c.label}</div>
+                      </div>
+                      <p className="text-xs text-slate-400 mb-3 line-clamp-1">{c.sub}</p>
+                      <span className="text-[10px] font-semibold text-blue-600 group-hover:underline mb-4 inline-block">{lang === 'th' ? 'ดูรายละเอียด →' : 'View Details →'}</span>
                     </button>
 
                     <button
                       onClick={(e) => {
                         e.stopPropagation();
-                        handleViewDetails(c.id, c.label);
+                        if (c.id === 'Research') router.push('/research');
+                        else if (c.id === 'Instructor') router.push('/faculty');
+                        else handleViewDetails(c.id_real || c.id, c.label);
                       }}
-                      className="mt-2 w-full flex items-center justify-center gap-2 py-2 px-3 bg-slate-50 hover:bg-slate-100 text-slate-600 text-xs font-semibold rounded-lg border border-slate-200 transition-colors"
+                      className="mt-2 w-full flex items-center justify-center gap-2 py-2 px-3 bg-slate-50 hover:bg-slate-100 text-slate-600 text-[10px] font-semibold rounded-lg border border-slate-200 transition-colors"
                     >
-                      <Database size={14} />
+                      <Database size={12} />
                       {lang === 'th' ? 'ดูข้อมูล / Export' : 'Data & Export'}
                     </button>
                   </div>
@@ -367,21 +381,29 @@ function DashboardContent() {
               </div>
 
             </>
-          ) : activeTab === 'Academic' ? (
+          ) : activeTab === 'Postgraduate' ? (
             <AcademicDashboard lang={lang} />
-          ) : activeTab === 'Staff/HR' ? (
+          ) : activeTab === 'Personnel' ? (
             <StaffDashboard lang={lang} />
-          ) : activeTab === 'Hospital' ? (
-            <HospitalDashboard lang={lang} />
+          ) : activeTab === 'Undergraduate' ? (
+            <div className="bg-white p-12 rounded-3xl border border-slate-200/60 shadow-sm text-center">
+              <h3 className="text-2xl font-bold text-slate-800 mb-4">{t('undergrad')}</h3>
+              <p className="text-slate-500 max-w-md mx-auto mb-8">{t('populatingData')}</p>
+            </div>
           ) : activeTab === 'Strategic' ? (
             <StrategicDashboard lang={lang} />
           ) : activeTab === 'Input' ? (
             <div className="animate-in fade-in duration-500">
               <InputHub lang={lang} />
             </div>
-          ) : activeTab === 'Review' ? (
+          ) : activeTab === 'MyTasks' ? (
             <div className="animate-in fade-in duration-500">
               <ReviewerDashboard lang={lang} />
+            </div>
+          ) : activeTab === 'Department' ? (
+            <div className="bg-white p-12 rounded-3xl border border-slate-200/60 shadow-sm text-center">
+              <h3 className="text-2xl font-bold text-slate-800 mb-4">{t('department')}</h3>
+              <p className="text-slate-500 max-w-md mx-auto mb-8">{t('populatingData')}</p>
             </div>
           ) : activeTab === 'Admin' ? (
             <div className="animate-in fade-in duration-500">
@@ -400,7 +422,7 @@ function DashboardContent() {
             </div>
           )}
         </div>
-      </main>
+    </main>
 
       {/* Data Explorer Overlay */}
       {showExplorer && (

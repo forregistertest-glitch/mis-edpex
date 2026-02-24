@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { GraduateStudent } from "@/types/student";
 import { StudentService } from "@/services/studentService";
-import { Plus, Search, Edit, Trash2, Download, Upload, ArrowLeft, GraduationCap, BarChart3, ArrowUpAZ, ArrowDownAZ, Calendar, Hash, FileSpreadsheet, RefreshCw, ChevronUp, Users, ChevronDown, FileDown, LayoutDashboard, Archive } from "lucide-react";
+import { Plus, Search, Edit, Trash2, Download, Upload, ArrowLeft, GraduationCap, TrendingUp, ArrowUpAZ, ArrowDownAZ, Calendar, Hash, FileSpreadsheet, RefreshCw, ChevronUp, Users, ChevronDown, FileDown, LayoutDashboard, Archive } from "lucide-react";
 import { exportStudentsToExcel, exportFullReport } from "@/utils/studentExport";
 import { downloadImportTemplate } from "@/utils/templateGenerator";
 import { parseStudentExcel } from "@/utils/studentImport";
@@ -388,11 +388,11 @@ export default function StudentPage() {
             <Link href="/?tab=Input" className="p-2 hover:bg-gray-100 rounded-full transition-colors text-gray-500 hover:text-gray-700">
                <ArrowLeft size={24} />
             </Link>
-            <h1 className="text-2xl font-bold flex items-center gap-3">
-               <div className="bg-green-600 p-2 rounded-lg shadow-sm">
+            <h1 className="text-2xl font-bold flex items-center gap-3 text-slate-800">
+               <div className="bg-purple-600 p-2 rounded-xl shadow-md">
                   <GraduationCap size={24} className="text-white" />
                </div>
-               ระบบข้อมูลนิสิต (Academic)
+               งานบัณฑิตศึกษา
             </h1>
           </div>
           <div className="flex items-center gap-2">
@@ -401,46 +401,58 @@ export default function StudentPage() {
                   กำลังนำเข้า... {importProgress.current} / {importProgress.total} รายการ
                </span>
             )}
-
+ 
             {/* Template Download */}
             <button
               onClick={() => downloadImportTemplate()}
-              className="flex items-center gap-2 bg-white border border-gray-300 hover:border-blue-400 hover:bg-blue-50 text-gray-700 px-3 py-2 rounded-lg transition-all shadow-sm text-sm"
+              className="flex items-center gap-2 bg-white border border-gray-300 hover:border-purple-400 hover:bg-purple-50 text-gray-700 px-3 py-2 rounded-lg transition-all shadow-sm text-sm"
               title="ดาวน์โหลดแบบฟอร์มนำเข้าข้อมูล (Excel ว่างมี Header)"
             >
-              <FileDown size={16} className="text-blue-600" />
-              <span className="font-medium">Template</span>
-              <span className="text-[10px] bg-blue-100 text-blue-700 px-1.5 py-0.5 rounded font-bold">v1.1b</span>
+              <FileDown size={16} className="text-purple-600" />
+              <span className="font-medium">แบบฟอร์ม (Template)</span>
+              <span className="text-[10px] bg-purple-100 text-purple-700 px-1.5 py-0.5 rounded font-bold">v1.1b</span>
             </button>
 
             {/* Import Dropdown */}
             <div className="relative" ref={importMenuRef}>
               <button
                 onClick={() => setShowImportMenu(!showImportMenu)}
-                className="flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg transition-colors shadow-sm text-sm font-medium"
+                className={`flex items-center gap-2 bg-white border border-gray-300 hover:border-purple-400 hover:bg-purple-50 text-gray-700 px-4 py-2 rounded-lg transition-all shadow-sm text-sm font-medium ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
               >
-                <Upload size={16} />
+                <Upload size={16} className="text-purple-600" />
                 นำเข้า
-                <ChevronDown size={14} className={`transition-transform ${showImportMenu ? 'rotate-180' : ''}`} />
+                <ChevronDown size={14} className={`text-gray-400 transition-transform ${showImportMenu ? 'rotate-180' : ''}`} />
               </button>
               {showImportMenu && (
-                <div className="absolute right-0 mt-1 w-64 bg-white rounded-lg shadow-lg border border-gray-200 py-1 z-50">
-                  <button onClick={() => handleImportMenuSelect('smart')} className="w-full text-left px-4 py-2.5 hover:bg-blue-50 text-sm flex items-center gap-3 transition-colors">
-                    <FileSpreadsheet size={16} className="text-blue-600" />
-                    <div><div className="font-medium text-gray-800">Smart Import</div><div className="text-xs text-gray-500">รวมทุก Sheet อัตโนมัติ</div></div>
+                <div className="absolute right-0 mt-2 w-64 bg-white rounded-xl shadow-xl border border-gray-200 py-1.5 z-50 animate-in fade-in slide-in-from-top-1">
+                  <button onClick={() => handleImportMenuSelect('smart')} className="w-full text-left px-4 py-2.5 hover:bg-purple-50 text-sm flex items-center gap-3 transition-colors group">
+                    <FileSpreadsheet size={18} className="text-purple-600 group-hover:scale-110 transition-transform" />
+                    <div>
+                      <div className="font-bold text-gray-800">Smart Import</div>
+                      <div className="text-[10px] text-gray-500">รวมทุก Sheet อัตโนมัติ</div>
+                    </div>
                   </button>
                   <div className="border-t border-gray-100 my-1" />
-                  <button onClick={() => handleImportMenuSelect('student')} className="w-full text-left px-4 py-2.5 hover:bg-gray-50 text-sm flex items-center gap-3 transition-colors">
-                    <GraduationCap size={16} className="text-gray-500" />
-                    <div><div className="font-medium text-gray-700">ข้อมูลนิสิต</div><div className="text-xs text-gray-500">Profile — ชื่อ, สาขา, อาจารย์</div></div>
+                  <button onClick={() => handleImportMenuSelect('student')} className="w-full text-left px-4 py-2.5 hover:bg-purple-50 text-sm flex items-center gap-3 transition-colors group">
+                    <GraduationCap size={18} className="text-purple-600/60 group-hover:text-purple-600" />
+                    <div>
+                      <div className="font-medium text-gray-700 group-hover:text-purple-700">ข้อมูลนิสิต</div>
+                      <div className="text-[10px] text-gray-500">Profile — ชื่อ, สาขา, อาจารย์</div>
+                    </div>
                   </button>
-                  <button onClick={() => handleImportMenuSelect('publication')} className="w-full text-left px-4 py-2.5 hover:bg-gray-50 text-sm flex items-center gap-3 transition-colors">
-                    <FileSpreadsheet size={16} className="text-gray-500" />
-                    <div><div className="font-medium text-gray-700">ผลงานตีพิมพ์</div><div className="text-xs text-gray-500">Publications — วารสาร, บทความ</div></div>
+                  <button onClick={() => handleImportMenuSelect('publication')} className="w-full text-left px-4 py-2.5 hover:bg-purple-50 text-sm flex items-center gap-3 transition-colors group">
+                    <FileSpreadsheet size={18} className="text-purple-600/60 group-hover:text-purple-600" />
+                    <div>
+                      <div className="font-medium text-gray-700 group-hover:text-purple-700">ผลงานตีพิมพ์</div>
+                      <div className="text-[10px] text-gray-500">Publications — วารสาร, บทความ</div>
+                    </div>
                   </button>
-                  <button onClick={() => handleImportMenuSelect('progress')} className="w-full text-left px-4 py-2.5 hover:bg-gray-50 text-sm flex items-center gap-3 transition-colors">
-                    <BarChart3 size={16} className="text-gray-500" />
-                    <div><div className="font-medium text-gray-700">ความก้าวหน้า</div><div className="text-xs text-gray-500">Progress — Milestones, สถานะ</div></div>
+                  <button onClick={() => handleImportMenuSelect('progress')} className="w-full text-left px-4 py-2.5 hover:bg-purple-50 text-sm flex items-center gap-3 transition-colors group">
+                    <TrendingUp size={18} className="text-purple-600/60 group-hover:text-purple-600" />
+                    <div>
+                      <div className="font-medium text-gray-700 group-hover:text-purple-700">ความก้าวหน้า</div>
+                      <div className="text-[10px] text-gray-500">Progress — Milestones, สถานะ</div>
+                    </div>
                   </button>
                 </div>
               )}
@@ -471,7 +483,7 @@ export default function StudentPage() {
             </Link>
             <Link 
               href="/student/new"
-              className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg flex items-center gap-2 shadow-sm transition-colors text-sm font-medium"
+              className="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg flex items-center gap-2 shadow-sm transition-colors text-sm font-medium"
             >
                <Plus size={16} />
                เพิ่มนิสิต
@@ -490,24 +502,24 @@ export default function StudentPage() {
                 placeholder="ค้นหา รหัส, ชื่อ, สาขา, อาจารย์, ภาควิชา, ระดับ, สถานะ..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
               />
             </div>
             <button 
               onClick={fetchStudents}
               disabled={loading}
-              className="flex items-center gap-2 px-3 py-2 bg-slate-50 text-slate-500 hover:bg-slate-100 hover:text-blue-600 border border-slate-200 rounded-lg text-sm font-medium transition-all"
+              className="flex items-center gap-2 px-3 py-2 bg-white text-slate-500 hover:bg-purple-50 hover:text-purple-600 border border-slate-200 rounded-lg text-sm font-medium transition-all shadow-sm group"
               title="รีเฟรชข้อมูล"
             >
-              <RefreshCw className={loading ? "animate-spin" : ""} size={16} /> 
+              <RefreshCw size={18} className={`text-purple-600 ${loading ? 'animate-spin' : ''}`} />
             </button>
             <button 
               onClick={() => handleExport(false)}
               disabled={loading || filteredStudents.length === 0}
-              className="flex items-center gap-1.5 px-3 py-2 bg-slate-50 text-slate-500 hover:bg-slate-100 hover:text-green-600 border border-slate-200 rounded-lg text-sm font-medium transition-all disabled:opacity-40"
+              className="flex items-center gap-1.5 px-3 py-2 bg-white text-slate-500 hover:bg-purple-50 hover:text-purple-600 border border-slate-200 rounded-lg text-sm font-medium transition-all shadow-sm group disabled:opacity-40"
               title={`ส่งออกตารางที่กำลังแสดง (${filteredStudents.length} รายการ)`}
             >
-              <Download size={14} />
+              <Download size={14} className="text-purple-600" />
               <span className="hidden lg:inline text-xs">Export ตาราง</span>
             </button>
           </div>
@@ -536,9 +548,9 @@ export default function StudentPage() {
           </div>
 
           <div className="flex border-b border-gray-100 px-4">
-            <button onClick={() => setViewTab('active')} className={`px-4 py-3 text-sm font-bold transition-all border-b-2 ${viewTab === 'active' ? 'border-green-600 text-green-700' : 'border-transparent text-gray-400 hover:text-gray-600'}`}>รายการปกติ ({students.filter(s => !s.is_deleted).length})</button>
+            <button onClick={() => setViewTab('active')} className={`px-4 py-3 text-sm font-bold transition-all border-b-2 ${viewTab === 'active' ? 'border-purple-600 text-purple-700' : 'border-transparent text-gray-400 hover:text-gray-600'}`}>รายการปกติ ({students.filter(s => !s.is_deleted).length})</button>
             <button onClick={() => setViewTab('disabled')} className={`px-4 py-3 text-sm font-bold transition-all border-b-2 ${viewTab === 'disabled' ? 'border-red-600 text-red-700' : 'border-transparent text-gray-400 hover:text-gray-600'}`}>รายการที่ยกเลิก ({students.filter(s => s.is_deleted).length})</button>
-            <button onClick={() => setViewTab('all')} className={`px-4 py-3 text-sm font-bold transition-all border-b-2 ${viewTab === 'all' ? 'border-blue-600 text-blue-700' : 'border-transparent text-gray-400 hover:text-gray-600'}`}>ทั้งหมด ({students.length})</button>
+            <button onClick={() => setViewTab('all')} className={`px-4 py-3 text-sm font-bold transition-all border-b-2 ${viewTab === 'all' ? 'border-purple-600 text-purple-700' : 'border-transparent text-gray-400 hover:text-gray-600'}`}>ทั้งหมด ({students.length})</button>
           </div>
         </div>
 

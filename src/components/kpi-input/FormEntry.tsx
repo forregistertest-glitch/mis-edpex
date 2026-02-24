@@ -80,13 +80,13 @@ export default function FormEntry({ selectedForm, selectedPeriod, setSelectedPer
             </div>
 
             {/* Editing Conditions & Meaning */}
-            <div className="bg-blue-50/50 border border-blue-100 rounded-2xl p-5 flex flex-col md:flex-row gap-6">
+            <div className="bg-emerald-50/50 border border-emerald-100 rounded-2xl p-5 flex flex-col md:flex-row gap-6">
                 <div className="flex-1">
-                    <h4 className="text-sm font-bold text-blue-800 mb-2 flex items-center gap-2">
+                    <h4 className="text-sm font-bold text-emerald-800 mb-2 flex items-center gap-2">
                         <AlertCircle size={16} />
                         {t ? "เงื่อนไขการแก้ไขข้อมูล" : "Editing Conditions"}
                     </h4>
-                    <ul className="text-xs text-blue-700/80 space-y-1 list-disc pl-4">
+                    <ul className="text-xs text-emerald-700/80 space-y-1 list-disc pl-4">
                         <li>
                             {t ? "สถานะ Pending (รอตรวจสอบ): ผู้กรอกสามารถ ลบ หรือ แก้ไข ได้" : "Pending: Can edit or delete by submitter."}
                         </li>
@@ -102,7 +102,7 @@ export default function FormEntry({ selectedForm, selectedPeriod, setSelectedPer
                     </ul>
                 </div>
                 {selectedForm.meaning_th && (
-                    <div className="flex-1 border-t md:border-t-0 md:border-l border-blue-200 pt-4 md:pt-0 md:pl-6">
+                    <div className="flex-1 border-t md:border-t-0 md:border-l border-emerald-200 pt-4 md:pt-0 md:pl-6">
                         <h4 className="text-sm font-bold text-slate-700 mb-2">{t ? "คำอธิบายตัวชี้วัด" : "KPI Description"}</h4>
                         <p className="text-xs text-slate-600 leading-relaxed max-w-xl">
                             {t ? selectedForm.meaning_th : selectedForm.meaning_en}
@@ -116,7 +116,7 @@ export default function FormEntry({ selectedForm, selectedPeriod, setSelectedPer
                 {/* Period Selector */}
                 <div className="mb-8 border-b border-slate-100 pb-8">
                     <label className="flex items-center gap-2 text-sm font-bold text-slate-700 mb-3">
-                        <CalendarDays size={18} className="text-blue-600" />
+                        <CalendarDays size={18} className="text-emerald-600" />
                         {t ? "1. เลือกงวดข้อมูล (Period)" : "1. Select Data Period"}
                     </label>
                     <div className="flex flex-wrap gap-2">
@@ -125,7 +125,7 @@ export default function FormEntry({ selectedForm, selectedPeriod, setSelectedPer
                                 key={p}
                                 onClick={() => setSelectedPeriod(p)}
                                 className={`px-4 py-2 rounded-xl text-sm font-semibold transition-all ${selectedPeriod === p
-                                    ? "bg-blue-600 text-white shadow-md ring-2 ring-blue-200"
+                                    ? "bg-emerald-600 text-white shadow-md ring-2 ring-emerald-200"
                                     : "bg-slate-50 text-slate-600 hover:bg-slate-100 border border-slate-200"
                                     }`}
                             >
@@ -138,7 +138,7 @@ export default function FormEntry({ selectedForm, selectedPeriod, setSelectedPer
                 {/* Main Fields */}
                 <div className="mb-8">
                     <label className="flex items-center gap-2 text-sm font-bold text-slate-700 mb-4">
-                        <Send size={18} className="text-blue-600" />
+                        <Send size={18} className="text-emerald-600" />
                         {t ? "2. กรอกข้อมูลตัวชี้วัด" : "2. Enter KPI Data"}
                     </label>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6 p-4 bg-slate-50/50 rounded-2xl border border-slate-100">
@@ -150,7 +150,7 @@ export default function FormEntry({ selectedForm, selectedPeriod, setSelectedPer
                 {footerFields.length > 0 && (
                     <div className="mb-8">
                         <label className="flex items-center gap-2 text-sm font-bold text-slate-700 mb-4">
-                            <FileText size={18} className="text-blue-600" />
+                            <FileText size={18} className="text-emerald-600" />
                             {t ? "3. ข้อมูลเพิ่มเติม & ไฟล์แนบ" : "3. Additional Info & Attachments"}
                         </label>
                         <div className="grid grid-cols-1 gap-6">
@@ -163,7 +163,7 @@ export default function FormEntry({ selectedForm, selectedPeriod, setSelectedPer
                     <p className="text-xs text-slate-400">{t ? "* ฟิลด์จำเป็นต้องกรอก | ข้อมูลจะบันทึกลง Firestore" : "* Required fields | Data saves to Firestore"}</p>
                     <div className="flex items-center gap-3">
                         <button onClick={goBack} className="px-5 py-2.5 text-sm font-semibold text-slate-500 hover:bg-slate-100 rounded-xl transition-colors">{t ? "ยกเลิก" : "Cancel"}</button>
-                        <button onClick={handleSubmit} className="px-8 py-3 bg-blue-600 text-white rounded-xl text-sm font-bold hover:bg-blue-700 transition-all shadow-lg shadow-blue-600/20 flex items-center gap-2 transform active:scale-95">
+                        <button onClick={handleSubmit} className="px-8 py-3 bg-emerald-600 text-white rounded-xl text-sm font-bold hover:bg-emerald-700 transition-all shadow-lg shadow-emerald-600/20 flex items-center gap-2 transform active:scale-95">
                             <Send size={16} />{t ? "ตรวจสอบ & บันทึก" : "Review & Save"}
                         </button>
                     </div>

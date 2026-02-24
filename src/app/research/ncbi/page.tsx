@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { ArrowLeft, Search, Download, RefreshCw, ChevronDown, CheckCircle2, Globe, PlayCircle, Loader2, FileDown, Building2, Save, FileClock } from "lucide-react";
+import { ArrowLeft, Search, Download, RefreshCw, ChevronDown, CheckCircle2, Globe, PlayCircle, Loader2, FileDown, Building2, Save, FileClock, ChevronUp } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { NcbiService } from "@/services/ncbiService";
 import { ResearchService } from "@/services/researchService";
@@ -81,6 +81,14 @@ export default function NcbiSearchPage() {
             setIsExporting(false);
         }
     };
+    
+    // -- Scroll State --
+    const [showFloatingTop, setShowFloatingTop] = useState(false);
+    useEffect(() => {
+        const handleScroll = () => setShowFloatingTop(window.scrollY > 300);
+        window.addEventListener("scroll", handleScroll);
+        return () => window.removeEventListener("scroll", handleScroll);
+    }, []);
 
     useEffect(() => {
         if (modalScrollRef.current) {
@@ -763,6 +771,18 @@ export default function NcbiSearchPage() {
                             )}
                         </div>
                     </div>
+                </div>
+            )}
+            {/* Floating Action Button (Scroll to Top) */}
+            {showFloatingTop && (
+                <div className="fixed bottom-6 right-6 z-50 animate-in fade-in slide-in-from-bottom-4 duration-300">
+                    <button
+                        onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+                        className="bg-slate-800 hover:bg-slate-700 text-white p-3 rounded-full shadow-2xl transition-all hover:-translate-y-1 focus:outline-none focus:ring-4 focus:ring-slate-300 group"
+                        aria-label="Back to top"
+                    >
+                        <ChevronUp size={20} className="group-hover:animate-bounce" />
+                    </button>
                 </div>
             )}
         </div>

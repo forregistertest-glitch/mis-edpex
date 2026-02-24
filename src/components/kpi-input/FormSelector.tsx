@@ -73,7 +73,7 @@ export default function FormSelector({
     return (
         <div className="space-y-8">
             {/* Header */}
-            <div className="bg-gradient-to-br from-blue-700 via-blue-800 to-indigo-900 rounded-3xl p-8 text-white shadow-xl relative overflow-hidden">
+            <div className="bg-gradient-to-br from-emerald-700 via-emerald-800 to-teal-900 rounded-3xl p-8 text-white shadow-xl relative overflow-hidden">
                 <div className="relative z-10">
                     <span className="inline-block px-3 py-1 bg-white/20 rounded-full text-xs font-semibold mb-3 backdrop-blur-sm">
                         {t ? "ระบบกรอกข้อมูล → Firestore" : "DATA INPUT → FIRESTORE"}
@@ -85,7 +85,7 @@ export default function FormSelector({
                             : "Select form → fill data → choose period (annual/quarterly/monthly) → data saves directly to Firestore"}
                     </p>
                 </div>
-                <div className="absolute right-0 top-0 w-64 h-64 bg-blue-400/20 rounded-full -mr-16 -mt-16 blur-3xl" />
+                <div className="absolute right-0 top-0 w-64 h-64 bg-emerald-400/20 rounded-full -mr-16 -mt-16 blur-3xl" />
             </div>
 
             {/* Form Cards Grid */}
@@ -132,7 +132,7 @@ export default function FormSelector({
                                 <button
                                     disabled={page === 1}
                                     onClick={() => setPage(p => Math.max(1, p - 1))}
-                                    className="p-1 px-2 hover:bg-slate-100 rounded-lg text-slate-400 hover:text-blue-600 disabled:opacity-30 transition-all flex items-center gap-1"
+                                    className="p-1 px-2 hover:bg-slate-100 rounded-lg text-slate-400 hover:text-emerald-600 disabled:opacity-30 transition-all flex items-center gap-1"
                                 >
                                     <ArrowLeft size={12} />
                                     <span className="text-[10px] font-bold uppercase hidden sm:inline">{t ? "ก่อนหน้า" : "Prev"}</span>
@@ -151,7 +151,7 @@ export default function FormSelector({
                                             <button
                                                 key={pageNum}
                                                 onClick={() => setPage(() => pageNum)}
-                                                className={`w-7 h-7 flex items-center justify-center rounded-lg text-[11px] font-black transition-all ${page === pageNum ? 'bg-blue-600 text-white shadow-md' : 'text-slate-400 hover:bg-slate-50 hover:text-slate-600'}`}
+                                                className={`w-7 h-7 flex items-center justify-center rounded-lg text-[11px] font-black transition-all ${page === pageNum ? 'bg-emerald-600 text-white shadow-md' : 'text-slate-400 hover:bg-slate-50 hover:text-slate-600'}`}
                                             >
                                                 {pageNum}
                                             </button>
@@ -162,7 +162,7 @@ export default function FormSelector({
                                 <button
                                     disabled={page >= Math.ceil(totalCount / 20)}
                                     onClick={() => setPage(p => p + 1)}
-                                    className="p-1 px-2 hover:bg-slate-100 rounded-lg text-slate-400 hover:text-blue-600 disabled:opacity-30 transition-all flex items-center gap-1"
+                                    className="p-1 px-2 hover:bg-slate-100 rounded-lg text-slate-400 hover:text-emerald-600 disabled:opacity-30 transition-all flex items-center gap-1"
                                 >
                                     <span className="text-[10px] font-bold uppercase hidden sm:inline">{t ? "ถัดไป" : "Next"}</span>
                                     <ChevronRight size={12} />
@@ -178,7 +178,7 @@ export default function FormSelector({
                         <div className="space-y-1">
                             <label className="text-[10px] font-bold text-slate-400 uppercase">{t ? "หมวดหมู่" : "Category"}</label>
                             <select
-                                className="w-full bg-white border border-slate-200 rounded-lg px-2 py-1.5 text-xs text-slate-900 font-medium focus:ring-2 focus:ring-blue-500/20"
+                                className="w-full bg-white border border-slate-200 rounded-lg px-2 py-1.5 text-xs text-slate-900 font-medium focus:ring-2 focus:ring-emerald-500/20"
                                 value={tempFilters.kpi_id}
                                 onChange={(e) => setTempFilters({ ...tempFilters, kpi_id: e.target.value })}
                             >
@@ -192,7 +192,7 @@ export default function FormSelector({
                         <div className="space-y-1">
                             <label className="text-[10px] font-bold text-slate-400 uppercase">{t ? "ปีงบประมาณ" : "Fiscal Year"}</label>
                             <select
-                                className="w-full bg-white border border-slate-200 rounded-lg px-2 py-1.5 text-xs text-slate-900 font-medium focus:ring-2 focus:ring-blue-500/20"
+                                className="w-full bg-white border border-slate-200 rounded-lg px-2 py-1.5 text-xs text-slate-900 font-medium focus:ring-2 focus:ring-emerald-500/20"
                                 value={tempFilters.year}
                                 onChange={(e) => setTempFilters({ ...tempFilters, year: Number(e.target.value) })}
                             >
@@ -206,7 +206,7 @@ export default function FormSelector({
                         <div className="space-y-1">
                             <label className="text-[10px] font-bold text-slate-400 uppercase">{t ? "งวดข้อมูล" : "Period"}</label>
                             <select
-                                className="w-full bg-white border border-slate-200 rounded-lg px-2 py-1.5 text-xs text-slate-900 font-medium focus:ring-2 focus:ring-blue-500/20"
+                                className="w-full bg-white border border-slate-200 rounded-lg px-2 py-1.5 text-xs text-slate-900 font-medium focus:ring-2 focus:ring-emerald-500/20"
                                 value={tempFilters.period}
                                 onChange={(e) => setTempFilters({ ...tempFilters, period: e.target.value })}
                             >
@@ -220,7 +220,7 @@ export default function FormSelector({
                         <div className="space-y-1">
                             <label className="text-[10px] font-bold text-slate-400 uppercase">{t ? "ผู้กรอก" : "User"}</label>
                             <select
-                                className="w-full bg-white border border-slate-200 rounded-lg px-2 py-1.5 text-xs text-slate-900 font-medium focus:ring-2 focus:ring-blue-500/20"
+                                className="w-full bg-white border border-slate-200 rounded-lg px-2 py-1.5 text-xs text-slate-900 font-medium focus:ring-2 focus:ring-emerald-500/20"
                                 value={tempFilters.submitted_by}
                                 onChange={(e) => setTempFilters({ ...tempFilters, submitted_by: e.target.value })}
                             >
@@ -233,7 +233,7 @@ export default function FormSelector({
                         <div className="space-y-1">
                             <label className="text-[10px] font-bold text-slate-400 uppercase">{t ? "สถานะ" : "Status"}</label>
                             <select
-                                className="w-full bg-white border border-slate-200 rounded-lg px-2 py-1.5 text-xs text-slate-900 font-medium focus:ring-2 focus:ring-blue-500/20"
+                                className="w-full bg-white border border-slate-200 rounded-lg px-2 py-1.5 text-xs text-slate-900 font-medium focus:ring-2 focus:ring-emerald-500/20"
                                 value={tempFilters.status}
                                 onChange={(e) => setTempFilters({ ...tempFilters, status: e.target.value })}
                             >
@@ -260,7 +260,7 @@ export default function FormSelector({
                         </button>
                         <button
                             onClick={() => { setFilters(tempFilters); setPage(() => 1); }}
-                            className="flex-1 lg:flex-none px-5 py-1.5 bg-blue-600 text-white rounded-lg text-xs font-bold hover:bg-blue-700 transition-all shadow-md shadow-blue-500/20 flex items-center justify-center gap-1.5"
+                            className="flex-1 lg:flex-none px-5 py-1.5 bg-emerald-600 text-white rounded-lg text-xs font-bold hover:bg-emerald-700 transition-all shadow-md shadow-emerald-500/20 flex items-center justify-center gap-1.5"
                             disabled={loadingLogs}
                         >
                             {loadingLogs ? <Loader2 size={12} className="animate-spin" /> : null}
@@ -274,7 +274,7 @@ export default function FormSelector({
                     {loadingLogs && (
                         <div className="absolute inset-0 bg-white/60 backdrop-blur-[1px] z-10 flex items-center justify-center transition-all">
                             <div className="bg-white px-6 py-4 rounded-2xl shadow-xl border border-slate-100 flex flex-col items-center gap-3">
-                                <Loader2 size={24} className="animate-spin text-blue-600" />
+                                <Loader2 size={24} className="animate-spin text-emerald-600" />
                                 <p className="text-xs font-bold text-slate-500">{t ? "กำลังดึงข้อมูล..." : "Refreshing Table..."}</p>
                             </div>
                         </div>
@@ -305,10 +305,10 @@ export default function FormSelector({
                                         const master = kpiMasters.find((m) => m.kpi_id === log.kpi_id);
                                         return (
                                             <tr key={log.id || i} className="hover:bg-slate-50/50 transition-colors">
-                                                <td className="px-6 py-4 font-mono text-xs text-blue-600 font-bold">{log.kpi_id}</td>
+                                                <td className="px-6 py-4 font-mono text-xs text-emerald-600 font-bold">{log.kpi_id}</td>
                                                 <td className="px-6 py-4 text-slate-700 text-xs max-w-[200px] truncate" title={master ? (t ? master.name_th : master.name_en) : ""}>{master ? (t ? master.name_th : master.name_en) : "—"}</td>
                                                 <td className="px-6 py-4 text-slate-600 text-xs">{log.fiscal_year}</td>
-                                                <td className="px-6 py-4"><span className="text-[10px] bg-blue-50 text-blue-600 px-2 py-0.5 rounded-full font-bold uppercase">{log.period}</span></td>
+                                                <td className="px-6 py-4"><span className="text-[10px] bg-emerald-50 text-emerald-600 px-2 py-0.5 rounded-full font-bold uppercase">{log.period}</span></td>
                                                 <td className="px-6 py-4 font-bold text-slate-800 text-xs">{log.value !== null ? log.value.toLocaleString() : "—"} <span className="text-slate-400 font-normal text-[10px]">{log.unit}</span></td>
                                                 <td className="px-6 py-4">
                                                     <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold ${badge.cls}`}>

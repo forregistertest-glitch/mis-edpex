@@ -149,14 +149,14 @@ export default function StrategicDashboard({ lang }: StrategicDashboardProps) {
                 {/* Strategic Objectives — Horizontal Bar */}
                 <div className="lg:col-span-2">
                     <DashboardCard
-                        title={th ? "ความก้าวหน้าดำเนินงานตามแผนยุทธศาสตร์ (7.4.4)" : "Strategic Objectives Progress (7.4.4)"}
+                        title={th ? "ความก้าวหน้าตามแผนยุทธศาสตร์ (KPI 7.4.4)" : "Strategic Plan Progress (KPI 7.4.4)"}
                         logic={th ? "ร้อยละความสำเร็จของโครงการตามแผนยุทธศาสตร์" : "Percentage of completion for strategic projects"}
                         source={th ? "งานนโยบายและแผน" : "Policy & Planning"}
                     >
                         <div className="h-[320px]">
                             {soMatrix.length > 0 ? (
                                 <Bar options={{
-                                    ...chartOpts(th ? "ความก้าวหน้าดำเนินงานตามแผนยุทธศาสตร์ (7.4.4)" : "Strategic Objectives Progress (7.4.4)"),
+                                    ...chartOpts(th ? "ความก้าวหน้าตามแผนยุทธศาสตร์ (KPI 7.4.4)" : "Strategic Plan Progress (KPI 7.4.4)"),
                                     indexAxis: "y" as const,
                                     scales: { x: { beginAtZero: true, max: 1, ticks: { format: { style: "percent" as const }, callback: (v: any) => `${Math.round(Number(v) * 100)}%` }, grid: { color: "rgba(0,0,0,0.04)" } }, y: { grid: { display: false } } },
                                 }} data={{
@@ -169,30 +169,30 @@ export default function StrategicDashboard({ lang }: StrategicDashboardProps) {
                                         borderWidth: 1,
                                     }],
                                 }} />
-                            ) : <div className="flex flex-col items-center justify-center h-full text-slate-400"><p className="font-bold text-sm mb-1">{th ? "ความก้าวหน้ายุทธศาสตร์ (7.4.4)" : "Strategic Objectives Progress (7.4.4)"}</p><p className="text-xs">{th ? "ยังไม่มีข้อมูล — กรุณากรอกข้อมูลในแบบฟอร์ม" : "No data — please submit via input form"}</p></div>}
+                            ) : <div className="flex flex-col items-center justify-center h-full text-slate-400"><p className="font-bold text-sm mb-1">{th ? "ความก้าวหน้ายุทธศาสตร์ (KPI 7.4.4)" : "Strategic Progress (KPI 7.4.4)"}</p><p className="text-xs">{th ? "ยังไม่มีข้อมูล — กรุณากรอกข้อมูลในแบบฟอร์ม" : "No data — please submit via input form"}</p></div>}
                         </div>
                     </DashboardCard>
                 </div>
 
                 {/* Revenue Sources */}
                 <DashboardCard
-                    title={th ? "แหล่งรายได้ใหม่ (7.4.7)" : "New Revenue Sources (7.4.7)"}
+                    title={th ? "แหล่งรายได้ใหม่ (KPI 7.4.7)" : "New Revenue Sources (KPI 7.4.7)"}
                     logic={th ? "มูลค่ารายได้จากแหล่งทุนใหม่และบริการวิชาการ" : "Revenue value from new funding sources and academic services"}
                     source={th ? "งานคลังและพัสดุ" : "Finance & Procurement"}
                 >
                     <div className="h-[320px]">
                         {revenueMatrix.length > 0 ? (
-                            <Bar options={chartOpts(th ? "แหล่งรายได้ใหม่ (7.4.7)" : "New Revenue Sources (7.4.7)")} data={{
+                            <Bar options={chartOpts(th ? "แหล่งรายได้ใหม่ (KPI 7.4.7)" : "New Revenue Sources (KPI 7.4.7)")} data={{
                                 labels: revenueMatrix.map(m => m.dimension_value),
                                 datasets: [{ label: th ? "บาท" : "THB", data: revenueMatrix.map(m => m.value), backgroundColor: COLORS.map(c => c.bg), borderColor: COLORS.map(c => c.border), borderWidth: 1 }],
                             }} />
-                        ) : <div className="flex flex-col items-center justify-center h-full text-slate-400"><p className="font-bold text-sm mb-1">{th ? "แหล่งรายได้ใหม่ (7.4.7)" : "New Revenue Sources (7.4.7)"}</p><p className="text-xs">{th ? "ยังไม่มีข้อมูล — กรุณากรอกข้อมูลในแบบฟอร์ม" : "No data — please submit via input form"}</p></div>}
+                        ) : <div className="flex flex-col items-center justify-center h-full text-slate-400"><p className="font-bold text-sm mb-1">{th ? "แหล่งรายได้ใหม่ (KPI 7.4.7)" : "New Revenue Sources (KPI 7.4.7)"}</p><p className="text-xs">{th ? "ยังไม่มีข้อมูล — กรุณากรอกข้อมูลในแบบฟอร์ม" : "No data — please submit via input form"}</p></div>}
                     </div>
                 </DashboardCard>
 
                 {/* Governance Radar */}
                 <DashboardCard
-                    title={th ? "ธรรมาภิบาล จริยธรรม (7.4.11)" : "Governance & Ethics (7.4.11)"}
+                    title={th ? "ธรรมาภิบาล จริยธรรม (KPI 7.4.11)" : "Governance & Ethics (KPI 7.4.11)"}
                     logic={th ? "ผลการประเมินธรรมาภิบาลและความโปร่งใส (ITA)" : "Integrity and Transparency Assessment (ITA) results"}
                     source={th ? "คณะกรรมการจริยธรรม" : "Ethics Committee"}
                 >
@@ -206,18 +206,18 @@ export default function StrategicDashboard({ lang }: StrategicDashboardProps) {
                                 labels: governanceMatrix.map(m => m.dimension_value.length > 18 ? m.dimension_value.slice(0, 18) + "…" : m.dimension_value),
                                 datasets: [{ label: th ? "คะแนน" : "Score", data: governanceMatrix.map(m => m.value), borderColor: COLORS[0].border, backgroundColor: COLORS[0].bg, pointBackgroundColor: COLORS[0].border }],
                             }} />
-                        ) : <div className="flex flex-col items-center justify-center h-full text-slate-400"><p className="font-bold text-sm mb-1">{th ? "ธรรมาภิบาล จริยธรรม (7.4.11)" : "Governance & Ethics (7.4.11)"}</p><p className="text-xs">{th ? "ยังไม่มีข้อมูล — กรุณากรอกข้อมูลในแบบฟอร์ม" : "No data — please submit via input form"}</p></div>}
+                        ) : <div className="flex flex-col items-center justify-center h-full text-slate-400"><p className="font-bold text-sm mb-1">{th ? "ธรรมาภิบาล จริยธรรม (KPI 7.4.11)" : "Governance & Ethics (KPI 7.4.11)"}</p><p className="text-xs">{th ? "ยังไม่มีข้อมูล — กรุณากรอกข้อมูลในแบบฟอร์ม" : "No data — please submit via input form"}</p></div>}
                     </div>
                 </DashboardCard>
 
                 {/* Animal Welfare */}
                 <DashboardCard
-                    title={th ? "สัตว์ปลอดโรค & ทำหมัน (7.4.14-15)" : "Animal Disease Control & Sterilization"}
+                    title={th ? "สัตว์ปลอดโรค & ทำหมัน (KPI 7.4.14-15)" : "Animal Welfare (KPI 7.4.14-15)"}
                     logic={th ? "จำนวนการให้บริการฉีดวัคซีนและทำหมันสัตว์จรจัด" : "Number of vaccinations and sterilizations for stray animals"}
                     source={th ? "หน่วยสัตวแพทย์เคลื่อนที่" : "Mobile Vet Unit"}
                 >
                     <div className="h-[320px]">
-                        <Bar options={chartOpts(th ? "สัตว์ปลอดโรค & ทำหมัน (7.4.14-15)" : "Animal Disease Control & Sterilization")} data={buildTrend(animalTrend, {
+                        <Bar options={chartOpts(th ? "สัตว์ปลอดโรค & ทำหมัน (KPI 7.4.14-15)" : "Animal Welfare (KPI 7.4.14-15)")} data={buildTrend(animalTrend, {
                             "7.4.14": th ? "จำนวนครั้ง" : "Events", "7.4.15": th ? "จำนวนสัตว์" : "Animals",
                         })} />
                     </div>
@@ -225,12 +225,12 @@ export default function StrategicDashboard({ lang }: StrategicDashboardProps) {
 
                 {/* Lab Standards */}
                 <DashboardCard
-                    title={th ? "สถานที่ได้รับรองมาตรฐานสัตว์ทดลอง (7.4.12)" : "Accredited Lab Facilities (7.4.12)"}
+                    title={th ? "สถานที่ได้รับรองมาตรฐานสัตว์ทดลอง (KPI 7.4.12)" : "Accredited Lab Facilities (KPI 7.4.12)"}
                     logic={th ? "จำนวนห้องปฏิบัติการที่ได้รับการรับรองมาตรฐานสากล" : "Number of internationally accredited laboratories"}
                     source={th ? "ศูนย์สัตว์ทดลอง" : "Lab Animal Center"}
                 >
                     <div className="h-[320px]">
-                        <Bar options={chartOpts(th ? "สถานที่ได้รับรองมาตรฐานสัตว์ทดลอง (7.4.12)" : "Accredited Lab Facilities (7.4.12)")} data={buildTrend(labTrend, { "7.4.12": th ? "แห่ง" : "Sites" })} />
+                        <Bar options={chartOpts(th ? "สถานที่ได้รับรองมาตรฐานสัตว์ทดลอง (KPI 7.4.12)" : "Accredited Lab Facilities (KPI 7.4.12)")} data={buildTrend(labTrend, { "7.4.12": th ? "แห่ง" : "Sites" })} />
                     </div>
                 </DashboardCard>
             </div>

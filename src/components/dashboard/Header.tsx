@@ -25,9 +25,17 @@ interface HeaderProps {
 }
 
 export default function Header({ activeTab, lang, setLang, dashboardData, t, user, onSignOut, userRole, setActiveTab }: HeaderProps) {
+    const [time, setTime] = useState(new Date());
+    const [mounted, setMounted] = useState(false);
     const [settingsOpen, setSettingsOpen] = useState(false);
     const dropdownRef = useRef<HTMLDivElement>(null);
     const isAdmin = userRole === "admin";
+
+    useEffect(() => {
+        setMounted(true);
+        const timer = setInterval(() => setTime(new Date()), 1000);
+        return () => clearInterval(timer);
+    }, []);
 
     // Close dropdown on outside click
     useEffect(() => {
@@ -40,10 +48,27 @@ export default function Header({ activeTab, lang, setLang, dashboardData, t, use
         return () => document.removeEventListener("mousedown", handleClick);
     }, [settingsOpen]);
 
+    const formatDateTime = (date: Date) => {
+        const d = date.getDate();
+        const m = lang === 'th' 
+            ? date.toLocaleDateString('th-TH', { month: 'long' })
+            : date.toLocaleDateString('en-US', { month: 'short' });
+        const y = lang === 'th' ? date.getFullYear() + 543 : date.getFullYear();
+        const t = date.toLocaleTimeString(lang === 'th' ? 'th-TH' : 'en-US', { 
+            hour: '2-digit', 
+            minute: '2-digit', 
+            second: '2-digit',
+            hour12: false 
+        });
+        return `${d} ${m} ${y} | ${t}`;
+    };
+
     return (
         <header className="h-16 bg-white/80 backdrop-blur-md border-b border-slate-200 flex items-center justify-between px-8 sticky top-0 z-50">
             <h2 className="text-lg font-semibold text-slate-800">
-                {activeTab === 'Dashboard' ? t('executiveOverview') : activeTab}
+                {activeTab === 'Dashboard' ? t('executiveOverview') : 
+                 activeTab === 'Input' ? t('inputData') :
+                 activeTab === 'MyTasks' ? t('myTasks') : activeTab}
             </h2>
             <div className="flex items-center gap-3">
                 <div className="flex items-center gap-2 text-[11px] font-bold text-slate-500 bg-slate-100 px-3 py-1.5 rounded-xl border border-slate-200">
@@ -52,6 +77,14 @@ export default function Header({ activeTab, lang, setLang, dashboardData, t, use
                 </div>
 
                 <div className="h-6 w-[1px] bg-slate-200 mx-1 hidden sm:block" />
+
+                {/* Real-time Clock */}
+                <div className="hidden lg:flex items-center gap-2 text-xs font-mono font-medium text-slate-500 bg-slate-50 px-3 py-1.5 rounded-xl border border-slate-100 shadow-inner min-w-[200px] justify-center">
+                    <div className={`w-2 h-2 rounded-full ${mounted ? 'bg-emerald-500 animate-pulse' : 'bg-slate-300'}`} />
+                    {mounted ? formatDateTime(time) : '-- -- -- | --:--:--'}
+                </div>
+
+                <div className="h-6 w-[1px] bg-slate-200 mx-1 hidden lg:block" />
 
                 {/* Language Toggle */}
                 <button
@@ -120,12 +153,6 @@ export default function Header({ activeTab, lang, setLang, dashboardData, t, use
                             )}
                         </div>
                     )}
-                </div>
-
-                <div className="h-6 w-[1px] bg-slate-200 mx-1 hidden sm:block" />
-
-                <div className="flex items-center gap-2 text-sm font-medium text-slate-500 bg-slate-100 px-3 py-1 rounded-full">
-                    {t('academicYear')} 2568
                 </div>
 
                 {/* User Avatar & Sign Out */}

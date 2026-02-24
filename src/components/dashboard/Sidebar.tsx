@@ -14,7 +14,13 @@ import {
     UserCheck,
     User,
     BarChart3,
-    Palette
+    Palette,
+    LibraryBig,
+    Landmark,
+    UserStar,
+    MessageSquare,
+    CheckSquare,
+    Keyboard
 } from "lucide-react";
 import type { Language, TranslationKey } from "@/lib/translations";
 import { useRouter } from "next/navigation";
@@ -41,15 +47,18 @@ export default function Sidebar({ activeTab, setActiveTab, setShowDocs, t, lang,
     const router = useRouter();
 
     const navItems = [
-        { id: 'Dashboard', name: t('dashboard'), icon: LayoutDashboard, show: true },
-        { id: 'Academic', name: t('academic'), icon: GraduationCap, show: true },
-        { id: 'Staff/HR', name: t('staff'), icon: Users, show: true },
-        { id: 'Hospital', name: t('hospital'), icon: Stethoscope, show: true },
+        { id: 'Dashboard', name: lang === 'th' ? 'หน้าแรก' : 'Dashboard', icon: LayoutDashboard, show: true },
+        { id: 'MyTasks', name: t('myTasks'), icon: CheckSquare, show: true },
+        { id: 'Input', name: t('inputData'), icon: Keyboard, show: true },
+        { id: 'Personnel', name: t('personnel'), icon: Users, show: true },
+        { id: 'Instructor', name: t('instructor'), icon: UserStar, show: true },
+        { id: 'Department', name: t('department'), icon: Landmark, show: true },
+        { id: 'Undergraduate', name: t('undergrad'), icon: Stethoscope, show: true },
+        { id: 'Postgraduate', name: t('postgrad'), icon: GraduationCap, show: true },
+        { id: 'Research', name: t('research'), icon: LibraryBig, show: true },
         { id: 'Strategic', name: t('strategic'), icon: TrendingUp, show: true },
-        { id: 'Input', name: t('inputData'), icon: ClipboardEdit, show: true },
-        { id: 'Review', name: lang === 'th' ? 'ตรวจสอบข้อมูล' : 'Review', icon: UserCheck, show: isReviewer },
-        { id: 'Reports', name: t('reports'), icon: FileText, show: true },
         { id: 'AnnualReport', name: lang === 'th' ? 'รายงานประจำปี' : 'Annual Report', icon: BarChart3, show: true },
+        { id: 'Reports', name: t('reports'), icon: FileText, show: true },
         { id: 'Docs', name: t('documentation'), icon: BookOpen, show: true },
         { id: 'UIKit', name: 'UI Kit / Design', icon: Palette, show: true },
     ].filter(item => item.show);
@@ -89,7 +98,7 @@ export default function Sidebar({ activeTab, setActiveTab, setShowDocs, t, lang,
                             else if (item.id === 'UIKit') router.push('/ui-kit');
                             else setActiveTab(item.id);
                         }}
-                        className={`flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-medium w-full transition-all duration-200 ${activeTab === item.id ? 'bg-[#71C5E8] text-white shadow-md scale-105' : 'text-slate-500 hover:bg-slate-100'}`}
+                        className={`flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-medium w-full text-left transition-all duration-200 ${activeTab === item.id ? 'bg-[#71C5E8] text-white shadow-md scale-105' : 'text-slate-500 hover:bg-slate-100'}`}
                     >
                         <item.icon size={18} />
                         {item.name}
@@ -97,7 +106,6 @@ export default function Sidebar({ activeTab, setActiveTab, setShowDocs, t, lang,
                 ))}
             </nav>
             <div className="p-4 border-t border-slate-200 space-y-3">
-                <p className="text-[10px] text-slate-400 font-medium text-center uppercase tracking-widest">{t('academicYear')} 2568</p>
                 {onSignOut && (
                     <button
                         onClick={onSignOut}

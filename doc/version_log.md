@@ -43,3 +43,30 @@
 - **อุปสรรค**: Dev server ใช้ทรัพยากรมาก ทำให้ terminal commands ช้า — แก้ด้วยการสร้างหน้า Seed ผ่าน Browser แทน
 
 ---
+
+---
+
+## [Research Module Enhancement — v.1.3b ORCiD API]
+- **วันที่**: 2026-02-23
+- **เวลา**: 20:00 (GMT+7)
+- **สรุป**: เพิ่มระบบเชื่อมต่อ ORCiD API และปรับปรุง UI งานวิจัยสู่มาตรฐานความปลอดภัยสูง
+- **เทคนิค**:
+    - **Security**: ย้าย API Keys ทั้งหมดไปเก็บที่ Firestore Secrets เพื่อความปลอดภัย (ISO 27001 Compliance)
+    - **ORCiD API**: พัฒนา Proxy Route (OAuth 2.0 Client Credentials) เพื่อสืบค้นข้อมูลนักวิจัยระดับสากล
+    - **UI Standard**: ปรับปรุงหน้าจอ ORCiD จากระบบ Split-screen เดิม ให้เป็น **Single Column Standard UI** พร้อมติดตั้ง **Progress Modal** ตามแบบอย่าง Scopus และ NCBI
+    - **Branding**: ผสานธีมสี Indigo (Standard Research) และ Purple (ORCiD) อย่างลงตัว
+    - **Deployment**: เตรียมระบบรองรับ CI/CD บน Vercel พร้อมดึง Configuration จากระบบ Cloud Firestore โดยตรง
+- **อุปสรรค**: โครงสร้างข้อมูล ORCiD มีความซับซ้อน (Nested JSON) — แก้ไขโดยการทำ Data Flattening ในฝั่ง API Proxy
+
+---
+
+## [Remodel UI & Full API Integration — v.1.4]
+- **วันที่**: 2026-02-24
+- **เวลา**: 12:30 (GMT+7)
+- **สรุป**: ปรับโฉม UI ใหม่ยกเครื่อง (Remodel) พร้อมเชื่อมต่อ API งานวิจัยสมบูรณ์แบบ (Scopus, NCBI, ORCiD)
+- **เทคนิค**:
+    - **UI Refinement**: ปรับปรุงปุ่มและสีประจำโมดูล (Branding) ให้เป็นระบบเดียวกัน (White-background style for secondary actions)
+    - **Navigation Optimization**: ปรับปรุง Loading logic ใน `app/page.tsx` เพื่อลด Flicker เวลาสลับหน้า
+    - **API Integration**: เชื่อมต่อ NCBI (PubMed) สำหรับงานวิจัยสายการแพทย์ และ ORCiD สำหรับข้อมูลนักวิจัยสากล
+    - **Documentation**: ปรับปรุงคู่มือการใช้งานและการติดตั้งเป็นเวอร์ชัน 1.4
+- **อุปสรรค**: การกะพริบของ Layout (Flicker) เมื่อมีการโหลดคอมโพเนนต์ใหม่ — แก้ไขโดยการแยกส่วน Content Loading ออกจาก Layout พื้นฐาน

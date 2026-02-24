@@ -79,7 +79,11 @@ export default function LoginPage({ onSignIn, loading, error }: LoginPageProps) 
                     <div className="mt-8 space-y-3 pt-6 border-t border-slate-100">
                         <div className="flex items-start gap-2 text-xs font-medium text-slate-400 leading-relaxed">
                             <ShieldCheck size={14} className="text-green-400 flex-shrink-0 mt-0.5" />
-                            <span>Scopus Intelligence: เชื่อมต่อ API เพื่อสืบค้นและวิเคราะห์งานวิจัยครอบคลุมทั่วโลก</span>
+                            <span>Global API Integration: เชื่อมต่อ Scopus, NCBI และ ORCiD สมบูรณ์แบบ</span>
+                        </div>
+                        <div className="flex items-start gap-2 text-xs font-medium text-slate-400 leading-relaxed">
+                            <ShieldCheck size={14} className="text-green-400 flex-shrink-0 mt-0.5" />
+                            <span>Remodel UI v2: ปรับปรุงส่วนติดต่อผู้ใช้ทุกโมดูลตามมาตรฐานใหม่</span>
                         </div>
                         <div className="flex items-start gap-2 text-xs font-medium text-slate-400 leading-relaxed">
                             <ShieldCheck size={14} className="text-green-400 flex-shrink-0 mt-0.5" />
@@ -109,7 +113,7 @@ export default function LoginPage({ onSignIn, loading, error }: LoginPageProps) 
 
                 {/* Footer */}
                 <p className="text-center text-[11px] mt-6" style={{ color: '#133045', opacity: 0.6 }}>
-                    KUVMIS v.1.3 · Last update: 20 Feb 2026 20:30 TH
+                    KUVMIS v.1.4 · Last update: 24 Feb 2026
                 </p>
             </div>
         </div>
