@@ -11,7 +11,8 @@ import {
   LibraryBig,
   UserStar,
   Landmark,
-  ClipboardEdit
+  ClipboardEdit,
+  Upload
 } from "lucide-react";
 import KpiInputForm from "@/components/KpiInputForm";
 import type { Language } from "@/lib/translations";
@@ -100,6 +101,17 @@ export default function InputHub({ lang }: InputHubProps) {
         bg: "bg-slate-600 shadow-sm",
         hoverText: "group-hover:text-slate-600",
         href: "/department",
+        isExternal: true
+      },
+      {
+        id: "import-data",
+        title: lang === "th" ? "ข้อมูลนำเข้า" : "Import Data",
+        description: lang === "th" ? "จัดการฐานข้อมูลบุคลากรของคณะสัตวแพทยศาสตร์ โดยการนำเข้าจากแอปพลิเคชันอื่น" : "Manage personnel data by importing from other applications.",
+        icon: Upload,
+        color: "text-white",
+        bg: "bg-indigo-600 shadow-sm",
+        hoverText: "group-hover:text-indigo-600",
+        href: "/import-data",
         isExternal: true
       },
       {

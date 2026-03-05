@@ -7,7 +7,7 @@ import { PersonnelService } from "@/services/personnelService";
 import { Plus, Search, Edit, Trash2, Download, Upload, BarChart3, ArrowLeft, ArrowUpAZ, ArrowDownAZ, Calendar, Hash, FileSpreadsheet, RefreshCw, Users, Grid2X2Check, ChevronUp } from "lucide-react";
 import { exportPersonnelToExcel } from "@/utils/personnelExport";
 import { parsePersonnelExcel } from "@/utils/personnelImport";
-import { useAuth } from "@/contexts/AuthContext"; 
+import { useAuth } from "@/contexts/AuthContext";
 import { useSearchParams, useRouter } from "next/navigation";
 import PersonnelForm from "@/components/personnel/PersonnelForm";
 
@@ -62,7 +62,7 @@ function PersonnelContent() {
 
   const [sortBy, setSortBy] = useState<'personnel_id' | 'updated_at'>('updated_at');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
-  
+
   const [viewTab, setViewTab] = useState<'active' | 'disabled' | 'all'>('active');
 
   useEffect(() => {
@@ -86,15 +86,15 @@ function PersonnelContent() {
     );
   }).sort((a, b) => {
     if (sortBy === 'personnel_id') {
-        const valA = String(a.personnel_id || "");
-        const valB = String(b.personnel_id || "");
-        return sortOrder === 'asc' 
-          ? valA.localeCompare(valB, undefined, { numeric: true })
-          : valB.localeCompare(valA, undefined, { numeric: true });
+      const valA = String(a.personnel_id || "");
+      const valB = String(b.personnel_id || "");
+      return sortOrder === 'asc'
+        ? valA.localeCompare(valB, undefined, { numeric: true })
+        : valB.localeCompare(valA, undefined, { numeric: true });
     } else {
-       const timeA = a.updated_at ? new Date(a.updated_at.toDate ? a.updated_at.toDate() : a.updated_at).getTime() : 0;
-       const timeB = b.updated_at ? new Date(b.updated_at.toDate ? b.updated_at.toDate() : b.updated_at).getTime() : 0;
-       return sortOrder === 'asc' ? timeA - timeB : timeB - timeA;
+      const timeA = a.updated_at ? new Date(a.updated_at.toDate ? a.updated_at.toDate() : a.updated_at).getTime() : 0;
+      const timeB = b.updated_at ? new Date(b.updated_at.toDate ? b.updated_at.toDate() : b.updated_at).getTime() : 0;
+      return sortOrder === 'asc' ? timeA - timeB : timeB - timeA;
     }
   });
 
@@ -125,11 +125,11 @@ function PersonnelContent() {
               Previous
             </button>
             {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
-               let pNum = i + 1;
-               if (totalPages > 5 && currentPage > 3) pNum = currentPage - 2 + i;
-               if (pNum > totalPages) return null;
-               
-               return (
+              let pNum = i + 1;
+              if (totalPages > 5 && currentPage > 3) pNum = currentPage - 2 + i;
+              if (pNum > totalPages) return null;
+
+              return (
                 <button
                   key={pNum}
                   onClick={() => setCurrentPage(pNum)}
@@ -137,7 +137,7 @@ function PersonnelContent() {
                 >
                   {pNum}
                 </button>
-               );
+              );
             })}
             <button
               onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
@@ -150,7 +150,7 @@ function PersonnelContent() {
         </div>
         {showBackToTop && (
           <div>
-            <button 
+            <button
               onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
               className="flex items-center gap-1.5 px-3 py-2 bg-slate-50 text-slate-500 hover:bg-slate-100 hover:text-green-600 border border-slate-200 rounded-lg text-sm font-medium transition-all group"
               title="Back to Top"
@@ -170,13 +170,13 @@ function PersonnelContent() {
     if (!file) return;
 
     if (!confirm(`Importing ${file.name}. This might take a while. Continue?`)) {
-       if (e.target) e.target.value = ""; 
-       return;
+      if (e.target) e.target.value = "";
+      return;
     }
 
     setLoading(true);
     setImportProgress({ current: 0, total: 0 });
-    
+
     try {
       const result = await parsePersonnelExcel(file, user.email, (processed, total) => {
         setImportProgress({ current: processed, total: total });
@@ -200,7 +200,7 @@ function PersonnelContent() {
       await PersonnelService.deleteAllPersonnel(user.email);
       setPersonnel([]);
     } catch (error) {
-       console.error(error);
+      console.error(error);
     } finally {
       setLoading(false);
     }
@@ -225,56 +225,56 @@ function PersonnelContent() {
       <div className="flex justify-between items-center mb-6">
         <div className="flex items-center gap-4">
           <Link href="/?tab=Input" className="p-2 hover:bg-gray-100 rounded-full transition-colors text-gray-500 hover:text-gray-700">
-             <ArrowLeft size={24} />
+            <ArrowLeft size={24} />
           </Link>
           <h1 className="text-2xl font-bold flex items-center gap-3">
-              <div className="bg-blue-600 p-2 rounded-lg shadow-sm">
-                <Users size={24} className="text-white" />
-              </div>
-             งานบุคคล
+            <div className="bg-blue-600 p-2 rounded-lg shadow-sm">
+              <Users size={24} className="text-white" />
+            </div>
+            ข้อมูลบุคลากร
           </h1>
         </div>
         <div className="flex gap-2">
           {importProgress && (
-             <span className="text-sm text-blue-600 flex items-center bg-blue-50 px-3 rounded-lg animate-pulse">
-                กำลังนำเข้า... {importProgress.current} / {importProgress.total} รายการ
-             </span>
+            <span className="text-sm text-blue-600 flex items-center bg-blue-50 px-3 rounded-lg animate-pulse">
+              กำลังนำเข้า... {importProgress.current} / {importProgress.total} รายการ
+            </span>
           )}
           {userRole === 'admin' && (
-             <div className="flex items-center gap-2 mr-2">
-                <button onClick={handleFixData} className="text-slate-300 hover:text-green-600 transition-colors p-1 hover:bg-slate-100 rounded" title="Fix visibility (Experimental)">
-                  <Grid2X2Check size={16} />
-                </button>
-                <button onClick={handleDeleteAll} className="text-slate-300 hover:text-red-500 transition-colors p-1 hover:bg-slate-100 rounded" title="ล้างข้อมูลทั้งหมด">
-                  <Trash2 size={16} />
-                </button>
-             </div>
+            <div className="flex items-center gap-2 mr-2">
+              <button onClick={handleFixData} className="text-slate-300 hover:text-green-600 transition-colors p-1 hover:bg-slate-100 rounded" title="Fix visibility (Experimental)">
+                <Grid2X2Check size={16} />
+              </button>
+              <button onClick={handleDeleteAll} className="text-slate-300 hover:text-red-500 transition-colors p-1 hover:bg-slate-100 rounded" title="ล้างข้อมูลทั้งหมด">
+                <Trash2 size={16} />
+              </button>
+            </div>
           )}
           <input type="file" ref={fileInputRef} onChange={handleFileChange} className="hidden" accept=".xlsx, .xls, .csv" />
           <button onClick={() => fileInputRef.current?.click()} disabled={loading} className={`bg-white border border-gray-300 hover:border-blue-400 hover:bg-blue-50 text-gray-700 px-4 py-2 rounded-lg flex items-center gap-2 shadow-sm transition-all ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}>
             <Upload size={20} className="text-blue-600" /> นำเข้าข้อมูล (Excel)
           </button>
           <div className="flex gap-1">
-             <button 
-               onClick={() => exportPersonnelToExcel(filteredPersonnel)} 
-               className="bg-white border border-gray-300 hover:border-blue-400 hover:bg-blue-50 text-gray-700 px-4 py-2 rounded-l-lg flex items-center gap-2 shadow-sm transition-all border-r border-gray-200 text-sm group"
-               title="ส่งออกผลที่เลือก"
-             >
-               <Download size={18} className="text-blue-600" /> ส่งออกผลการค้นหา
-             </button>
-             <button 
-               onClick={() => exportPersonnelToExcel(personnel)} 
-               className="bg-white border border-gray-300 hover:border-blue-400 hover:bg-blue-50 text-gray-700 px-4 py-2 rounded-r-lg shadow-sm transition-all flex items-center gap-2 text-sm group"
-               title="ส่งออกข้อมูลทั้งหมด"
-             >
-               <FileSpreadsheet size={18} className="text-blue-600" /> ส่งออกข้อมูลดิบ
-             </button>
+            <button
+              onClick={() => exportPersonnelToExcel(filteredPersonnel)}
+              className="bg-white border border-gray-300 hover:border-blue-400 hover:bg-blue-50 text-gray-700 px-4 py-2 rounded-l-lg flex items-center gap-2 shadow-sm transition-all border-r border-gray-200 text-sm group"
+              title="ส่งออกผลที่เลือก"
+            >
+              <Download size={18} className="text-blue-600" /> ส่งออกผลการค้นหา
+            </button>
+            <button
+              onClick={() => exportPersonnelToExcel(personnel)}
+              className="bg-white border border-gray-300 hover:border-blue-400 hover:bg-blue-50 text-gray-700 px-4 py-2 rounded-r-lg shadow-sm transition-all flex items-center gap-2 text-sm group"
+              title="ส่งออกข้อมูลทั้งหมด"
+            >
+              <FileSpreadsheet size={18} className="text-blue-600" /> ส่งออกข้อมูลดิบ
+            </button>
           </div>
           <Link href="/personnel/report" className="bg-white border border-gray-300 hover:border-blue-400 hover:bg-blue-50 text-gray-700 px-5 py-2.5 rounded-lg flex items-center gap-2 shadow-sm transition-all text-sm font-medium">
-             <BarChart3 size={18} className="text-blue-600" /> รายงาน
+            <BarChart3 size={18} className="text-blue-600" /> รายงาน
           </Link>
           <Link href="/personnel/new" className="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-lg flex items-center gap-2 shadow-sm transition-all text-sm font-medium">
-             <Plus size={18} /> เพิ่มบุคลากร
+            <Plus size={18} /> เพิ่มบุคลากร
           </Link>
         </div>
       </div>
@@ -292,7 +292,7 @@ function PersonnelContent() {
                 className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               />
             </div>
-            <button 
+            <button
               onClick={fetchPersonnel}
               disabled={loading}
               className="flex items-center gap-2 px-3 py-2 bg-white border border-gray-300 hover:border-blue-400 hover:bg-blue-50 text-gray-700 rounded-lg text-sm font-medium transition-all shadow-sm"
@@ -301,9 +301,9 @@ function PersonnelContent() {
               <RefreshCw size={18} className={`text-blue-600 ${loading ? 'animate-spin' : ''}`} />
             </button>
           </div>
-          
+
           <div className="flex items-center gap-2">
-            <button 
+            <button
               onClick={() => {
                 if (sortBy === 'personnel_id') setSortOrder(prev => prev === 'asc' ? 'desc' : 'asc');
                 else { setSortBy('personnel_id'); setSortOrder('asc'); }
@@ -313,7 +313,7 @@ function PersonnelContent() {
               <Hash size={16} /> ID
               {sortBy === 'personnel_id' && (sortOrder === 'asc' ? <ArrowUpAZ size={14} /> : <ArrowDownAZ size={14} />)}
             </button>
-            <button 
+            <button
               onClick={() => {
                 if (sortBy === 'updated_at') setSortOrder(prev => prev === 'asc' ? 'desc' : 'asc');
                 else { setSortBy('updated_at'); setSortOrder('desc'); }
@@ -366,25 +366,25 @@ function PersonnelContent() {
                       <span className="text-xs text-gray-400">{p.affiliation}</span>
                     </td>
                     <td className="p-4 text-[11px] text-gray-500">
-                       <div className="flex flex-col">
-                         <span className="font-medium text-slate-700">
-                           {p.created_at ? new Date(p.created_at).toLocaleString('th-TH', { dateStyle: 'short', timeStyle: 'short' }) : '-'}
-                         </span>
-                         <span className="text-gray-400">{p.created_by?.includes('@') ? p.created_by.split('@')[0] : (p.created_by || '-')}</span>
-                       </div>
+                      <div className="flex flex-col">
+                        <span className="font-medium text-slate-700">
+                          {p.created_at ? new Date(p.created_at).toLocaleString('th-TH', { dateStyle: 'short', timeStyle: 'short' }) : '-'}
+                        </span>
+                        <span className="text-gray-400">{p.created_by?.includes('@') ? p.created_by.split('@')[0] : (p.created_by || '-')}</span>
+                      </div>
                     </td>
                     <td className="p-4 text-[11px] text-gray-500">
-                       <div className="flex flex-col">
-                         <span className="font-medium text-slate-700">
-                           {p.updated_at ? new Date(p.updated_at).toLocaleString('th-TH', { dateStyle: 'short', timeStyle: 'short' }) : '-'}
-                         </span>
-                         <span className="text-gray-400">{p.updated_by?.includes('@') ? p.updated_by.split('@')[0] : (p.updated_by || '-')}</span>
-                       </div>
+                      <div className="flex flex-col">
+                        <span className="font-medium text-slate-700">
+                          {p.updated_at ? new Date(p.updated_at).toLocaleString('th-TH', { dateStyle: 'short', timeStyle: 'short' }) : '-'}
+                        </span>
+                        <span className="text-gray-400">{p.updated_by?.includes('@') ? p.updated_by.split('@')[0] : (p.updated_by || '-')}</span>
+                      </div>
                     </td>
                     <td className="p-4">
-                       <div className="text-sm font-medium text-blue-700 whitespace-pre-line">
-                         {p.employment_status || "-"}
-                       </div>
+                      <div className="text-sm font-medium text-blue-700 whitespace-pre-line">
+                        {p.employment_status || "-"}
+                      </div>
                     </td>
                     <td className="p-4 text-right">
                       <div className="flex justify-end gap-2">

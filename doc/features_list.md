@@ -125,6 +125,18 @@
   - **Excel Import/Export:** 4 import modes (Profile, Publications, Progress, Smart Import). 2 export modes (Filtered/All with sub-sheets).
   - **Seed Data (`/seed`):** Temporary page for populating test data via browser (4 students + 4 advisors from real CSV).
 
+### 1.9 Import Data Module (v.1.5)
+- **Import Data List (`/import-data`):** Table view of imported staging data with search, sort, pagination, Excel import/export, and view tabs (active/disabled/all).
+- **Import Data Form (`/import-data/new`):** Comprehensive 6-tab form for personnel data entry:
+  - **Tab ข้อมูลทั่วไป (Personal):** PDPA toggle switch, profile photo upload, identification numbers (ID card, passport, fingerprint ID), Research IDs (Scopus/NCBI/ORCID/Author ID), detailed naming (academic/professional/royal titles in TH & EN), personal details (gender, DOB, nationality, blood type).
+  - **Tab ที่อยู่และติดต่อ (Address):** Contact info, registered and current address.
+  - **Tab การจ้างงาน (Employment):** Employee type, campus, department, position, dates.
+  - **Tab บัญชีธนาคาร (Financial):** Salary, payment method, bank account.
+  - **Tab วุฒิการศึกษา (Education):** Degree, major, institution, year.
+  - **Tab สถิติเวลาทำงาน (Time Log):** Leave quotas, daily logs.
+- **PDPA Compliance:** Toggle switch for masking/unmasking sensitive personal data with visual feedback (Eye/EyeOff icon).
+- **Navigation:** Accessible from InputHub (การจัดการข้อมูล) via dedicated card with Upload icon.
+
 ## 2. Shared Components
 - **ChartFilterBar:** Unified control for Year, Quarter (Period), Dimension, and View Mode (Chart/Table).
 - **Data Explorer:** Drill-down table view for granular data analysis.

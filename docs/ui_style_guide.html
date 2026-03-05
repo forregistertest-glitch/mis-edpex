@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MIS-EdPEx Style Guide - Buttons Updated (Swapped)</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Sarabun:wght@400;600;700&display=swap');
+
+        body {
+            background-color: #f8fafc;
+            font-family: 'Inter', 'Sarabun', sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 60px 20px;
+            margin: 0;
+        }
+
+        .container {
+            max-width: 900px;
+            width: 100%;
+            background: white;
+            padding: 40px;
+            border-radius: 24px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+        }
+
+        h1 {
+            font-size: 28px;
+            color: #1e293b;
+            margin-bottom: 8px;
+            text-align: center;
+        }
+
+        p.subtitle {
+            color: #64748b;
+            margin-bottom: 40px;
+            text-align: center;
+            font-size: 14px;
+        }
+
+        h2 {
+            font-size: 18px;
+            font-weight: 700;
+            color: #334155;
+            margin: 40px 0 20px 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        h2::before {
+            content: "";
+            width: 4px;
+            height: 18px;
+            background: #2563eb;
+            border-radius: 10px;
+        }
+
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+            gap: 20px;
+        }
+
+        .btn {
+            border: none;
+            padding: 12px 24px;
+            text-align: center;
+            font-size: 14px;
+            font-weight: 600;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            width: 100%;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        /* --- Set 1: Solid Buttons (Primary Actions) --- */
+        .p-personnel {
+            background-color: #2563eb;
+            color: #ffffff;
+        }
+
+        .p-instructor {
+            background-color: #0d9488;
+            color: #ffffff;
+        }
+
+        .p-undergrad {
+            background-color: #0284c7;
+            color: #ffffff;
+        }
+
+        .p-postgrad {
+            background-color: #9333ea;
+            color: #ffffff;
+        }
+
+        .p-research {
+            background-color: #d97706;
+            color: #ffffff;
+        }
+
+        .p-department {
+            background-color: #475569;
+            color: #ffffff;
+        }
+
+        .p-kpi {
+            background-color: #059669;
+            color: #ffffff;
+        }
+
+        /* Swapped Colors */
+        .p-import {
+            background-color: #4f46e5;
+            color: #ffffff;
+        }
+
+        /* Indigo-600 */
+        .p-other {
+            background-color: #e11d48;
+            color: #ffffff;
+        }
+
+        /* Rose-600 */
+
+        /* --- Set 2: White Style (Secondary/Import/API) --- */
+        .secondary {
+            background-color: #ffffff;
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+        }
+
+        .secondary:hover {
+            border-color: #cbd5e1;
+            background-color: #f8fafc;
+        }
+
+        .s-personnel {
+            color: #2563eb;
+            border-color: #2563eb33;
+        }
+
+        .s-instructor {
+            color: #0d9488;
+            border-color: #0d948833;
+        }
+
+        .s-undergrad {
+            color: #0284c7;
+            border-color: #0284c733;
+        }
+
+        .s-postgrad {
+            color: #9333ea;
+            border-color: #9333ea33;
+        }
+
+        .s-research {
+            color: #d97706;
+            border-color: #d9770633;
+        }
+
+        .s-kpi {
+            color: #059669;
+            border-color: #05966933;
+        }
+
+        /* Swapped Colors */
+        .s-import {
+            color: #4f46e5;
+            border-color: #4f46e533;
+        }
+
+        .s-other {
+            color: #e11d48;
+            border-color: #e11d4833;
+        }
+
+        hr {
+            width: 100%;
+            border: none;
+            border-top: 1px solid #f1f5f9;
+            margin: 20px 0;
+        }
+
+        .label {
+            font-size: 11px;
+            color: #94a3b8;
+            margin-top: 4px;
+            font-weight: 500;
+        }
+
+        .btn-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+        <h1>MIS-EdPEx Design Tokens</h1>
+        <p class="subtitle">มาตรฐานปุ่มและสีประจำโมดูล (อัปเดต: สลับสี Import/Other)</p>
+
+        <h2>Primary Actions (Add New / Main Submit)</h2>
+        <div class="grid-container">
+            <div class="btn-wrapper">
+                <button class="btn p-personnel">+ เพิ่มบุคลากร</button>
+                <span class="label">Personnel / Blue-600</span>
+            </div>
+            <div class="btn-wrapper">
+                <button class="btn p-instructor">+ เพิ่มอาจารย์</button>
+                <span class="label">Instructor / Teal-600</span>
+            </div>
+            <div class="btn-wrapper">
+                <button class="btn p-undergrad">+ เพิ่มข้อมูลนิสิต</button>
+                <span class="label">Undergraduate / Sky-600</span>
+            </div>
+            <div class="btn-wrapper">
+                <button class="btn p-postgrad">+ เพิ่มนิสิตปอนด์</button>
+                <span class="label">Postgraduate / Purple-600</span>
+            </div>
+            <div class="btn-wrapper">
+                <button class="btn p-research">+ เพิ่มผลงานวิจัย</button>
+                <span class="label">Research / Amber-600</span>
+            </div>
+            <div class="btn-wrapper">
+                <button class="btn p-department">+ เพิ่มภาควิชา</button>
+                <span class="label">Department / Slate-600</span>
+            </div>
+            <div class="btn-wrapper">
+                <button class="btn p-kpi">บันทึกข้อมูล KPI</button>
+                <span class="label">KPI / Emerald-600</span>
+            </div>
+            <div class="btn-wrapper">
+                <button class="btn p-import">จัดการไฟล์นำเข้า</button>
+                <span class="label">Import / Indigo-600</span>
+            </div>
+            <div class="btn-wrapper">
+                <button class="btn p-other">เมนูอื่นๆ</button>
+                <span class="label">Other / Rose-600</span>
+            </div>
+        </div>
+
+        <h2>Secondary Actions (Import / API / Export)</h2>
+        <div class="grid-container">
+            <div class="btn-wrapper">
+                <button class="btn secondary s-personnel">นำเข้า (Excel)</button>
+                <span class="label">White / Blue-600 Icon</span>
+            </div>
+            <div class="btn-wrapper">
+                <button class="btn secondary s-postgrad">นำเข้าบัณฑิตศึกษา</button>
+                <span class="label">White / Purple-600 Icon</span>
+            </div>
+            <div class="btn-wrapper">
+                <button class="btn secondary s-research">เชื่อมต่อ Scopus</button>
+                <span class="label">White / Amber-600 Icon</span>
+            </div>
+            <div class="btn-wrapper">
+                <button class="btn secondary s-kpi">ส่งออก SAR</button>
+                <span class="label">White / Emerald-600 Icon</span>
+            </div>
+            <div class="btn-wrapper">
+                <button class="btn secondary s-import">ประวัติการนำเข้า</button>
+                <span class="label">White / Indigo-600 Icon</span>
+            </div>
+            <div class="btn-wrapper">
+                <button class="btn secondary s-other">ตั้งค่าระบบ</button>
+                <span class="label">White / Rose-600 Icon</span>
+            </div>
+        </div>
+
+        <h2>Special Buttons</h2>
+        <div class="grid-container">
+            <div class="btn-wrapper">
+                <button class="btn" style="background: #ffffff; color: #475569; border: 1px solid #e2e8f0;">
+                    <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="18"
+                        style="margin-right: 8px;">
+                    Sign in with Google
+                </button>
+                <span class="label">Login Button Style</span>
+            </div>
+        </div>
+    </div>
+
+</body>
+
+</html>
