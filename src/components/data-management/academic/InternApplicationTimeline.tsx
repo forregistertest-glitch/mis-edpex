@@ -3,23 +3,27 @@
 import { useState } from "react";
 import { InternApplicationLog, InternWorkHistory } from "@/types/data-management";
 import { Plus, FileText, Briefcase, CheckCircle, XCircle, Clock } from "lucide-react";
+import ApplicationLogForm from "./ApplicationLogForm";
+import WorkHistoryForm from "./WorkHistoryForm";
 
 interface InternApplicationTimelineProps {
   internId: string;
   applications?: InternApplicationLog[];
   workHistory?: InternWorkHistory[];
-  onAddApplication?: () => void;
-  onAddWorkHistory?: () => void;
 }
 
 export default function InternApplicationTimeline({
   internId,
-  applications = [],
-  workHistory = [],
-  onAddApplication,
-  onAddWorkHistory,
+  applications: initialApplications = [],
+  workHistory: initialWorkHistory = [],
 }: InternApplicationTimelineProps) {
   const [activeSection, setActiveSection] = useState<"applications" | "work">("applications");
+  const [applications, setApplications] = useState<InternApplicationLog[]>(initialApplications);
+  const [workHistory, setWorkHistory] = useState<InternWorkHistory[]>(initialWorkHistory);
+  
+  // Modal states
+  const [showApplicationForm, setShowApplicationForm] = useState(false);
+  const [showWorkHistoryForm, setShowWorkHistoryForm] = useState(false);
 
   const getStatusIcon = (status: string) => {
     switch (status) {
@@ -42,6 +46,29 @@ export default function InternApplicationTimeline({
       'withdrawn': 'ถอนตัว'
     };
     return labels[status] || status;
+  };
+
+  // Handlers
+  const handleAddApplication = (data: Omit<InternApplicationLog, 'id' | 'created_at'>) => {
+    const newApp: InternApplicationLog = {
+      ...data,
+      id: `app_${Date.now()}`,
+      created_at: new Date().toISOString(),
+    };
+    setApplications([...applications, newApp]);
+    setShowApplicationForm(false);
+    alert('บันทึกการสมัครเรียบร้อยแล้ว');
+  };
+
+  const handleAddWorkHistory = (data: Omit<InternWorkHistory, 'id' | 'created_at'>) => {
+    const newWork: InternWorkHistory = {
+      ...data,
+      id: `work_${Date.now()}`,
+      created_at: new Date().toISOString(),
+    };
+    setWorkHistory([...workHistory, newWork]);
+    setShowWorkHistoryForm(false);
+    alert('บันทึกประวัติการทำงานเรียบร้อยแล้ว');
   };
 
   return (
@@ -79,16 +106,14 @@ export default function InternApplicationTimeline({
         <div className="space-y-4">
           <div className="flex justify-between items-center">
             <h3 className="text-lg font-bold text-slate-800">ประวัติการสมัคร Intern</h3>
-            {onAddApplication && (
-              <button
-                type="button"
-                onClick={onAddApplication}
-                className="flex items-center gap-2 px-4 py-2 bg-sky-50 text-sky-600 rounded-lg text-sm font-medium hover:bg-sky-100 transition-colors"
-              >
-                <Plus size={16} />
-                เพิ่มการสมัคร
-              </button>
-            )}
+            <button
+              type="button"
+              onClick={() => setShowApplicationForm(true)}
+              className="flex items-center gap-2 px-4 py-2 bg-sky-50 text-sky-600 rounded-lg text-sm font-medium hover:bg-sky-100 transition-colors"
+            >
+              <Plus size={16} />
+              เพิ่มการสมัคร
+            </button>
           </div>
 
           {applications.length === 0 ? (
@@ -143,16 +168,14 @@ export default function InternApplicationTimeline({
         <div className="space-y-4">
           <div className="flex justify-between items-center">
             <h3 className="text-lg font-bold text-slate-800">ประวัติการทำงาน</h3>
-            {onAddWorkHistory && (
-              <button
-                type="button"
-                onClick={onAddWorkHistory}
-                className="flex items-center gap-2 px-4 py-2 bg-sky-50 text-sky-600 rounded-lg text-sm font-medium hover:bg-sky-100 transition-colors"
-              >
-                <Plus size={16} />
-                เพิ่มประวัติการทำงาน
-              </button>
-            )}
+            <button
+              type="button"
+              onClick={() => setShowWorkHistoryForm(true)}
+              className="flex items-center gap-2 px-4 py-2 bg-sky-50 text-sky-600 rounded-lg text-sm font-medium hover:bg-sky-100 transition-colors"
+            >
+              <Plus size={16} />
+              เพิ่มประวัติการทำงาน
+            </button>
           </div>
 
           {workHistory.length === 0 ? (
@@ -202,6 +225,23 @@ export default function InternApplicationTimeline({
             </div>
           )}
         </div>
+      )}
+
+      {/* Modal Forms */}
+      {showApplicationForm && (
+        <ApplicationLogForm
+          internId={internId}
+          onSubmit={handleAddApplication}
+          onCancel={() => setShowApplicationForm(false)}
+        />
+      )}
+
+      {showWorkHistoryForm && (
+        <WorkHistoryForm
+          internId={internId}
+          onSubmit={handleAddWorkHistory}
+          onCancel={() => setShowWorkHistoryForm(false)}
+        />
       )}
     </div>
   );

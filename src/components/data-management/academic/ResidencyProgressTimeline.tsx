@@ -3,25 +3,32 @@
 import { useState } from "react";
 import { ResidencyExamLog, ResidencyPublication, ResidencyCertificate } from "@/types/data-management";
 import { Plus, Calendar, CheckCircle, XCircle, Clock, BookOpen, Award } from "lucide-react";
+import ExamLogForm from "./ExamLogForm";
+import PublicationForm from "./PublicationForm";
+import CertificateForm from "./CertificateForm";
 
 interface ResidencyProgressTimelineProps {
   residencyId: string;
   examLogs?: ResidencyExamLog[];
   publications?: ResidencyPublication[];
   certificate?: ResidencyCertificate;
-  onAddExam?: () => void;
-  onAddPublication?: () => void;
 }
 
 export default function ResidencyProgressTimeline({
   residencyId,
-  examLogs = [],
-  publications = [],
-  certificate,
-  onAddExam,
-  onAddPublication,
+  examLogs: initialExamLogs = [],
+  publications: initialPublications = [],
+  certificate: initialCertificate,
 }: ResidencyProgressTimelineProps) {
   const [activeSection, setActiveSection] = useState<"exams" | "publications" | "certificate">("exams");
+  const [examLogs, setExamLogs] = useState<ResidencyExamLog[]>(initialExamLogs);
+  const [publications, setPublications] = useState<ResidencyPublication[]>(initialPublications);
+  const [certificate, setCertificate] = useState<ResidencyCertificate | undefined>(initialCertificate);
+  
+  // Modal states
+  const [showExamForm, setShowExamForm] = useState(false);
+  const [showPublicationForm, setShowPublicationForm] = useState(false);
+  const [showCertificateForm, setShowCertificateForm] = useState(false);
 
   const getExamStatusIcon = (status: string) => {
     switch (status) {
@@ -48,6 +55,40 @@ export default function ResidencyProgressTimeline({
       'pending': 'รอผล'
     };
     return labels[status] || status;
+  };
+
+  // Handlers
+  const handleAddExam = (data: Omit<ResidencyExamLog, 'id' | 'created_at' | 'created_by'>) => {
+    const newExam: ResidencyExamLog = {
+      ...data,
+      id: `exam_${Date.now()}`,
+      created_at: new Date().toISOString(),
+    };
+    setExamLogs([...examLogs, newExam]);
+    setShowExamForm(false);
+    alert('บันทึกผลการสอบเรียบร้อยแล้ว');
+  };
+
+  const handleAddPublication = (data: Omit<ResidencyPublication, 'id' | 'created_at' | 'updated_at'>) => {
+    const newPub: ResidencyPublication = {
+      ...data,
+      id: `pub_${Date.now()}`,
+      created_at: new Date().toISOString(),
+    };
+    setPublications([...publications, newPub]);
+    setShowPublicationForm(false);
+    alert('บันทึกผลงานวิจัยเรียบร้อยแล้ว');
+  };
+
+  const handleAddCertificate = (data: Omit<ResidencyCertificate, 'id' | 'created_at'>) => {
+    const newCert: ResidencyCertificate = {
+      ...data,
+      id: `cert_${Date.now()}`,
+      created_at: new Date().toISOString(),
+    };
+    setCertificate(newCert);
+    setShowCertificateForm(false);
+    alert('บันทึกข้อมูลวุฒิบัตรเรียบร้อยแล้ว');
   };
 
   return (
@@ -97,16 +138,14 @@ export default function ResidencyProgressTimeline({
         <div className="space-y-4">
           <div className="flex justify-between items-center">
             <h3 className="text-lg font-bold text-slate-800">ประวัติการสอบ</h3>
-            {onAddExam && (
-              <button
-                type="button"
-                onClick={onAddExam}
-                className="flex items-center gap-2 px-4 py-2 bg-emerald-50 text-emerald-600 rounded-lg text-sm font-medium hover:bg-emerald-100 transition-colors"
-              >
-                <Plus size={16} />
-                เพิ่มผลการสอบ
-              </button>
-            )}
+            <button
+              type="button"
+              onClick={() => setShowExamForm(true)}
+              className="flex items-center gap-2 px-4 py-2 bg-emerald-50 text-emerald-600 rounded-lg text-sm font-medium hover:bg-emerald-100 transition-colors"
+            >
+              <Plus size={16} />
+              เพิ่มผลการสอบ
+            </button>
           </div>
 
           {examLogs.length === 0 ? (
@@ -152,16 +191,14 @@ export default function ResidencyProgressTimeline({
         <div className="space-y-4">
           <div className="flex justify-between items-center">
             <h3 className="text-lg font-bold text-slate-800">ผลงานวิจัยที่ตีพิมพ์</h3>
-            {onAddPublication && (
-              <button
-                type="button"
-                onClick={onAddPublication}
-                className="flex items-center gap-2 px-4 py-2 bg-emerald-50 text-emerald-600 rounded-lg text-sm font-medium hover:bg-emerald-100 transition-colors"
-              >
-                <Plus size={16} />
-                เพิ่มผลงานวิจัย
-              </button>
-            )}
+            <button
+              type="button"
+              onClick={() => setShowPublicationForm(true)}
+              className="flex items-center gap-2 px-4 py-2 bg-emerald-50 text-emerald-600 rounded-lg text-sm font-medium hover:bg-emerald-100 transition-colors"
+            >
+              <Plus size={16} />
+              เพิ่มผลงานวิจัย
+            </button>
           </div>
 
           {publications.length === 0 ? (
@@ -205,7 +242,19 @@ export default function ResidencyProgressTimeline({
       {/* Certificate Section */}
       {activeSection === "certificate" && (
         <div className="space-y-4">
-          <h3 className="text-lg font-bold text-slate-800">ข้อมูลวุฒิบัตร</h3>
+          <div className="flex justify-between items-center">
+            <h3 className="text-lg font-bold text-slate-800">ข้อมูลวุฒิบัตร</h3>
+            {!certificate && (
+              <button
+                type="button"
+                onClick={() => setShowCertificateForm(true)}
+                className="flex items-center gap-2 px-4 py-2 bg-emerald-50 text-emerald-600 rounded-lg text-sm font-medium hover:bg-emerald-100 transition-colors"
+              >
+                <Plus size={16} />
+                บันทึกวุฒิบัตร
+              </button>
+            )}
+          </div>
 
           {!certificate ? (
             <div className="text-center py-12 bg-slate-50 rounded-xl border-2 border-dashed border-slate-200">
@@ -242,6 +291,31 @@ export default function ResidencyProgressTimeline({
             </div>
           )}
         </div>
+      )}
+
+      {/* Modal Forms */}
+      {showExamForm && (
+        <ExamLogForm
+          residencyId={residencyId}
+          onSubmit={handleAddExam}
+          onCancel={() => setShowExamForm(false)}
+        />
+      )}
+
+      {showPublicationForm && (
+        <PublicationForm
+          residencyId={residencyId}
+          onSubmit={handleAddPublication}
+          onCancel={() => setShowPublicationForm(false)}
+        />
+      )}
+
+      {showCertificateForm && (
+        <CertificateForm
+          residencyId={residencyId}
+          onSubmit={handleAddCertificate}
+          onCancel={() => setShowCertificateForm(false)}
+        />
       )}
     </div>
   );

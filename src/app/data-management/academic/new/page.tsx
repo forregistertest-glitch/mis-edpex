@@ -178,16 +178,12 @@ export default function NewAcademicPage() {
                   residencyId={savedId}
                   examLogs={[]}
                   publications={[]}
-                  onAddExam={() => alert("TODO: เพิ่มฟอร์มบันทึกผลการสอบ")}
-                  onAddPublication={() => alert("TODO: เพิ่มฟอร์มบันทึกผลงานวิจัย")}
                 />
               ) : (
                 <InternApplicationTimeline
                   internId={savedId}
                   applications={[]}
                   workHistory={[]}
-                  onAddApplication={() => alert("TODO: เพิ่มฟอร์มบันทึกการสมัคร")}
-                  onAddWorkHistory={() => alert("TODO: เพิ่มฟอร์มบันทึกประวัติการทำงาน")}
                 />
               )}
             </div>
