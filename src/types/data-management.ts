@@ -107,21 +107,21 @@ export interface ResidencyData {
   prename: string;                    // คำนำหน้า
   full_name: string;                  // ชื่อ-นามสกุล
   sex: string;                        // เพศ
-  advisor: string;                    // อาจารย์ที่ปรึกษา
-  advisor_affiliation: string;        // สังกัดอาจารย์ที่ปรึกษา
-  specialty: string;                  // สาขาวิชาที่ฝึกอบรม
+  advisor_name: string;               // อาจารย์ที่ปรึกษา
+  advisor_affiliation?: string;       // สังกัดอาจารย์ที่ปรึกษา
+  training_specialty: string;         // สาขาวิชาที่ฝึกอบรม
   concurrent_study?: string;          // สัตวแพทย์ประจำบ้านฯ เรียนควบคู่กับ ป.โท, ป.บัณฑิตชั้นสูง
-  admission_year: string;             // ปีที่เข้าฝึกอบรม
+  training_start_year: string;        // ปีที่เข้าฝึกอบรม
   comprehensive_exam_date?: string;   // วันที่สอบประมวลความรู้/วัดคุณสมบัติ
   comprehensive_exam_status?: string; // สถานะการสอบประมวลความรู้
-  oral_exam_date?: string;            // วันที่สอบปากเปล่าขั้นสุดท้าย
-  oral_exam_status?: string;          // สถานะสอบปากเปล่าขั้นสุดท้าย
-  graduation_year?: string;           // ปีที่จบฝึกอบรม
+  final_oral_exam_date?: string;      // วันที่สอบปากเปล่าขั้นสุดท้าย
+  final_oral_exam_status?: string;    // สถานะสอบปากเปล่าขั้นสุดท้าย
+  training_end_year?: string;         // ปีที่จบฝึกอบรม
   certificate_date?: string;          // วันที่ได้รับวุฒิบัตร
   research_title?: string;            // ชื่อผลงานวิจัยที่ตีพิมพ์
-  journal?: string;                   // วารสารที่ตีพิมพ์
+  journal_name?: string;              // วารสารที่ตีพิมพ์
   publication_year?: string;          // ปีที่ตีพิมพ์
-  undergraduate_institution?: string; // สถาบันที่จบ สพ.บ.
+  undergraduate_university: string;   // สถาบันที่จบ สพ.บ.
   personnel_status?: string;          // สถานะการเป็นบุคลากร
   training_status?: string;           // สถานะการฝึกอบรม
   teaching_participation?: string;    // การมีส่วนร่วมสอน/แนะนำ
