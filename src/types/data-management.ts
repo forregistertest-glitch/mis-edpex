@@ -102,29 +102,29 @@ export interface PostgraduateData {
   created_by?: string;
 }
 
-// ===== Residency Data =====
-export interface ResidencyData {
+// ===== Residency Data (Redesigned with Static + Progressive) =====
+
+// ข้อมูลหลัก Profile (Static/Master Data - อัพเดททับได้)
+export interface ResidencyProfile {
+  id?: string;
+  
+  // Personal Info (Static)
   prename: string;                    // คำนำหน้า
   full_name: string;                  // ชื่อ-นามสกุล
   sex: string;                        // เพศ
+  undergraduate_university: string;   // สถาบันที่จบ สพ.บ.
+  
+  // Program Info (Static)
   advisor_name: string;               // อาจารย์ที่ปรึกษา
   advisor_affiliation?: string;       // สังกัดอาจารย์ที่ปรึกษา
   training_specialty: string;         // สาขาวิชาที่ฝึกอบรม
   concurrent_study?: string;          // สัตวแพทย์ประจำบ้านฯ เรียนควบคู่กับ ป.โท, ป.บัณฑิตชั้นสูง
   training_start_year: string;        // ปีที่เข้าฝึกอบรม
-  comprehensive_exam_date?: string;   // วันที่สอบประมวลความรู้/วัดคุณสมบัติ
-  comprehensive_exam_status?: string; // สถานะการสอบประมวลความรู้
-  final_oral_exam_date?: string;      // วันที่สอบปากเปล่าขั้นสุดท้าย
-  final_oral_exam_status?: string;    // สถานะสอบปากเปล่าขั้นสุดท้าย
-  training_end_year?: string;         // ปีที่จบฝึกอบรม
-  certificate_date?: string;          // วันที่ได้รับวุฒิบัตร
-  research_title?: string;            // ชื่อผลงานวิจัยที่ตีพิมพ์
-  journal_name?: string;              // วารสารที่ตีพิมพ์
-  publication_year?: string;          // ปีที่ตีพิมพ์
-  undergraduate_university: string;   // สถาบันที่จบ สพ.บ.
-  personnel_status?: string;          // สถานะการเป็นบุคลากร
-  training_status?: string;           // สถานะการฝึกอบรม
-  teaching_participation?: string;    // การมีส่วนร่วมสอน/แนะนำ
+  
+  // Current Status (Updated - ทับได้)
+  current_training_status?: string;   // สถานะการฝึกอบรมล่าสุด
+  current_personnel_status?: string;  // สถานะการเป็นบุคลากรล่าสุด
+  teaching_participation?: string;    // การมีส่วนร่วมสอน/แนะนำล่าสุด
   
   // Metadata
   created_at?: string;
@@ -132,29 +132,151 @@ export interface ResidencyData {
   created_by?: string;
 }
 
-// ===== Intern Data =====
-export interface InternData {
+// ข้อมูลการสอบ (Progressive - เก็บเป็น Log)
+export interface ResidencyExamLog {
+  id?: string;
+  residency_id: string;               // FK to ResidencyProfile
+  
+  exam_type: 'comprehensive' | 'final_oral';  // ประเภทการสอบ
+  exam_date: string;                  // วันที่สอบ
+  exam_status: 'scheduled' | 'passed' | 'failed' | 'pending';  // สถานะ
+  
+  // Additional Info
+  notes?: string;                     // หมายเหตุ
+  score?: number;                     // คะแนน
+  
+  // Metadata
+  created_at?: string;
+  created_by?: string;
+}
+
+// ข้อมูลผลงานวิจัย (Progressive - เก็บเป็น Collection)
+export interface ResidencyPublication {
+  id?: string;
+  residency_id: string;               // FK to ResidencyProfile
+  
+  research_title: string;             // ชื่อผลงานวิจัย
+  journal_name: string;               // วารสารที่ตีพิมพ์
+  publication_year: string;           // ปีที่ตีพิมพ์
+  
+  // Additional Info
+  authors?: string[];                 // ผู้แต่ง
+  doi?: string;                       // DOI
+  url?: string;                       // URL
+  
+  // Metadata
+  created_at?: string;
+  updated_at?: string;
+}
+
+// ข้อมูลสถานะการฝึกอบรม (Progressive - เก็บเป็น Log)
+export interface ResidencyStatusLog {
+  id?: string;
+  residency_id: string;               // FK to ResidencyProfile
+  
+  status_type: 'training' | 'personnel';  // ประเภทสถานะ
+  status_value: string;               // ค่าสถานะ
+  effective_date: string;             // วันที่มีผล
+  
+  // Additional Info
+  notes?: string;                     // หมายเหตุ
+  reason?: string;                    // เหตุผล
+  
+  // Metadata
+  created_at?: string;
+  created_by?: string;
+}
+
+// ข้อมูลวุฒิบัตร (Milestone)
+export interface ResidencyCertificate {
+  id?: string;
+  residency_id: string;               // FK to ResidencyProfile
+  
+  training_end_year: string;          // ปีที่จบฝึกอบรม
+  certificate_date: string;           // วันที่ได้รับวุฒิบัตร
+  certificate_number?: string;        // เลขที่วุฒิบัตร
+  
+  // Metadata
+  created_at?: string;
+}
+
+// Legacy type for backward compatibility
+export type ResidencyData = ResidencyProfile;
+
+// ===== Intern Data (Redesigned with Static + Progressive) =====
+
+// ข้อมูลหลัก Profile (Static/Master Data - อัพเดททับได้)
+export interface InternProfile {
+  id?: string;
+  
+  // Personal Info (Static)
   prename: string;                    // คำนำหน้า
   full_name: string;                  // ชื่อ - นามสกุล
   sex: string;                        // เพศ
+  
+  // Education Info (Static)
   undergraduate_university: string;   // มหาวิทยาลัยที่จบการศึกษา
   gpa: number;                        // เกรดเฉลี่ย
-  license_number?: string;            // เลขที่ใบประกอบวิชาชีพ
-  vet_generation?: string;            // สัตวแพทย์รุ่นที่
   admission_year: string;             // ปีที่เข้าศึกษา
   graduation_year: string;            // ปีที่จบการศึกษา
-  workplace?: string;                 // สถานที่ทำงาน
-  phone?: string;                     // เบอร์โทรศัพท์
-  email?: string;                     // email
-  address?: string;                   // ที่อยู่
-  application_year?: string;          // ปีที่สมัคร Intern
-  selected?: string;                  // ได้รับคัดเลือกเข้าฝึกอบรม
+  
+  // Professional Info (Static)
+  license_number?: string;            // เลขที่ใบประกอบวิชาชีพ
+  vet_generation?: string;            // สัตวแพทย์รุ่นที่
+  
+  // Current Contact (Updated - ทับได้)
+  current_workplace?: string;         // สถานที่ทำงานปัจจุบัน
+  current_phone?: string;             // เบอร์โทรศัพท์ปัจจุบัน
+  current_email?: string;             // email ปัจจุบัน
+  current_address?: string;           // ที่อยู่ปัจจุบัน
   
   // Metadata
   created_at?: string;
   updated_at?: string;
   created_by?: string;
 }
+
+// ข้อมูลการสมัคร (Progressive - เก็บเป็น Log)
+export interface InternApplicationLog {
+  id?: string;
+  intern_id: string;                  // FK to InternProfile
+  
+  application_year: string;           // ปีที่สมัคร
+  application_date?: string;          // วันที่สมัคร
+  selection_status: 'pending' | 'selected' | 'not_selected' | 'withdrawn';  // สถานะการคัดเลือก
+  selection_date?: string;            // วันที่ประกาศผล
+  
+  // Additional Info
+  interview_score?: number;           // คะแนนสัมภาษณ์
+  notes?: string;                     // หมายเหตุ
+  
+  // Metadata
+  created_at?: string;
+  updated_at?: string;
+}
+
+// ข้อมูลการทำงาน (Progressive - เก็บเป็น History)
+export interface InternWorkHistory {
+  id?: string;
+  intern_id: string;                  // FK to InternProfile
+  
+  workplace: string;                  // สถานที่ทำงาน
+  position?: string;                  // ตำแหน่ง
+  start_date: string;                 // วันที่เริ่มงาน
+  end_date?: string;                  // วันที่สิ้นสุด (null = ปัจจุบัน)
+  
+  // Contact at that time
+  phone?: string;                     // เบอร์โทรศัพท์
+  email?: string;                     // email
+  address?: string;                   // ที่อยู่
+  
+  // Metadata
+  created_at?: string;
+  updated_at?: string;
+}
+
+// Legacy type for backward compatibility
+export type InternData = InternProfile;
 
 // ===== HR Data (Simplified - will expand based on 17 sheets) =====
 export interface HRData {

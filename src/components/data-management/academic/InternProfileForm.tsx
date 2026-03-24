@@ -4,29 +4,29 @@ import { useState } from "react";
 import { InternProfile } from "@/types/data-management";
 import { Save, Loader2 } from "lucide-react";
 
-interface InternFormProps {
+interface InternProfileFormProps {
   initialData?: Partial<InternProfile>;
   onSubmit: (data: InternProfile) => Promise<void>;
   onCancel: () => void;
   loading?: boolean;
 }
 
-export default function InternForm({
+export default function InternProfileForm({
   initialData = {},
   onSubmit,
   onCancel,
   loading = false,
-}: InternFormProps) {
+}: InternProfileFormProps) {
   const [formData, setFormData] = useState<Partial<InternProfile>>({
     prename: "",
     full_name: "",
     sex: "ชาย",
     undergraduate_university: "",
     gpa: 0,
-    license_number: "",
-    vet_generation: "",
     admission_year: "",
     graduation_year: "",
+    license_number: "",
+    vet_generation: "",
     current_workplace: "",
     current_phone: "",
     current_email: "",
@@ -48,7 +48,7 @@ export default function InternForm({
     <form onSubmit={handleSubmit} className="space-y-6">
       {/* Section 1: ข้อมูลพื้นฐาน */}
       <div className="space-y-4">
-        <h2 className="text-lg font-bold text-slate-800 border-b pb-2">ข้อมูลพื้นฐาน</h2>
+        <h2 className="text-lg font-bold text-slate-800 border-b pb-2">ข้อมูลพื้นฐาน (Profile)</h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -196,10 +196,15 @@ export default function InternForm({
         </div>
       </div>
 
-
       {/* Section 3: ข้อมูลติดต่อปัจจุบัน */}
       <div className="space-y-4">
-        <h2 className="text-lg font-bold text-slate-800 border-b pb-2">ข้อมูลติดต่อปัจจุบัน</h2>
+        <h2 className="text-lg font-bold text-slate-800 border-b pb-2">ข้อมูลติดต่อปัจจุบัน (Current Contact)</h2>
+        <div className="bg-amber-50 border-l-4 border-amber-500 p-4 rounded-r-lg mb-4">
+          <p className="text-amber-800 text-sm">
+            <strong>หมายเหตุ:</strong> ข้อมูลติดต่อเหล่านี้จะถูกอัพเดทเมื่อมีการเปลี่ยนแปลง 
+            ระบบจะเก็บประวัติการทำงานไว้ใน Work History
+          </p>
+        </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">สถานที่ทำงานปัจจุบัน</label>

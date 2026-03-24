@@ -4,31 +4,31 @@ import { useState } from "react";
 import { ResidencyProfile } from "@/types/data-management";
 import { Save, Loader2 } from "lucide-react";
 
-interface ResidencyFormProps {
+interface ResidencyProfileFormProps {
   initialData?: Partial<ResidencyProfile>;
   onSubmit: (data: ResidencyProfile) => Promise<void>;
   onCancel: () => void;
   loading?: boolean;
 }
 
-export default function ResidencyForm({
+export default function ResidencyProfileForm({
   initialData = {},
   onSubmit,
   onCancel,
   loading = false,
-}: ResidencyFormProps) {
+}: ResidencyProfileFormProps) {
   const [formData, setFormData] = useState<Partial<ResidencyProfile>>({
     prename: "",
     full_name: "",
     sex: "ชาย",
+    undergraduate_university: "",
     advisor_name: "",
     advisor_affiliation: "",
     training_specialty: "",
     concurrent_study: "",
     training_start_year: "",
-    undergraduate_university: "",
-    current_personnel_status: "",
     current_training_status: "",
+    current_personnel_status: "",
     teaching_participation: "",
     ...initialData,
   });
@@ -47,7 +47,7 @@ export default function ResidencyForm({
     <form onSubmit={handleSubmit} className="space-y-6">
       {/* Section 1: ข้อมูลพื้นฐาน */}
       <div className="space-y-4">
-        <h2 className="text-lg font-bold text-slate-800 border-b pb-2">ข้อมูลพื้นฐาน</h2>
+        <h2 className="text-lg font-bold text-slate-800 border-b pb-2">ข้อมูลพื้นฐาน (Profile)</h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -176,13 +176,7 @@ export default function ResidencyForm({
               className="w-full p-2.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-emerald-100 outline-none"
             />
           </div>
-        </div>
-      </div>
 
-      {/* Section 3: ปีที่เข้าฝึกอบรม */}
-      <div className="space-y-4">
-        <h2 className="text-lg font-bold text-slate-800 border-b pb-2">ข้อมูลการฝึกอบรม</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
               ปีที่เข้าฝึกอบรม <span className="text-red-500">*</span>
@@ -200,13 +194,13 @@ export default function ResidencyForm({
         </div>
       </div>
 
-      {/* Section 4: สถานะปัจจุบัน */}
+      {/* Section 3: สถานะปัจจุบัน */}
       <div className="space-y-4">
         <h2 className="text-lg font-bold text-slate-800 border-b pb-2">สถานะปัจจุบัน (Current Status)</h2>
         <div className="bg-amber-50 border-l-4 border-amber-500 p-4 rounded-r-lg mb-4">
           <p className="text-amber-800 text-sm">
             <strong>หมายเหตุ:</strong> สถานะเหล่านี้จะถูกอัพเดทเมื่อมีการเปลี่ยนแปลง 
-            ข้อมูลการสอบและผลงานวิจัยจะบันทึกผ่าน Timeline หลังจากบันทึก Profile
+            ระบบจะเก็บประวัติการเปลี่ยนแปลงไว้ใน Timeline
           </p>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

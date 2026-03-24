@@ -4,29 +4,37 @@ import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
-import ResidencyForm from "@/components/data-management/academic/ResidencyForm";
-import InternForm from "@/components/data-management/academic/InternForm";
-import { ResidencyData, InternData } from "@/types/data-management";
+import ResidencyProfileForm from "@/components/data-management/academic/ResidencyProfileForm";
+import InternProfileForm from "@/components/data-management/academic/InternProfileForm";
+import ResidencyProgressTimeline from "@/components/data-management/academic/ResidencyProgressTimeline";
+import InternApplicationTimeline from "@/components/data-management/academic/InternApplicationTimeline";
+import { ResidencyProfile, InternProfile } from "@/types/data-management";
 
 export default function NewAcademicPage() {
   const router = useRouter();
   const [dataType, setDataType] = useState<"residency" | "intern">("residency");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [showTimeline, setShowTimeline] = useState(false);
+  const [savedId, setSavedId] = useState<string | null>(null);
 
-  const handleResidencySubmit = async (formData: ResidencyData) => {
+  const handleResidencySubmit = async (formData: ResidencyProfile) => {
     setLoading(true);
     setError(null);
 
     try {
       // TODO: เชื่อมต่อกับ Firebase/Database
-      console.log("Residency Data:", formData);
+      console.log("Residency Profile Data:", formData);
       
       // Simulate API call
       await new Promise(resolve => setTimeout(resolve, 1000));
       
-      alert("บันทึกข้อมูล Residency สำเร็จ! (นี่เป็น UI sample - ยังไม่ได้เชื่อมต่อ Database จริง)");
-      router.push("/data-management/academic");
+      // Simulate saved ID
+      const mockId = "res_" + Date.now();
+      setSavedId(mockId);
+      
+      alert("บันทึกข้อมูล Profile สำเร็จ! ตอนนี้คุณสามารถเพิ่มข้อมูลความก้าวหน้า (การสอบ, ผลงานวิจัย) ได้");
+      setShowTimeline(true);
     } catch (err: any) {
       setError(err.message || "เกิดข้อผิดพลาดในการบันทึกข้อมูล");
     } finally {
@@ -34,19 +42,23 @@ export default function NewAcademicPage() {
     }
   };
 
-  const handleInternSubmit = async (formData: InternData) => {
+  const handleInternSubmit = async (formData: InternProfile) => {
     setLoading(true);
     setError(null);
 
     try {
       // TODO: เชื่อมต่อกับ Firebase/Database
-      console.log("Intern Data:", formData);
+      console.log("Intern Profile Data:", formData);
       
       // Simulate API call
       await new Promise(resolve => setTimeout(resolve, 1000));
       
-      alert("บันทึกข้อมูล Intern สำเร็จ! (นี่เป็น UI sample - ยังไม่ได้เชื่อมต่อ Database จริง)");
-      router.push("/data-management/academic");
+      // Simulate saved ID
+      const mockId = "int_" + Date.now();
+      setSavedId(mockId);
+      
+      alert("บันทึกข้อมูล Profile สำเร็จ! ตอนนี้คุณสามารถเพิ่มข้อมูลการสมัครและประวัติการทำงานได้");
+      setShowTimeline(true);
     } catch (err: any) {
       setError(err.message || "เกิดข้อผิดพลาดในการบันทึกข้อมูล");
     } finally {
@@ -130,22 +142,75 @@ export default function NewAcademicPage() {
           </div>
         </div>
 
-        {/* Form */}
-        <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-6 md:p-8">
-          {dataType === "residency" ? (
-            <ResidencyForm
-              onSubmit={handleResidencySubmit}
-              onCancel={handleCancel}
-              loading={loading}
-            />
-          ) : (
-            <InternForm
-              onSubmit={handleInternSubmit}
-              onCancel={handleCancel}
-              loading={loading}
-            />
-          )}
-        </div>
+        {/* Profile Form */}
+        {!showTimeline && (
+          <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-6 md:p-8">
+            {dataType === "residency" ? (
+              <ResidencyProfileForm
+                onSubmit={handleResidencySubmit}
+                onCancel={handleCancel}
+                loading={loading}
+              />
+            ) : (
+              <InternProfileForm
+                onSubmit={handleInternSubmit}
+                onCancel={handleCancel}
+                loading={loading}
+              />
+            )}
+          </div>
+        )}
+
+        {/* Timeline/Progress Section */}
+        {showTimeline && savedId && (
+          <div className="space-y-6">
+            {/* Success Message */}
+            <div className="bg-green-50 border-l-4 border-green-500 p-4 rounded-r-xl">
+              <p className="text-green-800 text-sm">
+                <strong>✓ บันทึก Profile สำเร็จ!</strong> ตอนนี้คุณสามารถเพิ่มข้อมูลความก้าวหน้าได้ด้านล่าง
+              </p>
+            </div>
+
+            {/* Timeline Component */}
+            <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-6 md:p-8">
+              {dataType === "residency" ? (
+                <ResidencyProgressTimeline
+                  residencyId={savedId}
+                  examLogs={[]}
+                  publications={[]}
+                  onAddExam={() => alert("TODO: เพิ่มฟอร์มบันทึกผลการสอบ")}
+                  onAddPublication={() => alert("TODO: เพิ่มฟอร์มบันทึกผลงานวิจัย")}
+                />
+              ) : (
+                <InternApplicationTimeline
+                  internId={savedId}
+                  applications={[]}
+                  workHistory={[]}
+                  onAddApplication={() => alert("TODO: เพิ่มฟอร์มบันทึกการสมัคร")}
+                  onAddWorkHistory={() => alert("TODO: เพิ่มฟอร์มบันทึกประวัติการทำงาน")}
+                />
+              )}
+            </div>
+
+            {/* Action Buttons */}
+            <div className="flex justify-between items-center">
+              <button
+                type="button"
+                onClick={() => setShowTimeline(false)}
+                className="px-6 py-2.5 border border-slate-200 rounded-xl text-slate-600 hover:bg-slate-50 transition-all font-medium text-sm"
+              >
+                ← กลับไปแก้ไข Profile
+              </button>
+              <button
+                type="button"
+                onClick={() => router.push("/data-management/academic")}
+                className="px-6 py-2.5 bg-emerald-600 text-white rounded-xl hover:bg-emerald-700 transition-all font-medium text-sm"
+              >
+                เสร็จสิ้น
+              </button>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
