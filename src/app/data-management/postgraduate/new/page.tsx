@@ -1,16 +1,44 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
-import { ArrowLeft, Save } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { ArrowLeft } from "lucide-react";
+import PostgraduateForm from "@/components/data-management/postgraduate/PostgraduateForm";
+import { PostgraduateData } from "@/types/data-management";
 
 export default function NewPostgraduatePage() {
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    alert("นี่เป็นตัวอย่าง UI เท่านั้น - ยังไม่มีการบันทึกข้อมูลจริง");
+  const router = useRouter();
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const handleSubmit = async (formData: Partial<PostgraduateData>) => {
+    setLoading(true);
+    setError(null);
+
+    try {
+      // TODO: เชื่อมต่อกับ Firebase/Database
+      console.log("Form Data:", formData);
+      
+      // Simulate API call
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      alert("บันทึกข้อมูลสำเร็จ! (นี่เป็น UI sample - ยังไม่ได้เชื่อมต่อ Database จริง)");
+      router.push("/data-management/postgraduate");
+    } catch (err: any) {
+      setError(err.message || "เกิดข้อผิดพลาดในการบันทึกข้อมูล");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleCancel = () => {
+    router.push("/data-management/postgraduate");
   };
 
   return (
     <div className="min-h-screen bg-slate-50 font-sarabun">
+      {/* Sticky Header */}
       <div className="sticky top-0 z-30 bg-white/80 backdrop-blur-md border-b border-slate-200 shadow-sm">
         <div className="max-w-5xl mx-auto px-4 md:px-8 py-4">
           <div className="flex items-center justify-between">
@@ -20,7 +48,7 @@ export default function NewPostgraduatePage() {
               </Link>
               <div>
                 <h1 className="text-xl md:text-2xl font-bold text-slate-800">เพิ่มข้อมูลนิสิตบัณฑิตศึกษา</h1>
-                <p className="text-slate-500 text-xs md:text-sm">Add New Postgraduate Student (UI Sample)</p>
+                <p className="text-slate-500 text-xs md:text-sm">Add New Postgraduate Student</p>
               </div>
             </div>
           </div>
@@ -28,47 +56,29 @@ export default function NewPostgraduatePage() {
       </div>
 
       <div className="max-w-5xl mx-auto p-4 md:p-8">
-        <div className="bg-amber-50 border-l-4 border-amber-500 p-4 rounded-r-xl mb-6">
-          <p className="text-amber-800 text-sm">
-            <strong>ตัวอย่าง UI:</strong> Form นี้จะมีโครงสร้างคล้าย StudentForm.tsx 
-            พร้อม tabs สำหรับข้อมูลส่วนตัว, การศึกษา, อาจารย์ที่ปรึกษา, ผลงานตีพิมพ์, ความก้าวหน้า
+        {/* Info Banner */}
+        <div className="bg-purple-50 border-l-4 border-purple-500 p-4 rounded-r-xl mb-6">
+          <p className="text-purple-800 text-sm">
+            <strong>ข้อมูลบัณฑิตศึกษา:</strong> กรอกข้อมูลนิสิตระดับบัณฑิตศึกษาตาม Excel structure (58 fields) 
+            แบ่งเป็น 5 tabs: ข้อมูลส่วนตัว, การศึกษา, ที่ปรึกษา/วิทยานิพนธ์, การสอบ, และความก้าวหน้า
           </p>
         </div>
 
-        <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-6 md:p-8">
-          <form onSubmit={handleSubmit} className="space-y-6">
-            <div className="space-y-4">
-              <h2 className="text-lg font-bold text-slate-800 border-b pb-2">ข้อมูลตัวอย่าง (Sample Form)</h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">รหัสนิสิต</label>
-                  <input type="text" className="w-full p-2.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-purple-100 outline-none" placeholder="เช่น 6210101234" />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">ชื่อ-นามสกุล</label>
-                  <input type="text" className="w-full p-2.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-purple-100 outline-none" placeholder="เช่น นายสมชาย ใจดี" />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">สาขาวิชา</label>
-                  <input type="text" className="w-full p-2.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-purple-100 outline-none" placeholder="เช่น สัตวแพทยศาสตร์" />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">อาจารย์ที่ปรึกษา</label>
-                  <input type="text" className="w-full p-2.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-purple-100 outline-none" placeholder="เช่น รศ.ดร.สมหญิง ใจดี" />
-                </div>
-              </div>
-            </div>
+        {/* Error Message */}
+        {error && (
+          <div className="mb-6 p-4 bg-red-50 text-red-600 rounded-xl border border-red-100 flex items-center gap-3">
+            <div className="w-1.5 h-1.5 rounded-full bg-red-500" />
+            {error}
+          </div>
+        )}
 
-            <div className="pt-6 flex justify-end gap-3 border-t border-slate-100">
-              <Link href="/data-management/postgraduate" className="px-6 py-2.5 border border-slate-200 rounded-xl text-slate-600 hover:bg-slate-50 transition-all font-medium text-sm">
-                ยกเลิก
-              </Link>
-              <button type="submit" className="px-6 py-2.5 bg-purple-600 text-white rounded-xl hover:bg-purple-700 flex items-center gap-2 shadow-lg shadow-purple-200 transition-all font-medium text-sm">
-                <Save size={18} />
-                บันทึกข้อมูล
-              </button>
-            </div>
-          </form>
+        {/* Form */}
+        <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-6 md:p-8">
+          <PostgraduateForm
+            onSubmit={handleSubmit}
+            onCancel={handleCancel}
+            loading={loading}
+          />
         </div>
       </div>
     </div>
