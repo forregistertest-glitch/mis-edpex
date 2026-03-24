@@ -20,7 +20,8 @@ import {
     UserStar,
     MessageSquare,
     CheckSquare,
-    Keyboard
+    Keyboard,
+    LayoutGrid
 } from "lucide-react";
 import type { Language, TranslationKey } from "@/lib/translations";
 import { useRouter } from "next/navigation";
@@ -59,6 +60,7 @@ export default function Sidebar({ activeTab, setActiveTab, setShowDocs, t, lang,
         { id: 'Strategic', name: t('strategic'), icon: TrendingUp, show: true },
         { id: 'AnnualReport', name: lang === 'th' ? 'รายงานประจำปี' : 'Annual Report', icon: BarChart3, show: true },
         { id: 'Reports', name: t('reports'), icon: FileText, show: true },
+        { id: 'DataManagement', name: lang === 'th' ? 'ตัวอย่างการออกแบบ' : 'Design Samples', icon: LayoutGrid, show: true },
         { id: 'Docs', name: t('documentation'), icon: BookOpen, show: true },
         { id: 'UIKit', name: 'UI Kit / Design', icon: Palette, show: true },
     ].filter(item => item.show);
@@ -96,6 +98,7 @@ export default function Sidebar({ activeTab, setActiveTab, setShowDocs, t, lang,
                         onClick={() => {
                             if (item.id === 'Docs') setShowDocs(true);
                             else if (item.id === 'UIKit') router.push('/ui-kit');
+                            else if (item.id === 'DataManagement') router.push('/data-management');
                             else setActiveTab(item.id);
                         }}
                         className={`flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-medium w-full text-left transition-all duration-200 ${activeTab === item.id ? 'bg-[#71C5E8] text-white shadow-md scale-105' : 'text-slate-500 hover:bg-slate-100'}`}

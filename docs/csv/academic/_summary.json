@@ -1,0 +1,18 @@
+{
+  "fileName": "Academic",
+  "filePath": "/home/anmkr57/projects/mis-edpex/docs/หัวข้อของ Resideny-Intern.xlsx",
+  "totalSheets": 2,
+  "sheets": [
+    {
+      "index": 1,
+      "name": "Residency",
+      "csvFile": "1_Residency.csv"
+    },
+    {
+      "index": 2,
+      "name": "Intern",
+      "csvFile": "2_Intern.csv"
+    }
+  ],
+  "exportedAt": "2026-03-24T00:25:42.820Z"
+}
